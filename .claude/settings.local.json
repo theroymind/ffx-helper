@@ -6,7 +6,9 @@
       "Bash(npm run dev:*)",
       "WebSearch",
       "WebFetch(domain:github.com)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(npx shadcn-vue@latest add:*)",
+      "mcp__ide__getDiagnostics"
     ],
     "deny": [],
     "ask": []
