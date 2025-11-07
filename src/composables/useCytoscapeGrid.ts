@@ -1,13 +1,14 @@
-import { ref, type Ref, onBeforeUnmount } from 'vue'
+import { ref, type Ref, onBeforeUnmount, watch } from 'vue'
 import cytoscape, { type Core, type NodeSingular } from 'cytoscape'
 import type { SphereGridData, SphereType } from '@/types/sphere'
-import { getSphereColors, abilityNodeColor, sphereTypeInfo } from '@/constants/sphere'
+import { getSphereColors, abilityNodeColor, sphereTypeInfo, sphereIcons } from '@/constants/sphere'
 
 export function useCytoscapeGrid(
   container: Ref<HTMLElement | null>,
   gridData: Ref<SphereGridData>,
   selectedType: Ref<SphereType>,
   onNodeUpdate: (nodeId: string, type: SphereType, value: number) => void,
+  showIcons: Ref<boolean>,
 ) {
   let cy: Core | null = null
   const isDragging = ref(false)
@@ -53,6 +54,16 @@ export function useCytoscapeGrid(
               }
               return sphereColors[ele.data('type') as SphereType]
             },
+            'background-image': (ele) => {
+              // Don't show icons when showIcons is false
+              if (!showIcons.value) return 'none'
+              // Use icon if available for this sphere type
+              const type = ele.data('type') as SphereType
+              return sphereIcons[type] || 'none'
+            },
+            'background-fit': 'none',
+            'background-width': 50,
+            'background-height': 50,
             'border-width': 2,
             'border-color': '#ffffff',
             label: (ele) => {
@@ -60,8 +71,20 @@ export function useCytoscapeGrid(
               if (ele.data('abilityName')) {
                 return ele.data('abilityName')
               }
-              // Show stat value for stat nodes
+
+              const type = ele.data('type') as SphereType
               const value = ele.data('value')
+
+              // When showing icons, show H/M for HP/MP, otherwise empty
+              if (showIcons.value) {
+                if (type === 'hp') return 'H'
+                if (type === 'mp') return 'M'
+                return '' // Don't show numbers when icons are visible
+              }
+
+              // When not showing icons, show all stat values
+              if (type === 'hp') return 'H'
+              if (type === 'mp') return 'M'
               return value && value > 0 ? String(value) : ''
             },
             'text-valign': 'center',
@@ -160,6 +183,7 @@ export function useCytoscapeGrid(
     node.data('type', newType)
     node.data('value', statValue)
     node.style('background-color', sphereColors[newType])
+    node.style('background-image', showIcons.value ? (sphereIcons[newType] || 'none') : 'none')
 
     // Update the underlying data via callback
     onNodeUpdate(node.id(), newType, statValue)
@@ -179,6 +203,7 @@ export function useCytoscapeGrid(
           'background-color',
           defaultNode.abilityId ? abilityNodeColor : sphereColors[defaultNode.type],
         )
+        node.style('background-image', showIcons.value ? (sphereIcons[defaultNode.type] || 'none') : 'none')
       }
     })
   }
@@ -190,6 +215,24 @@ export function useCytoscapeGrid(
       cy = null
     }
   }
+
+  // Watch for showIcons changes and update all nodes
+  watch(showIcons, () => {
+    if (!cy) return
+
+    cy.nodes().forEach((node) => {
+      const type = node.data('type') as SphereType
+      const isAbilityNode = node.data('abilityId') !== null && node.data('abilityId') !== undefined
+
+      if (!isAbilityNode) {
+        // Update background image based on showIcons
+        node.style('background-image', showIcons.value ? (sphereIcons[type] || 'none') : 'none')
+      }
+    })
+
+    // Force redraw
+    cy.style().update()
+  })
 
   onBeforeUnmount(destroy)
 

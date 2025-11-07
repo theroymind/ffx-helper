@@ -1,45 +1,3 @@
-<script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useSphereData } from '@/composables/useSphereData'
-import { useCytoscapeGrid } from '@/composables/useCytoscapeGrid'
-import type { SphereType } from '@/types/sphere'
-import SphereSelector from './sphere-grid/SphereSelector.vue'
-import StatsPanel from './sphere-grid/StatsPanel.vue'
-import SphereCountsPanel from './sphere-grid/SphereCountsPanel.vue'
-import GridControls from './sphere-grid/GridControls.vue'
-import InstructionsPanel from './sphere-grid/InstructionsPanel.vue'
-import SphereGridCanvas from './sphere-grid/SphereGridCanvas.vue'
-import { Separator } from '@/components/ui/separator'
-
-// State
-const selectedType = ref<SphereType>('hp')
-
-// Composables
-const { sphereData, stats, overriddenSphereCounts, resetGrid, updateNode } = useSphereData()
-
-// Canvas ref
-const canvasRef = ref<InstanceType<typeof SphereGridCanvas> | null>(null)
-const cyContainer = computed(() => canvasRef.value?.container ?? null)
-
-// Cytoscape grid
-const { initializeCytoscape, resetNodes } = useCytoscapeGrid(
-  cyContainer,
-  sphereData,
-  selectedType,
-  updateNode,
-)
-
-// Initialize Cytoscape on mount
-onMounted(() => {
-  initializeCytoscape()
-})
-
-// Reset handler
-const handleReset = () => {
-  resetGrid(resetNodes)
-}
-</script>
-
 <template>
   <div class="flex gap-6 h-screen p-6 bg-zinc-950 text-white">
     <!-- Sidebar Controls -->
@@ -68,7 +26,10 @@ const handleReset = () => {
       <Separator class="bg-zinc-700/50" />
 
       <!-- Sphere Counts Panel -->
-      <SphereCountsPanel :counts="overriddenSphereCounts.counts" :total="overriddenSphereCounts.total" />
+      <SphereCountsPanel
+        :counts="overriddenSphereCounts.counts"
+        :total="overriddenSphereCounts.total"
+      />
 
       <Separator class="bg-zinc-700/50" />
 
@@ -76,7 +37,72 @@ const handleReset = () => {
       <InstructionsPanel />
     </div>
 
-    <!-- Canvas -->
-    <SphereGridCanvas ref="canvasRef" />
+    <!-- Canvas with Toggle Overlay -->
+    <div class="relative flex-1">
+      <SphereGridCanvas ref="canvasRef" />
+      <div class="absolute top-4 right-4 z-10">
+        <ToggleGroup
+          v-model="displayMode"
+          type="single"
+          size="lg"
+          class="backdrop-blur-sm border rounded-md"
+        >
+          <ToggleGroupItem value="icons" aria-label="Show icons">
+            <Image class="size-4" />
+          </ToggleGroupItem>
+          <ToggleGroupItem value="numbers" aria-label="Show numbers">
+            <Hash class="size-4" />
+          </ToggleGroupItem>
+        </ToggleGroup>
+      </div>
+    </div>
   </div>
 </template>
+
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue'
+import { useSphereData } from '@/composables/useSphereData'
+import { useCytoscapeGrid } from '@/composables/useCytoscapeGrid'
+import type { SphereType } from '@/types/sphere'
+import SphereSelector from './sphere-grid/SphereSelector.vue'
+import StatsPanel from './sphere-grid/StatsPanel.vue'
+import SphereCountsPanel from './sphere-grid/SphereCountsPanel.vue'
+import GridControls from './sphere-grid/GridControls.vue'
+import InstructionsPanel from './sphere-grid/InstructionsPanel.vue'
+import SphereGridCanvas from './sphere-grid/SphereGridCanvas.vue'
+import { Separator } from '@/components/ui/separator'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { Image, Hash, Bold, Italic, Underline } from 'lucide-vue-next'
+import { Button } from '@/components/ui/button'
+
+// State
+const selectedType = ref<SphereType>('hp')
+const displayMode = ref<'icons' | 'numbers'>('icons')
+const showIcons = computed(() => displayMode.value === 'icons')
+
+// Composables
+const { sphereData, stats, overriddenSphereCounts, resetGrid, updateNode } = useSphereData()
+
+// Canvas ref
+const canvasRef = ref<InstanceType<typeof SphereGridCanvas> | null>(null)
+const cyContainer = computed(() => canvasRef.value?.container ?? null)
+
+// Cytoscape grid
+const { initializeCytoscape, resetNodes } = useCytoscapeGrid(
+  cyContainer,
+  sphereData,
+  selectedType,
+  updateNode,
+  showIcons,
+)
+
+// Initialize Cytoscape on mount
+onMounted(() => {
+  initializeCytoscape()
+})
+
+// Reset handler
+const handleReset = () => {
+  resetGrid(resetNodes)
+}
+</script>

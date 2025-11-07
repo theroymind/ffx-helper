@@ -1,9 +1,13 @@
 <script setup lang="ts">
-import SphereGrid from './components/SphereGrid.vue'
+import { RouterView } from 'vue-router'
+import NavigationBar from './components/NavigationBar.vue'
 </script>
 
 <template>
-  <SphereGrid />
+  <div class="flex flex-col h-screen">
+    <NavigationBar />
+    <RouterView class="flex-1 overflow-hidden" />
+  </div>
 </template>
 
 <style>
