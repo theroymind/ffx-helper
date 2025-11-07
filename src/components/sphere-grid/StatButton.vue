@@ -40,7 +40,7 @@ const icon = getSphereIcon(props.statType)
     type="button"
     :variant="variant || (statType as any)"
     :size="size"
-    :class="cn('justify-start', active && 'ring-2 ring-amber-300 ring-offset-2 ring-offset-zinc-950', props.class)"
+    :class="cn('justify-start', active && 'ring-2 ring-gold ring-offset-2 ring-offset-background', props.class)"
     :data-active="active"
   >
     <div
