@@ -70,28 +70,31 @@ export function useGridMapperEvents(providedContext?: GridMapperContext) {
   }
 
   function handleWheel(event: WheelEvent) {
-    event.preventDefault()
-
     const canvas = ctx.canvasRef.value
     if (!canvas) return
 
-    const rect = canvas.getBoundingClientRect()
-    const mouseX = event.clientX - rect.left
-    const mouseY = event.clientY - rect.top
+    if (event.ctrlKey) {
+      event.preventDefault()
 
-    // Get world position before zoom
-    const worldPosBefore = ctx.screenToWorld(mouseX, mouseY)
+      const rect = canvas.getBoundingClientRect()
+      const mouseX = event.clientX - rect.left
+      const mouseY = event.clientY - rect.top
 
-    // Adjust zoom
-    const zoomFactor = event.deltaY > 0 ? 0.9 : 1.1
-    ctx.viewScale.value = Math.max(0.1, Math.min(10, ctx.viewScale.value * zoomFactor))
+      const worldPosBefore = ctx.screenToWorld(mouseX, mouseY)
 
-    // Get world position after zoom
-    const worldPosAfter = ctx.screenToWorld(mouseX, mouseY)
+      const zoomFactor = event.deltaY > 0 ? 0.9 : 1.1
+      ctx.viewScale.value = Math.max(0.1, Math.min(10, ctx.viewScale.value * zoomFactor))
 
-    // Adjust offset to keep mouse position fixed
-    ctx.viewOffsetX.value += (worldPosAfter.x - worldPosBefore.x) * ctx.viewScale.value
-    ctx.viewOffsetY.value += (worldPosAfter.y - worldPosBefore.y) * ctx.viewScale.value
+      const worldPosAfter = ctx.screenToWorld(mouseX, mouseY)
+
+      ctx.viewOffsetX.value += (worldPosAfter.x - worldPosBefore.x) * ctx.viewScale.value
+      ctx.viewOffsetY.value += (worldPosAfter.y - worldPosBefore.y) * ctx.viewScale.value
+    } else {
+      event.preventDefault()
+
+      ctx.viewOffsetX.value -= event.deltaX
+      ctx.viewOffsetY.value -= event.deltaY
+    }
   }
 
   return {

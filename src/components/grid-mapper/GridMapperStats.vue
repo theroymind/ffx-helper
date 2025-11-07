@@ -1,19 +1,36 @@
 <template>
-  <div class="flex gap-8">
-    <p class="font-semibold">Nodes placed: {{ ctx.nodes.value.length }}</p>
-    <p class="font-semibold">Connections: {{ connectionsCount }}</p>
-    <p class="font-semibold">Target: ~860 nodes</p>
-    <p v-if="ctx.referenceNodes.value.length > 0" class="font-semibold">
-      Reference nodes: {{ ctx.referenceNodes.value.length }}
-    </p>
-    <p class="font-semibold">Canvas: {{ ctx.canvasWidth.value }}x{{ ctx.canvasHeight.value }}</p>
-    <p class="font-semibold">Zoom: {{ zoomPercentage }}%</p>
-    <p v-if="ctx.imageScale.value !== 1.0" class="font-semibold">Image scale: {{ ctx.imageScale.value.toFixed(3) }}</p>
+  <div class="flex items-center gap-4 text-xs">
+    <div class="flex items-center gap-2">
+      <span class="text-muted-foreground">Nodes:</span>
+      <span class="font-semibold text-foreground">{{ ctx.nodes.value.length }}/860</span>
+      <div class="w-20 h-1 bg-muted rounded-full overflow-hidden">
+        <div
+          class="h-full bg-gold transition-all duration-300"
+          :style="{ width: `${Math.min(100, (ctx.nodes.value.length / 860) * 100)}%` }"
+        ></div>
+      </div>
+    </div>
+    <Separator orientation="vertical" class="h-4" />
+    <div class="flex items-center gap-2">
+      <span class="text-muted-foreground">Connections:</span>
+      <span class="font-semibold text-foreground">{{ connectionsCount }}</span>
+    </div>
+    <Separator v-if="ctx.referenceNodes.value.length > 0" orientation="vertical" class="h-4" />
+    <div v-if="ctx.referenceNodes.value.length > 0" class="flex items-center gap-2">
+      <span class="text-muted-foreground">Reference:</span>
+      <span class="font-semibold text-foreground">{{ ctx.referenceNodes.value.length }}</span>
+    </div>
+    <Separator orientation="vertical" class="h-4" />
+    <div class="flex items-center gap-2">
+      <span class="text-muted-foreground">Zoom:</span>
+      <span class="font-semibold text-foreground">{{ zoomPercentage }}%</span>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from "vue"
+import { Separator } from "@/components/ui/separator"
 import { useGridMapperContext } from "@/composables/useGridMapperContext"
 
 const ctx = useGridMapperContext()

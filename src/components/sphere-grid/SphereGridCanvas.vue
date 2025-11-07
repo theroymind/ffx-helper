@@ -9,5 +9,5 @@ defineExpose({
 </script>
 
 <template>
-  <div ref="container" class="flex-1 overflow-hidden w-full h-full"></div>
+  <div ref="container" class="flex-1 overflow-hidden w-full h-full touch-none"></div>
 </template>

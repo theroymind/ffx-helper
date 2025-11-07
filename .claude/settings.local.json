@@ -10,7 +10,8 @@
       "Bash(npx shadcn-vue@latest add:*)",
       "mcp__ide__getDiagnostics",
       "Bash(jq:*)",
-      "Bash(npm run type-check:*)"
+      "Bash(npm run type-check:*)",
+      "Bash(pkill:*)"
     ],
     "deny": [],
     "ask": []

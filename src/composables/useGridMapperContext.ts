@@ -61,6 +61,8 @@ export interface GridMapperContext {
   toggleGrid: () => void
   resetView: () => void
   clearNodes: () => boolean
+  loadNodes: (loadedNodes: GridNode[]) => void
+  getCurrentNodes: () => GridNode[]
 }
 
 const GridMapperContextKey: InjectionKey<GridMapperContext> = Symbol("GridMapperContext")
@@ -122,6 +124,20 @@ export function createGridMapperContext() {
       return true
     }
     return false
+  }
+
+  function loadNodes(loadedNodes: GridNode[]) {
+    nodes.value = JSON.parse(JSON.stringify(loadedNodes))
+    selectedNodeForLink.value = null
+    if (loadedNodes.length > 0) {
+      nextNodeId = Math.max(...loadedNodes.map((n) => n.id)) + 1
+    } else {
+      nextNodeId = 1
+    }
+  }
+
+  function getCurrentNodes(): GridNode[] {
+    return JSON.parse(JSON.stringify(nodes.value))
   }
 
   function findNodeAtPosition(x: number, y: number, threshold = 15): GridNode | null {
@@ -269,6 +285,8 @@ export function createGridMapperContext() {
     toggleGrid,
     resetView,
     clearNodes,
+    loadNodes,
+    getCurrentNodes,
   }
 
   provide(GridMapperContextKey, context)

@@ -1,20 +1,30 @@
 <template>
   <div class="flex flex-col gap-4 p-4 bg-background min-h-screen">
-    <div class="flex flex-col gap-4 p-4 bg-muted rounded-lg">
-      <h2 class="m-0 text-foreground font-semibold text-xl">Standard Grid Mapper Tool</h2>
-      <p v-if="!isLinkMode" class="m-0 text-muted-foreground">
-        Click to place nodes. Select type in dialog. Shift+drag or middle-click to pan. Scroll to zoom.
-      </p>
-      <p v-else-if="!selectedNodeForLink" class="m-0 text-muted-foreground">
-        Click a node to start connecting. Shift+drag to pan.
-      </p>
-      <p v-else class="m-0 text-muted-foreground">Click another node to connect/disconnect. Red = will disconnect.</p>
+    <Card>
+      <CardHeader class="pb-3">
+        <div class="flex items-center justify-between">
+          <div>
+            <CardTitle class="text-xl">Grid Mapper</CardTitle>
+            <CardDescription class="text-xs mt-1">
+              <template v-if="!isLinkMode"> Click to place • Shift+drag to pan • Scroll to zoom </template>
+              <template v-else-if="!selectedNodeForLink"> Click node to start connecting </template>
+              <template v-else> Click another node to toggle connection </template>
+            </CardDescription>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent class="space-y-4 pb-4">
+        <GridMapperVersionManager
+          :versions="versionManager.versions.value"
+          @save="handleSaveVersion"
+          @load="handleLoadVersion"
+          @delete="handleDeleteVersion"
+        />
+        <GridMapperStats />
+      </CardContent>
+    </Card>
 
-      <GridMapperControls />
-      <GridMapperStats />
-    </div>
-
-    <div class="overflow-auto border-2 border-border rounded-lg bg-zinc-950 touch-none">
+    <div class="relative overflow-auto border-2 border-border rounded-lg bg-card shadow-lg touch-none">
       <canvas
         ref="canvasRef"
         :width="canvasWidth"
@@ -26,6 +36,8 @@
         @wheel="handleWheel"
         class="block cursor-crosshair select-none active:cursor-grabbing"
       ></canvas>
+
+      <GridMapperToolbar />
     </div>
 
     <!-- Node Type Selection Dialog -->
@@ -72,19 +84,42 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 import Button from "@/components/ui/button/Button.vue"
 import NodeTypeDialogContent from "@/components/grid-mapper/NodeTypeDialogContent.vue"
-import GridMapperControls from "@/components/grid-mapper/GridMapperControls.vue"
+import GridMapperToolbar from "@/components/grid-mapper/GridMapperToolbar.vue"
+import GridMapperVersionManager from "@/components/grid-mapper/GridMapperVersionManager.vue"
 import GridMapperStats from "@/components/grid-mapper/GridMapperStats.vue"
 import { useImageCache } from "@/composables/useImageCache"
 import { createGridMapperContext, type NodeData } from "@/composables/useGridMapperContext"
 import { useGridMapperDrawing } from "@/composables/useGridMapperDrawing"
 import { useGridMapperEvents } from "@/composables/useGridMapperEvents"
+import { useGridMapperVersionManager } from "@/composables/useVersionManager"
 
 // Create context (provides to child components and composables)
 const context = createGridMapperContext()
+const versionManager = useGridMapperVersionManager()
 const { isLinkMode, selectedNodeForLink, canvasWidth, canvasHeight, canvasRef, backgroundImage, imageScale, addNode } =
   context
+
+function handleSaveVersion(name: string) {
+  const nodes = context.getCurrentNodes()
+  versionManager.saveVersion(name, nodes)
+  alert(`Saved version: ${name}`)
+}
+
+function handleLoadVersion(versionId: string) {
+  const nodes = versionManager.loadVersion(versionId)
+  if (nodes) {
+    context.loadNodes(nodes)
+    alert(`Loaded version with ${nodes.length} nodes`)
+  }
+}
+
+function handleDeleteVersion(versionId: string) {
+  versionManager.deleteVersion(versionId)
+}
 
 // Canvas drawing (pass context since we're in the provider component)
 const { draw } = useGridMapperDrawing(context)
