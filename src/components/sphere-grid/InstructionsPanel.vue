@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
-import { Info } from 'lucide-vue-next'
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { Info } from "lucide-vue-next"
 </script>
 
 <template>
-  <Card class="bg-zinc-900/50 border-zinc-700 shadow-lg">
+  <Card class="shadow-lg">
     <CardHeader class="pb-2">
       <CardTitle class="text-gold font-semibold flex items-center gap-2">
         <Info class="h-4 w-4" />

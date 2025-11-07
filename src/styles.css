@@ -44,6 +44,10 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-gold: var(--gold);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
 
   /* SPHERE COLOURS */
   --color-sphere-hp: var(--sphere-hp);
@@ -66,6 +70,10 @@
   --color-sphere-evasion-foreground: var(--sphere-evasion-foreground);
   --color-sphere-luck: var(--sphere-luck);
   --color-sphere-luck-foreground: var(--sphere-luck-foreground);
+  --color-sphere-ability: var(--sphere-ability);
+  --color-sphere-ability-foreground: var(--sphere-ability-foreground);
+  --color-sphere-locked: var(--sphere-locked);
+  --color-sphere-locked-foreground: var(--sphere-locked-foreground);
 }
 
 :root {
@@ -124,8 +132,16 @@
   --sphere-evasion-foreground: #ffffff;
   --sphere-luck: #ffbf00; /* oklch(0.8238 0.1678 90.3) */
   --sphere-luck-foreground: #261802;
+  --sphere-ability: #ff1ac6; /* oklch(0.6297 0.2726 328.36) */
+  --sphere-ability-foreground: #ffffff;
+  --sphere-locked: #52525b; /* oklch(0.4268 0.0088 264.05) */
+  --sphere-locked-foreground: #ffffff;
 
   --gold: #ffbf00;
+  --success: oklch(0.6505 0.1791 141.66);
+  --success-foreground: oklch(1 0 0);
+  --warning: oklch(0.8238 0.1678 90.3);
+  --warning-foreground: oklch(0.15 0.03 90);
 }
 
 .dark {
@@ -161,6 +177,10 @@
   --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
   --sidebar-border: oklch(0.279 0.041 260.031);
   --sidebar-ring: oklch(0.446 0.043 257.281);
+  --success: oklch(0.6505 0.1791 141.66);
+  --success-foreground: oklch(1 0 0);
+  --warning: oklch(0.8238 0.1678 90.3);
+  --warning-foreground: oklch(0.15 0.03 90);
 }
 
 @layer base {
@@ -170,4 +190,20 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@keyframes pulse-bg {
+  0% {
+    background-color: transparent;
+  }
+  50% {
+    background-color: hsl(var(--accent));
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+.animate-pulse-bg [data-slot="collapsible-trigger"] > div {
+  animation: pulse-bg 1s ease-in-out;
 }

@@ -26,6 +26,8 @@ export const buttonVariants = cva(
         accuracy: 'bg-sphere-accuracy text-sphere-accuracy-foreground shadow-xs hover:bg-sphere-accuracy/90',
         evasion: 'bg-sphere-evasion text-sphere-evasion-foreground shadow-xs hover:bg-sphere-evasion/90',
         luck: 'bg-sphere-luck text-sphere-luck-foreground shadow-xs hover:bg-sphere-luck/90',
+        ability: 'bg-sphere-ability text-sphere-ability-foreground shadow-xs hover:bg-sphere-ability/90',
+        locked: 'bg-sphere-locked text-sphere-locked-foreground shadow-xs hover:bg-sphere-locked/90',
       },
       size: {
         default: 'h-9 px-4 py-2 has-[>svg]:px-3',

@@ -1,0 +1,59 @@
+<script setup lang="ts">
+import type { HTMLAttributes } from "vue"
+import type { ButtonVariants } from "@/components/ui/button"
+import { Button } from "@/components/ui/button"
+import type { SphereType } from "@/types/sphere"
+import { sphereTypeInfo, sphereIcons } from "@/constants/sphere"
+import { cn } from "@/lib/utils"
+
+interface Props {
+  statType: SphereType
+  variant?: ButtonVariants["variant"]
+  size?: ButtonVariants["size"]
+  class?: HTMLAttributes["class"]
+  showValue?: boolean
+  active?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  showValue: true,
+  active: false,
+})
+
+// Get icon for sphere type - either from icons or use letter for HP/MP
+const getSphereIcon = (type: SphereType): { type: "image" | "text"; value: string } | null => {
+  if (type === "hp") return { type: "text", value: "H" }
+  if (type === "mp") return { type: "text", value: "M" }
+
+  const iconUrl = sphereIcons[type]
+  if (iconUrl) return { type: "image", value: iconUrl }
+
+  return null
+}
+
+const typeInfo = sphereTypeInfo[props.statType]
+const icon = getSphereIcon(props.statType)
+</script>
+
+<template>
+  <Button
+    type="button"
+    :variant="variant || (statType as any)"
+    :size="size"
+    :class="cn('justify-start', active && 'ring-2 ring-amber-300 ring-offset-2 ring-offset-zinc-950', props.class)"
+    :data-active="active"
+  >
+    <div
+      class="flex h-6 w-6 items-center justify-center rounded-full border-2 shrink-0"
+      :class="['luck', 'accuracy', 'agility'].includes(statType) ? 'border-black' : 'border-white'"
+    >
+      <img v-if="icon?.type === 'image'" :src="icon.value" :alt="typeInfo.label" class="h-4 w-4" />
+      <span v-else-if="icon?.type === 'text'" class="font-bold">
+        {{ icon.value }}
+      </span>
+    </div>
+    <slot>
+      {{ typeInfo.label }}
+    </slot>
+  </Button>
+</template>

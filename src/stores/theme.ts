@@ -1,21 +1,26 @@
 import { computed } from 'vue'
 import { defineStore } from 'pinia'
-import { useLocalStorage } from '@vueuse/core'
+import { useDark, useToggle } from '@vueuse/core'
 
 export type Theme = 'light' | 'dark'
 
 export const useThemeStore = defineStore('theme', () => {
-  const theme = useLocalStorage<Theme>('ffx-theme', 'dark')
+  // useDark will automatically manage the 'dark' class on the body element
+  const isDark = useDark({
+    storageKey: 'ffx-theme',
+    selector: 'body',
+    attribute: 'class',
+    valueDark: 'dark',
+    valueLight: ''
+  })
 
-  const isDark = computed(() => theme.value === 'dark')
+  const toggleTheme = useToggle(isDark)
 
-  function toggleTheme() {
-    theme.value = theme.value === 'dark' ? 'light' : 'dark'
-  }
+  const theme = computed<Theme>(() => isDark.value ? 'dark' : 'light')
 
   function setTheme(newTheme: Theme | string) {
     if (newTheme === 'light' || newTheme === 'dark') {
-      theme.value = newTheme
+      isDark.value = newTheme === 'dark'
     }
   }
 

@@ -1,0 +1,58 @@
+[
+  {
+    "location": "Besaid",
+    "monsters": ["Dingo", "Condor", "Water Flan"]
+  },
+  {
+    "location": "Kilika",
+    "monsters": ["Dinonix", "Killer Bee", "Yellow Element", "Ragora"]
+  },
+  {
+    "location": "Mi'ihen Highroad",
+    "monsters": ["Mi'ihen Fang", "Ipiria", "Floating Eye", "White Element", "Raldo", "Vouivre", "Bomb", "Dual Horn"]
+  },
+  {
+    "location": "Mushroom Rock Road",
+    "monsters": ["Raptor", "Gandarewa", "Thunder Flan", "Red Element", "Lamashtu", "Funguar", "Garuda"]
+  },
+  {
+    "location": "Djose",
+    "monsters": ["Garm", "Simurgh", "Bite Bug", "Snow Flan", "Bunyip", "Basilisk", "Ochu"]
+  },
+  {
+    "location": "Thunder Plains",
+    "monsters": ["Melusine", "Aerouge", "Buer", "Gold Element", "Kusiraqqu", "Iron Giant", "Larva", "Quactuar"]
+  },
+  {
+    "location": "Macalania",
+    "monsters": ["Snow Wolf", "Iguion", "Wasp", "Evil Eye", "Ice Flan", "Blue Element", "Murussu", "Mafdet", "Xiphos", "Chimera"]
+  },
+  {
+    "location": "Bikanel",
+    "monsters": ["Sand Wolf", "Alcyone", "Mushusuu", "Zu", "Sand Worm", "Cactuar"]
+  },
+  {
+    "location": "Calm Lands",
+    "monsters": ["Skoll", "Nebiros", "Flame Flan", "Shred", "Anacondaur", "Ogre", "Coeurl", "Chimera Brain", "Malboro"]
+  },
+  {
+    "location": "Sunken Cave",
+    "monsters": ["Yowie", "Imp", "Dark Element", "Nidhogg", "Thorn", "Valaha", "Epaaj", "Ghost", "Tonberry"]
+  },
+  {
+    "location": "Gagazet",
+    "monsters": ["Bandersnatch", "Grenade", "Grat", "Bashura", "Splasher", "Achelous", "Maelspike"]
+  },
+  {
+    "location": "Zanarkand",
+    "monsters": ["Ahriman", "Grendel", "Mandragora", "Behemoth", "Dark Flan"]
+  },
+  {
+    "location": "Sin",
+    "monsters": ["Exoray", "Gemini A", "Gemini B", "Wraith", "Demonolith", "Great Malboro", "Barbatos", "Adamantoise", "Behemoth King"]
+  },
+  {
+    "location": "Omega Dungeon",
+    "monsters": ["Zaurus", "Floating Death", "Black Element", "Halma", "Puroboros", "Spirit", "Machea", "Master Coeurl", "Master Tonberry", "Varuna"]
+  }
+]

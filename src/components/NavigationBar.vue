@@ -22,6 +22,15 @@
               Monster Arena
             </Button>
           </RouterLink>
+          <RouterLink to="/grid-mapper" custom v-slot="{ navigate, isActive: isActiveLink }">
+            <Button
+              variant="ghost"
+              @click="navigate"
+              :class="isActiveLink && 'bg-accent text-accent-foreground'"
+            >
+              Grid Mapper
+            </Button>
+          </RouterLink>
         </div>
       </div>
 
