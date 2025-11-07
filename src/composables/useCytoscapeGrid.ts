@@ -1,7 +1,7 @@
 import { ref, type Ref, onBeforeUnmount } from 'vue'
 import cytoscape, { type Core, type NodeSingular } from 'cytoscape'
 import type { SphereGridData, SphereType } from '@/types/sphere'
-import { sphereColors, abilityNodeColor, sphereTypeInfo } from '@/constants/sphere'
+import { getSphereColors, abilityNodeColor, sphereTypeInfo } from '@/constants/sphere'
 
 export function useCytoscapeGrid(
   container: Ref<HTMLElement | null>,
@@ -16,6 +16,7 @@ export function useCytoscapeGrid(
     if (!container.value) return
 
     const { nodes, edges, positions } = gridData.value
+    const sphereColors = getSphereColors() // Get colors from CSS at runtime
 
     cy = cytoscape({
       container: container.value,
@@ -154,6 +155,7 @@ export function useCytoscapeGrid(
   const updateNodeType = (node: NodeSingular) => {
     const newType = selectedType.value
     const statValue = sphereTypeInfo[newType].statValue
+    const sphereColors = getSphereColors() // Get colors from CSS at runtime
 
     node.data('type', newType)
     node.data('value', statValue)
@@ -165,6 +167,8 @@ export function useCytoscapeGrid(
 
   const resetNodes = (nodes: any[]) => {
     if (!cy) return
+
+    const sphereColors = getSphereColors() // Get colors from CSS at runtime
 
     cy.nodes().forEach((node) => {
       const defaultNode = nodes.find((n) => n.id === node.id())

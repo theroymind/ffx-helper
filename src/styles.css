@@ -40,6 +40,8 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  /* SPHERE COLOURS */
   --color-sphere-hp: var(--sphere-hp);
   --color-sphere-hp-foreground: var(--sphere-hp-foreground);
   --color-sphere-mp: var(--sphere-mp);
@@ -96,25 +98,27 @@
   --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
   --sidebar-border: oklch(0.929 0.013 255.508);
   --sidebar-ring: oklch(0.704 0.04 256.788);
-  --sphere-hp: #22c55e;
-  --sphere-hp-foreground: #062612;
-  --sphere-mp: #3b82f6;
-  --sphere-mp-foreground: #071833;
-  --sphere-strength: #f97316;
-  --sphere-strength-foreground: #2d0c02;
-  --sphere-defense: #0ea5e9;
-  --sphere-defense-foreground: #041b23;
-  --sphere-magic: #a855f7;
-  --sphere-magic-foreground: #1f0b3a;
-  --sphere-magicDef: #ec4899;
-  --sphere-magicDef-foreground: #2b0416;
-  --sphere-agility: #06b6d4;
-  --sphere-agility-foreground: #031e24;
-  --sphere-accuracy: #eab308;
-  --sphere-accuracy-foreground: #241a03;
-  --sphere-evasion: #94a3b8;
-  --sphere-evasion-foreground: #101521;
-  --sphere-luck: #fbbf24;
+  /* 117	108	102 */
+  /* SPHERE COLOURS */
+  --sphere-hp: #00b84a; /* oklch(0.6505 0.1791 141.66) */
+  --sphere-hp-foreground: #ffffff;
+  --sphere-mp: #0088c9; /* oklch(0.6272 0.0937 190.4) */
+  --sphere-mp-foreground: #ffffff;
+  --sphere-strength: #a0441a; /* oklch(0.4313 0.1631 29.6) */
+  --sphere-strength-foreground: #ffffff;
+  --sphere-defense: #2f2daa; /* oklch(0.352 0.1843 269.96) */
+  --sphere-defense-foreground: #ffffff;
+  --sphere-magic: #aa0032; /* oklch(0.4997 0.1745 0) */
+  --sphere-magic-foreground: #ffffff;
+  --sphere-magicDef: #a42fa0; /* oklch(0.4774 0.2008 301.93) */
+  --sphere-magicDef-foreground: #ffffff;
+  --sphere-agility: #b6c800; /* oklch(0.8002 0.1323 108.08) */
+  --sphere-agility-foreground: #ffffff;
+  --sphere-accuracy: #f4d800; /* oklch(0.9424 0.1323 124.01) */
+  --sphere-accuracy-foreground: #261802;
+  --sphere-evasion: #756c66; /* oklch(0.5377 0.0146 56.06) */
+  --sphere-evasion-foreground: #ffffff;
+  --sphere-luck: #d6c500; /* oklch(0.8238 0.1678 90.3) */
   --sphere-luck-foreground: #261802;
 }
 
@@ -151,26 +155,6 @@
   --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
   --sidebar-border: oklch(0.279 0.041 260.031);
   --sidebar-ring: oklch(0.446 0.043 257.281);
-  --sphere-hp: #22c55e;
-  --sphere-hp-foreground: #d8ffe8;
-  --sphere-mp: #3b82f6;
-  --sphere-mp-foreground: #dbe9ff;
-  --sphere-strength: #f97316;
-  --sphere-strength-foreground: #ffe5d2;
-  --sphere-defense: #0ea5e9;
-  --sphere-defense-foreground: #d0f3ff;
-  --sphere-magic: #a855f7;
-  --sphere-magic-foreground: #f3e5ff;
-  --sphere-magicDef: #ec4899;
-  --sphere-magicDef-foreground: #ffd9ec;
-  --sphere-agility: #06b6d4;
-  --sphere-agility-foreground: #dafcff;
-  --sphere-accuracy: #eab308;
-  --sphere-accuracy-foreground: #fff3d1;
-  --sphere-evasion: #94a3b8;
-  --sphere-evasion-foreground: #f0f4ff;
-  --sphere-luck: #fbbf24;
-  --sphere-luck-foreground: #fff5d8;
 }
 
 @layer base {

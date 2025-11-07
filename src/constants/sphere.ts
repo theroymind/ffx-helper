@@ -1,20 +1,30 @@
 import type { SphereType, SphereTypeInfo, Stats } from '@/types/sphere'
 
-// Color mapping for sphere types
-export const sphereColors: Record<SphereType, string> = {
-  empty: '#333333',
-  hp: '#22c55e', // green
-  mp: '#3b82f6', // blue
-  strength: '#f97316', // orange
-  defense: '#0ea5e9', // cyan
-  magic: '#a855f7', // purple
-  magicDef: '#ec4899', // pink
-  agility: '#06b6d4', // teal
-  accuracy: '#eab308', // yellow
-  evasion: '#94a3b8', // slate
-  luck: '#fbbf24', // amber
-  locked: '#71717a', // gray
+// Helper to get CSS custom property color values at runtime
+export const getCssColor = (propertyName: string): string => {
+  if (typeof window === 'undefined') return '#333333'
+  const computedStyle = getComputedStyle(document.documentElement)
+  return computedStyle.getPropertyValue(propertyName).trim() || '#333333'
 }
+
+// Get sphere colors from CSS custom properties (single source of truth from styles.css)
+export const getSphereColors = (): Record<SphereType, string> => ({
+  empty: '#333333',
+  hp: getCssColor('--sphere-hp'),
+  mp: getCssColor('--sphere-mp'),
+  strength: getCssColor('--sphere-strength'),
+  defense: getCssColor('--sphere-defense'),
+  magic: getCssColor('--sphere-magic'),
+  magicDef: getCssColor('--sphere-magicDef'),
+  agility: getCssColor('--sphere-agility'),
+  accuracy: getCssColor('--sphere-accuracy'),
+  evasion: getCssColor('--sphere-evasion'),
+  luck: getCssColor('--sphere-luck'),
+  locked: '#71717a',
+})
+
+// Legacy export for backwards compatibility (will be computed at runtime)
+export const sphereColors: Record<SphereType, string> = getSphereColors()
 
 // Bright pink color for ability nodes
 export const abilityNodeColor = '#ff1ac6'

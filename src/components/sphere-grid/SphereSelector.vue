@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button'
 import type { SphereType } from '@/types/sphere'
-import { sphereTypeInfo, sphereButtonClasses, sphereColors } from '@/constants/sphere'
+import { sphereTypeInfo, sphereButtonClasses } from '@/constants/sphere'
 
 const modelValue = defineModel<SphereType>({ required: true })
 
@@ -29,21 +29,6 @@ const mixColor = (hex: string, amount: number, target: string) => {
   const nb = mix(b, tb)
   return `rgb(${nr}, ${ng}, ${nb})`
 }
-
-const buttonStyle = (type: SphereType, active: boolean) => {
-  const color = sphereColors[type]
-  const background = active ? color : mixColor(color, 0.3, '#000000')
-  const border = active ? mixColor(color, 0.2, '#ffffff') : mixColor(color, 0.4, '#000000')
-  const text = '#ffffff'
-  return {
-    backgroundColor: background,
-    borderColor: border,
-    borderWidth: active ? '2px' : '1px',
-    color: text,
-    boxShadow: active ? `0 0 0 3px ${mixColor(color, 0.3, '#000000')}` : 'none',
-    transform: active ? 'scale(1.02)' : 'scale(1)',
-  }
-}
 </script>
 
 <template>
@@ -63,10 +48,8 @@ const buttonStyle = (type: SphereType, active: boolean) => {
         v-for="[type, info] in selectableTypes"
         :key="type"
         type="button"
-        variant="ghost"
+        :variant="type as any"
         :data-active="modelValue === type"
-        :class="[sphereButtonClasses[type as SphereType]]"
-        :style="buttonStyle(type as SphereType, modelValue === type)"
         @click="modelValue = type as SphereType"
       >
         {{ info.label }} +{{ info.statValue }}
