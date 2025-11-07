@@ -23,7 +23,7 @@ const statDisplay = [
 <template>
   <Card class="bg-zinc-900/50 border-zinc-700 shadow-lg">
     <CardHeader class="pb-2">
-      <CardTitle class="text-amber-400 text-base font-semibold">Current Stats</CardTitle>
+      <CardTitle class="text-gold text-base font-semibold">Current Stats</CardTitle>
     </CardHeader>
     <CardContent class="space-y-1.5">
       <div

@@ -57,6 +57,9 @@ export function useCytoscapeGrid(
             'background-image': (ele) => {
               // Don't show icons when showIcons is false
               if (!showIcons.value) return 'none'
+              // Don't show icons for ability nodes
+              const isAbilityNode = ele.data('abilityId') !== null && ele.data('abilityId') !== undefined
+              if (isAbilityNode) return 'none'
               // Use icon if available for this sphere type
               const type = ele.data('type') as SphereType
               return sphereIcons[type] || 'none'
@@ -67,6 +70,12 @@ export function useCytoscapeGrid(
             'border-width': 2,
             'border-color': '#ffffff',
             label: (ele) => {
+              // Show hover label if hovering over non-ability nodes
+              const hoverLabel = ele.data('hoverLabel')
+              if (hoverLabel) {
+                return hoverLabel
+              }
+
               // Show ability name in center of ability nodes
               if (ele.data('abilityName')) {
                 return ele.data('abilityName')
@@ -91,15 +100,18 @@ export function useCytoscapeGrid(
             'text-halign': 'center',
             'text-margin-y': 0,
             'font-size': (ele) => {
+              // Smaller font for hover labels
+              if (ele.data('hoverLabel')) return '14px'
               // Font size for ability names and stats
               return ele.data('abilityName') ? '12px' : '26px'
             },
             'font-weight': 'bold',
-            // Enable text wrapping for ability names
+            // Enable text wrapping for ability names and hover labels
             'text-wrap': (ele) => {
-              return ele.data('abilityName') ? 'wrap' : 'none'
+              return ele.data('abilityName') || ele.data('hoverLabel') ? 'wrap' : 'none'
             },
             'text-max-width': (ele) => {
+              if (ele.data('hoverLabel')) return '80px'
               return ele.data('abilityName') ? '60px' : '0'
             },
             color: '#ffffff',
@@ -127,7 +139,7 @@ export function useCytoscapeGrid(
         {
           selector: 'edge',
           style: {
-            width: 2,
+            width: 16,
             'line-color': '#444444',
             'curve-style': 'straight',
           },
@@ -146,20 +158,41 @@ export function useCytoscapeGrid(
     // Handle node interactions
     cy.on('mousedown', 'node', (event) => {
       const node = event.target
-      // Don't allow modifying locked nodes or ability nodes
-      if (!node.data('locked') && !node.data('abilityId')) {
+      // Don't allow modifying ability nodes
+      if (!node.data('abilityId')) {
         isDragging.value = true
         updateNodeType(node)
       }
     })
 
     cy.on('mouseover', 'node', (event) => {
-      if (isDragging.value) {
-        const node = event.target
-        // Don't allow modifying locked nodes or ability nodes
-        if (!node.data('locked') && !node.data('abilityId')) {
+      const node = event.target
+
+      // Show hover label for non-ability nodes
+      if (!node.data('abilityId')) {
+        const type = node.data('type') as SphereType
+        const value = node.data('value')
+        const typeInfo = sphereTypeInfo[type]
+
+        // Create hover label with type name and value
+        let hoverLabel = typeInfo.label
+        if (value && value > 0) {
+          hoverLabel += ` +${value}`
+        }
+        node.data('hoverLabel', hoverLabel)
+
+        // If dragging, also update node type
+        if (isDragging.value) {
           updateNodeType(node)
         }
+      }
+    })
+
+    cy.on('mouseout', 'node', (event) => {
+      const node = event.target
+      // Clear hover label for non-ability nodes
+      if (!node.data('abilityId')) {
+        node.data('hoverLabel', null)
       }
     })
 
@@ -183,7 +216,7 @@ export function useCytoscapeGrid(
     node.data('type', newType)
     node.data('value', statValue)
     node.style('background-color', sphereColors[newType])
-    node.style('background-image', showIcons.value ? (sphereIcons[newType] || 'none') : 'none')
+    node.style('background-image', showIcons.value ? sphereIcons[newType] || 'none' : 'none')
 
     // Update the underlying data via callback
     onNodeUpdate(node.id(), newType, statValue)
@@ -203,7 +236,10 @@ export function useCytoscapeGrid(
           'background-color',
           defaultNode.abilityId ? abilityNodeColor : sphereColors[defaultNode.type],
         )
-        node.style('background-image', showIcons.value ? (sphereIcons[defaultNode.type] || 'none') : 'none')
+        node.style(
+          'background-image',
+          showIcons.value ? sphereIcons[defaultNode.type] || 'none' : 'none',
+        )
       }
     })
   }
@@ -226,7 +262,7 @@ export function useCytoscapeGrid(
 
       if (!isAbilityNode) {
         // Update background image based on showIcons
-        node.style('background-image', showIcons.value ? (sphereIcons[type] || 'none') : 'none')
+        node.style('background-image', showIcons.value ? sphereIcons[type] || 'none' : 'none')
       }
     })
 

@@ -41,17 +41,12 @@
     <div class="relative flex-1">
       <SphereGridCanvas ref="canvasRef" />
       <div class="absolute top-4 right-4 z-10">
-        <ToggleGroup
-          v-model="displayMode"
-          type="single"
-          size="lg"
-          class="backdrop-blur-sm border rounded-md"
-        >
+        <ToggleGroup v-model="displayMode" variant="outline" size="lg" type="single">
           <ToggleGroupItem value="icons" aria-label="Show icons">
-            <Image class="size-4" />
+            <Image class="size-4 min-w-12" />
           </ToggleGroupItem>
           <ToggleGroupItem value="numbers" aria-label="Show numbers">
-            <Hash class="size-4" />
+            <Hash class="size-4 min-w-12" />
           </ToggleGroupItem>
         </ToggleGroup>
       </div>

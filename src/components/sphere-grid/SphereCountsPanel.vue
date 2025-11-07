@@ -50,9 +50,11 @@ const badgeColorClasses: Record<SphereType, string> = {
 <template>
   <Card class="bg-zinc-900/50 border-zinc-700 shadow-lg">
     <CardHeader class="pb-2">
-      <CardTitle class="text-amber-400 text-base font-semibold flex items-center gap-2">
+      <CardTitle class="text-gold text-base font-semibold flex items-center gap-2">
         Customized Spheres
-        <Badge variant="secondary" class="bg-amber-400/20 text-amber-400 font-bold text-xs">{{ total }}</Badge>
+        <Badge variant="secondary" class="bg-gold/20 text-gold font-bold text-xs">{{
+          total
+        }}</Badge>
       </CardTitle>
     </CardHeader>
     <CardContent>
@@ -62,17 +64,17 @@ const badgeColorClasses: Record<SphereType, string> = {
           :key="type"
           class="flex justify-between items-center px-2.5 py-1.5 bg-zinc-800/50 rounded hover:bg-zinc-800 transition-colors"
         >
-          <span class="font-semibold text-xs" :class="textColorClasses[type]">{{ info.label }}</span>
+          <span class="font-semibold text-xs" :class="textColorClasses[type]">{{
+            info.label
+          }}</span>
           <Badge :class="badgeColorClasses[type]" class="font-bold px-2 text-xs shadow-md">
             {{ count }}
           </Badge>
         </div>
       </div>
       <div v-else class="text-center py-4 space-y-2">
-        <p class="text-slate-400 font-medium text-sm">No spheres customized yet</p>
-        <p class="text-xs text-slate-500 leading-relaxed">
-          Select a sphere type and click & drag over spheres!
-        </p>
+        <p class="font-medium text-sm">No spheres customized yet</p>
+        <p class="text-xs leading-relaxed">Select a sphere type and click & drag over spheres!</p>
       </div>
     </CardContent>
   </Card>

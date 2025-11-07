@@ -137,8 +137,8 @@ export function useSphereData() {
       const defaultNode = defaultSphereGrid.nodes[index]
 
       // Only count if the node has been changed from its default
-      // Skip locked and ability nodes as they can't be changed
-      if (defaultNode && !node.locked && !node.abilityId) {
+      // Skip ability nodes as they can't be changed
+      if (defaultNode && !node.abilityId) {
         const hasChanged = node.type !== defaultNode.type || node.value !== defaultNode.value
 
         if (hasChanged) {
