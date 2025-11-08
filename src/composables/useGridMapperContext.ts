@@ -45,6 +45,11 @@ export interface GridMapperContext {
   showGrid: Ref<boolean>
   isPanning: Ref<boolean>
 
+  // Drag-to-create state
+  isDraggingToCreate: Ref<boolean>
+  dragStartNode: Ref<GridNode | null>
+  dragEndPos: Ref<{ x: number; y: number } | null>
+
   // Canvas ref
   canvasRef: Ref<HTMLCanvasElement | null>
 
@@ -98,6 +103,11 @@ export function createGridMapperContext() {
   const selectedNodeForLink = ref<GridNode | null>(null)
   const mousePos = ref({ x: 0, y: 0 })
   const showGrid = ref(true)
+
+  // Drag-to-create state
+  const isDraggingToCreate = ref(false)
+  const dragStartNode = ref<GridNode | null>(null)
+  const dragEndPos = ref<{ x: number; y: number } | null>(null)
 
   // Canvas ref
   const canvasRef = ref<HTMLCanvasElement | null>(null)
@@ -303,6 +313,9 @@ export function createGridMapperContext() {
     mousePos,
     showGrid,
     isPanning,
+    isDraggingToCreate,
+    dragStartNode,
+    dragEndPos,
     canvasRef,
     screenToWorld,
     findNodeAtPosition,

@@ -6,7 +6,7 @@
           <div>
             <CardTitle class="text-xl">Grid Mapper</CardTitle>
             <CardDescription class="text-xs mt-1">
-              <template v-if="!isLinkMode"> Click to place • Shift+drag to pan • Scroll to zoom </template>
+              <template v-if="!isLinkMode"> Click to place • Drag from node to create & link • Shift+drag to pan • Scroll to zoom </template>
               <template v-else-if="!selectedNodeForLink"> Click node to start connecting </template>
               <template v-else> Click another node to toggle connection </template>
             </CardDescription>
@@ -35,7 +35,7 @@
     </div>
 
     <!-- Node Type Selection Dialog -->
-    <Dialog :open="showNodeTypeDialog" @update:open="showNodeTypeDialog = $event">
+    <Dialog :open="showNodeTypeDialog" @update:open="showNodeTypeDialog = $event" :modal="false">
       <DialogContent class="max-w-2xl">
         <DialogHeader>
           <DialogTitle>{{ editingNode ? "Edit Node" : dialogTitle }}</DialogTitle>
@@ -96,14 +96,14 @@ import { useGridMapperEvents } from "@/composables/useGridMapperEvents"
 
 // Create context (provides to child components and composables)
 const context = createGridMapperContext()
-const { isLinkMode, selectedNodeForLink, canvasWidth, canvasHeight, canvasRef, backgroundImage, imageScale, addNode, updateNode, deleteNode } =
+const { isLinkMode, selectedNodeForLink, canvasWidth, canvasHeight, canvasRef, backgroundImage, imageScale, addNode, updateNode, deleteNode, toggleConnection } =
   context
 
 // Canvas drawing (pass context since we're in the provider component)
 const { draw } = useGridMapperDrawing(context)
 
 // Canvas events (pass context since we're in the provider component)
-const { handleCanvasClick, handleMouseDown, handleMouseUp, handleMouseMove, handleWheel } = useGridMapperEvents(context)
+const { handleCanvasClick, handleMouseDown, handleMouseUp: handleMouseUpEvent, handleMouseMove, handleWheel } = useGridMapperEvents(context)
 
 // Image caching
 const { loadImage } = useImageCache()
@@ -112,6 +112,7 @@ const { loadImage } = useImageCache()
 const showNodeTypeDialog = ref(false)
 const pendingNodePosition = ref({ x: 0, y: 0 })
 const editingNode = ref<GridNode | null>(null)
+const pendingLinkSourceNode = ref<GridNode | null>(null)
 const dialogTitle = ref("Select Node Type")
 const dialogDescription = ref("default")
 const dialogKey = ref(0)
@@ -121,7 +122,12 @@ function handleNodeConfirm(nodeData: NodeData) {
   if (editingNode.value) {
     updateNode(editingNode.value.id, nodeData)
   } else {
-    addNode(pendingNodePosition.value.x, pendingNodePosition.value.y, nodeData)
+    const newNode = addNode(pendingNodePosition.value.x, pendingNodePosition.value.y, nodeData)
+
+    if (pendingLinkSourceNode.value) {
+      toggleConnection(pendingLinkSourceNode.value, newNode)
+      pendingLinkSourceNode.value = null
+    }
   }
   showNodeTypeDialog.value = false
   editingNode.value = null
@@ -159,6 +165,17 @@ function handleClick(event: MouseEvent) {
     } else {
       editingNode.value = null
     }
+    showNodeTypeDialog.value = true
+  }
+}
+
+function handleMouseUp(event: MouseEvent) {
+  const result = handleMouseUpEvent(event)
+
+  if (result && result.type === 'drag-to-create') {
+    pendingNodePosition.value = { x: result.worldX, y: result.worldY }
+    pendingLinkSourceNode.value = result.sourceNode
+    editingNode.value = null
     showNodeTypeDialog.value = true
   }
 }

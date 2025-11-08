@@ -5,6 +5,8 @@ export function useGridMapperEvents(providedContext?: GridMapperContext) {
   const ctx = providedContext || useGridMapperContext()
   const lastPanX = ref(0)
   const lastPanY = ref(0)
+  const dragStartScreenPos = ref<{ x: number; y: number } | null>(null)
+  const DRAG_THRESHOLD = 5
 
   function handleCanvasClick(event: MouseEvent) {
     const canvas = ctx.canvasRef.value
@@ -41,16 +43,52 @@ export function useGridMapperEvents(providedContext?: GridMapperContext) {
   }
 
   function handleMouseDown(event: MouseEvent) {
+    const canvas = ctx.canvasRef.value
+    if (!canvas) return
+
     if (event.button === 1 || (event.button === 0 && event.shiftKey)) {
       event.preventDefault()
       ctx.isPanning.value = true
       lastPanX.value = event.clientX
       lastPanY.value = event.clientY
+      return
+    }
+
+    if (event.button === 0 && !ctx.isLinkMode.value) {
+      const rect = canvas.getBoundingClientRect()
+      const screenX = event.clientX - rect.left
+      const screenY = event.clientY - rect.top
+      const { x, y } = ctx.screenToWorld(screenX, screenY)
+      const worldX = Math.round(x)
+      const worldY = Math.round(y)
+
+      const clickedNode = ctx.findNodeAtPosition(worldX, worldY)
+
+      if (clickedNode && clickedNode.connections.length < 4) {
+        dragStartScreenPos.value = { x: screenX, y: screenY }
+        ctx.dragStartNode.value = clickedNode
+      }
     }
   }
 
-  function handleMouseUp() {
+  function handleMouseUp(event: MouseEvent) {
+    const wasDragging = ctx.isDraggingToCreate.value
+
     ctx.isPanning.value = false
+    ctx.isDraggingToCreate.value = false
+    dragStartScreenPos.value = null
+
+    if (wasDragging && ctx.dragEndPos.value) {
+      return {
+        type: 'drag-to-create' as const,
+        worldX: ctx.dragEndPos.value.x,
+        worldY: ctx.dragEndPos.value.y,
+        sourceNode: ctx.dragStartNode.value
+      }
+    }
+
+    ctx.dragStartNode.value = null
+    ctx.dragEndPos.value = null
   }
 
   function handleMouseMove(event: MouseEvent) {
@@ -58,7 +96,9 @@ export function useGridMapperEvents(providedContext?: GridMapperContext) {
     if (!canvas) return
 
     const rect = canvas.getBoundingClientRect()
-    ctx.updateMousePosition(event.clientX - rect.left, event.clientY - rect.top)
+    const screenX = event.clientX - rect.left
+    const screenY = event.clientY - rect.top
+    ctx.updateMousePosition(screenX, screenY)
 
     if (ctx.isPanning.value) {
       const deltaX = event.clientX - lastPanX.value
@@ -69,6 +109,19 @@ export function useGridMapperEvents(providedContext?: GridMapperContext) {
 
       lastPanX.value = event.clientX
       lastPanY.value = event.clientY
+      return
+    }
+
+    if (ctx.dragStartNode.value && dragStartScreenPos.value) {
+      const dx = screenX - dragStartScreenPos.value.x
+      const dy = screenY - dragStartScreenPos.value.y
+      const distance = Math.sqrt(dx * dx + dy * dy)
+
+      if (distance > DRAG_THRESHOLD) {
+        ctx.isDraggingToCreate.value = true
+        const { x, y } = ctx.screenToWorld(screenX, screenY)
+        ctx.dragEndPos.value = { x: Math.round(x), y: Math.round(y) }
+      }
     }
   }
 

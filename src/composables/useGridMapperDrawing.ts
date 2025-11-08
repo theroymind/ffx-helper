@@ -52,6 +52,9 @@ export function useGridMapperDrawing(providedContext?: GridMapperContext) {
     // Draw connections
     drawConnections(context)
 
+    // Draw drag preview
+    drawDragPreview(context)
+
     // Draw nodes
     drawNodes(context)
 
@@ -118,6 +121,29 @@ export function useGridMapperDrawing(providedContext?: GridMapperContext) {
     })
   }
 
+  function drawDragPreview(context: CanvasRenderingContext2D) {
+    if (ctx.isDraggingToCreate.value && ctx.dragStartNode.value && ctx.dragEndPos.value) {
+      context.strokeStyle = "#10b981" // emerald-500
+      context.lineWidth = 3
+      context.setLineDash([5, 5])
+
+      context.beginPath()
+      context.moveTo(ctx.dragStartNode.value.x, ctx.dragStartNode.value.y)
+      context.lineTo(ctx.dragEndPos.value.x, ctx.dragEndPos.value.y)
+      context.stroke()
+
+      context.setLineDash([])
+
+      context.fillStyle = "#10b981" // emerald-500
+      context.strokeStyle = "#ffffff"
+      context.lineWidth = 2
+      context.beginPath()
+      context.arc(ctx.dragEndPos.value.x, ctx.dragEndPos.value.y, NODE_RADIUS, 0, Math.PI * 2)
+      context.fill()
+      context.stroke()
+    }
+  }
+
   function drawNodes(context: CanvasRenderingContext2D) {
     ctx.nodes.value.forEach((node) => {
       const isSelected = ctx.selectedNodeForLink.value?.id === node.id
@@ -125,6 +151,8 @@ export function useGridMapperDrawing(providedContext?: GridMapperContext) {
         ctx.selectedNodeForLink.value &&
         ctx.selectedNodeForLink.value.connections.includes(node.id) &&
         !isSelected
+      const isDragStart = ctx.dragStartNode.value?.id === node.id
+      const isFull = node.connections.length >= 4
 
       let baseColor = getSphereColor(node.type)
       if (node.abilityName) {
@@ -143,6 +171,13 @@ export function useGridMapperDrawing(providedContext?: GridMapperContext) {
         fillColor = "#ef4444" // red-500
         strokeColor = "#fca5a5" // red-300
         strokeWidth = 3
+      } else if (isDragStart) {
+        fillColor = "#10b981" // emerald-500
+        strokeColor = "#34d399" // emerald-400
+        strokeWidth = 3
+      } else if (isFull) {
+        strokeColor = "#ef4444" // red-500
+        strokeWidth = 2
       }
 
       context.fillStyle = fillColor
@@ -210,6 +245,9 @@ export function useGridMapperDrawing(providedContext?: GridMapperContext) {
       ctx.mousePos,
       ctx.backgroundImage,
       ctx.imageOpacity,
+      ctx.isDraggingToCreate,
+      ctx.dragStartNode,
+      ctx.dragEndPos,
     ],
     () => {
       draw()
