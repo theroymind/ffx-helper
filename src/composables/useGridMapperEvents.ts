@@ -32,7 +32,10 @@ export function useGridMapperEvents(providedContext?: GridMapperContext) {
         }
       }
     } else {
-      // Place mode - handled by parent component (dialog)
+      const clickedNode = ctx.findNodeAtPosition(worldX, worldY)
+      if (clickedNode) {
+        return { worldX, worldY, existingNode: clickedNode }
+      }
       return { worldX, worldY }
     }
   }

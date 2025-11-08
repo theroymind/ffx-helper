@@ -3,22 +3,6 @@
     <div class="absolute top-4 left-4 flex gap-2">
       <Card class="p-2">
         <div class="flex gap-1">
-          <Tooltip>
-            <TooltipTrigger as-child>
-              <Button
-                @click="ctx.toggleLinkMode()"
-                :variant="ctx.isLinkMode.value ? 'default' : 'ghost'"
-                size="icon"
-                class="h-8 w-8"
-              >
-                <Link class="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>{{ ctx.isLinkMode.value ? "Switch to Place Mode" : "Switch to Link Mode" }}</p>
-            </TooltipContent>
-          </Tooltip>
-
           <Tooltip v-if="ctx.isLinkMode.value && ctx.selectedNodeForLink.value">
             <TooltipTrigger as-child>
               <Button @click="ctx.cancelLinkSelection()" variant="ghost" size="icon" class="h-8 w-8">
@@ -128,7 +112,23 @@
       </Card>
 
       <Card class="p-2">
-        <div class="flex items-center gap-2 p-2 min-w-[110px]">
+        <div class="flex items-center gap-2 min-w-[150px]">
+          <Tooltip>
+            <TooltipTrigger as-child>
+              <Button
+                @click="ctx.toggleLinkMode()"
+                :variant="ctx.isLinkMode.value ? 'default' : 'ghost'"
+                size="icon"
+                class="h-8 w-8"
+              >
+                <Link class="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{{ ctx.isLinkMode.value ? "Switch to Place Mode" : "Switch to Link Mode" }}</p>
+            </TooltipContent>
+          </Tooltip>
+
           <span class="text-xs text-muted-foreground">Mode</span>
           <Badge :variant="ctx.isLinkMode.value ? 'default' : 'secondary'" class="text-xs">
             {{ ctx.isLinkMode.value ? "Link" : "Place" }}

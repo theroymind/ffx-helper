@@ -53,6 +53,8 @@ export interface GridMapperContext {
   toggleConnection: (node1: GridNode, node2: GridNode) => boolean
   updateMousePosition: (x: number, y: number) => void
   addNode: (x: number, y: number, nodeData: NodeData) => GridNode
+  updateNode: (nodeId: number, nodeData: NodeData) => void
+  deleteNode: (nodeId: number) => void
   setReferenceNodes: (refNodes: GridNode[]) => void
   handleImageUpload: (event: Event) => Promise<void>
   clearImage: () => void
@@ -114,6 +116,31 @@ export function createGridMapperContext() {
     }
     nodes.value.push(newNode)
     return newNode
+  }
+
+  function updateNode(nodeId: number, nodeData: NodeData) {
+    const node = nodes.value.find((n) => n.id === nodeId)
+    if (node) {
+      node.type = nodeData.type
+      node.value = nodeData.value || 0
+      node.lockLevel = nodeData.lockLevel
+      node.abilityName = nodeData.abilityName
+    }
+  }
+
+  function deleteNode(nodeId: number) {
+    const nodeIndex = nodes.value.findIndex((n) => n.id === nodeId)
+    if (nodeIndex === -1) return
+
+    nodes.value.forEach((node) => {
+      node.connections = node.connections.filter((id) => id !== nodeId)
+    })
+
+    nodes.value.splice(nodeIndex, 1)
+
+    if (selectedNodeForLink.value?.id === nodeId) {
+      selectedNodeForLink.value = null
+    }
   }
 
   function clearNodes(): boolean {
@@ -277,6 +304,8 @@ export function createGridMapperContext() {
     toggleConnection,
     updateMousePosition,
     addNode,
+    updateNode,
+    deleteNode,
     setReferenceNodes,
     handleImageUpload,
     clearImage,

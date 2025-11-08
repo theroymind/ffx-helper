@@ -44,9 +44,12 @@
     <Dialog :open="showNodeTypeDialog" @update:open="showNodeTypeDialog = $event">
       <DialogContent class="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>{{ dialogTitle }}</DialogTitle>
+          <DialogTitle>{{ editingNode ? "Edit Node" : dialogTitle }}</DialogTitle>
           <DialogDescription>
-            <template v-if="dialogDescription === 'default'">
+            <template v-if="editingNode && dialogDescription === 'default'">
+              Modify or delete the node at position ({{ editingNode.x }}, {{ editingNode.y }})
+            </template>
+            <template v-else-if="dialogDescription === 'default'">
               Choose the type of sphere node to place at position ({{ pendingNodePosition.x }},
               {{ pendingNodePosition.y }})
             </template>
@@ -60,6 +63,7 @@
           v-if="showNodeTypeDialog"
           :key="dialogKey"
           :pending-node-position="pendingNodePosition"
+          :existing-node="editingNode"
           @confirm="handleNodeConfirm"
           @cancel="cancelNodePlacement"
           @update-title="dialogTitle = $event"
@@ -67,6 +71,7 @@
         />
 
         <DialogFooter>
+          <Button v-if="editingNode" variant="destructive" @click="handleNodeDelete">Delete Node</Button>
           <Button variant="outline" @click="cancelNodePlacement">Cancel</Button>
         </DialogFooter>
       </DialogContent>
@@ -92,7 +97,7 @@ import GridMapperToolbar from "@/components/grid-mapper/GridMapperToolbar.vue"
 import GridMapperVersionManager from "@/components/grid-mapper/GridMapperVersionManager.vue"
 import GridMapperStats from "@/components/grid-mapper/GridMapperStats.vue"
 import { useImageCache } from "@/composables/useImageCache"
-import { createGridMapperContext, type NodeData } from "@/composables/useGridMapperContext"
+import { createGridMapperContext, type NodeData, type GridNode } from "@/composables/useGridMapperContext"
 import { useGridMapperDrawing } from "@/composables/useGridMapperDrawing"
 import { useGridMapperEvents } from "@/composables/useGridMapperEvents"
 import { useGridMapperVersionManager } from "@/composables/useVersionManager"
@@ -100,7 +105,7 @@ import { useGridMapperVersionManager } from "@/composables/useVersionManager"
 // Create context (provides to child components and composables)
 const context = createGridMapperContext()
 const versionManager = useGridMapperVersionManager()
-const { isLinkMode, selectedNodeForLink, canvasWidth, canvasHeight, canvasRef, backgroundImage, imageScale, addNode } =
+const { isLinkMode, selectedNodeForLink, canvasWidth, canvasHeight, canvasRef, backgroundImage, imageScale, addNode, updateNode, deleteNode } =
   context
 
 function handleSaveVersion(name: string) {
@@ -133,19 +138,37 @@ const { loadImage } = useImageCache()
 // Dialog state (UI-specific, stays in component)
 const showNodeTypeDialog = ref(false)
 const pendingNodePosition = ref({ x: 0, y: 0 })
+const editingNode = ref<GridNode | null>(null)
 const dialogTitle = ref("Select Node Type")
 const dialogDescription = ref("default")
 const dialogKey = ref(0)
 
 // Dialog handlers
 function handleNodeConfirm(nodeData: NodeData) {
-  addNode(pendingNodePosition.value.x, pendingNodePosition.value.y, nodeData)
+  if (editingNode.value) {
+    updateNode(editingNode.value.id, nodeData)
+  } else {
+    addNode(pendingNodePosition.value.x, pendingNodePosition.value.y, nodeData)
+  }
   showNodeTypeDialog.value = false
+  editingNode.value = null
   dialogKey.value++
+  draw()
+}
+
+function handleNodeDelete() {
+  if (editingNode.value) {
+    deleteNode(editingNode.value.id)
+    showNodeTypeDialog.value = false
+    editingNode.value = null
+    dialogKey.value++
+    draw()
+  }
 }
 
 function cancelNodePlacement() {
   showNodeTypeDialog.value = false
+  editingNode.value = null
   dialogKey.value++
 }
 
@@ -158,6 +181,11 @@ function handleClick(event: MouseEvent) {
   const result = handleCanvasClick(event)
   if (result && !isLinkMode.value) {
     pendingNodePosition.value = { x: result.worldX, y: result.worldY }
+    if ('existingNode' in result && result.existingNode) {
+      editingNode.value = result.existingNode
+    } else {
+      editingNode.value = null
+    }
     showNodeTypeDialog.value = true
   }
 }

@@ -11,7 +11,9 @@
       "mcp__ide__getDiagnostics",
       "Bash(jq:*)",
       "Bash(npm run type-check:*)",
-      "Bash(pkill:*)"
+      "Bash(pkill:*)",
+      "Bash(lsof:*)",
+      "Bash(xargs kill:*)"
     ],
     "deny": [],
     "ask": []

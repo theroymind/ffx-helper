@@ -119,8 +119,21 @@ interface NodeData {
   abilityName?: string | null
 }
 
-defineProps<{
+interface GridNode {
+  id: number
+  x: number
+  y: number
+  connections: number[]
+  type: SphereType
+  value?: number
+  lockLevel?: number | null
+  abilityId?: number | null
+  abilityName?: string | null
+}
+
+const props = defineProps<{
   pendingNodePosition: { x: number; y: number }
+  existingNode?: GridNode | null
 }>()
 
 const emit = defineEmits<{
@@ -222,6 +235,18 @@ watch(showAbilityInput, async (isShown) => {
 })
 
 onMounted(() => {
+  if (props.existingNode) {
+    const node = props.existingNode
+    if (node.abilityName) {
+      showAbilityInput.value = true
+      abilityName.value = node.abilityName
+    } else if (node.type === 'locked' && node.lockLevel) {
+      showLockLevelSelector.value = true
+    } else if (node.type !== 'empty' && node.type !== 'locked') {
+      selectedStatType.value = node.type
+      showValueSelector.value = true
+    }
+  }
   updateDialogContent()
 })
 </script>
