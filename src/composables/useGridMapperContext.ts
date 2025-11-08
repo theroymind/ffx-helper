@@ -1,4 +1,5 @@
-import { ref, computed, provide, inject, type Ref, type InjectionKey } from "vue"
+import { ref, computed, provide, inject, watch, type Ref, type InjectionKey } from "vue"
+import { useLocalStorage } from "@vueuse/core"
 import type { SphereType } from "@/types/sphere"
 
 export interface GridNode {
@@ -70,10 +71,14 @@ export interface GridMapperContext {
 const GridMapperContextKey: InjectionKey<GridMapperContext> = Symbol("GridMapperContext")
 
 export function createGridMapperContext() {
-  // Node state
-  const nodes = ref<GridNode[]>([])
+  // Node state (auto-saved to localStorage)
+  const nodes = useLocalStorage<GridNode[]>('ffx-grid-mapper-nodes', [])
   const referenceNodes = ref<GridNode[]>([])
+
   let nextNodeId = 1
+  if (nodes.value.length > 0) {
+    nextNodeId = Math.max(...nodes.value.map((n) => n.id)) + 1
+  }
 
   // Canvas transform state
   const viewScale = ref(1.0)

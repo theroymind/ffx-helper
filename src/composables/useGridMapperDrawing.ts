@@ -158,20 +158,19 @@ export function useGridMapperDrawing(providedContext?: GridMapperContext) {
       context.fillStyle = "#ffffff"
       context.font = "bold 10px monospace"
       context.textAlign = "center"
-      context.fillText(`${node.id}`, node.x, node.y + 20)
 
       if (node.abilityName) {
-        context.font = "8px monospace"
-        context.fillText(node.abilityName, node.x, node.y - 12)
+        context.fillText(node.abilityName, node.x, node.y + 20)
       } else if (node.lockLevel) {
+        context.fillText(`L${node.lockLevel}`, node.x, node.y + 20)
+      } else if (node.value && node.value > 0) {
+        context.fillText(`+${node.value}`, node.x, node.y + 20)
+      }
+
+      const typeInfo = sphereTypeInfo[node.type]
+      if (typeInfo && typeInfo.shortLabel !== "---" && !node.abilityName && !node.lockLevel) {
         context.font = "8px monospace"
-        context.fillText(`L${node.lockLevel}`, node.x, node.y - 12)
-      } else {
-        const typeInfo = sphereTypeInfo[node.type]
-        if (typeInfo && typeInfo.shortLabel !== "---") {
-          context.font = "8px monospace"
-          context.fillText(typeInfo.shortLabel, node.x, node.y - 12)
-        }
+        context.fillText(typeInfo.shortLabel, node.x, node.y - 12)
       }
     })
   }

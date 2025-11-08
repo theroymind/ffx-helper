@@ -14,12 +14,6 @@
         </div>
       </CardHeader>
       <CardContent class="space-y-4 pb-4">
-        <GridMapperVersionManager
-          :versions="versionManager.versions.value"
-          @save="handleSaveVersion"
-          @load="handleLoadVersion"
-          @delete="handleDeleteVersion"
-        />
         <GridMapperStats />
       </CardContent>
     </Card>
@@ -94,37 +88,16 @@ import { Badge } from "@/components/ui/badge"
 import Button from "@/components/ui/button/Button.vue"
 import NodeTypeDialogContent from "@/components/grid-mapper/NodeTypeDialogContent.vue"
 import GridMapperToolbar from "@/components/grid-mapper/GridMapperToolbar.vue"
-import GridMapperVersionManager from "@/components/grid-mapper/GridMapperVersionManager.vue"
 import GridMapperStats from "@/components/grid-mapper/GridMapperStats.vue"
 import { useImageCache } from "@/composables/useImageCache"
 import { createGridMapperContext, type NodeData, type GridNode } from "@/composables/useGridMapperContext"
 import { useGridMapperDrawing } from "@/composables/useGridMapperDrawing"
 import { useGridMapperEvents } from "@/composables/useGridMapperEvents"
-import { useGridMapperVersionManager } from "@/composables/useVersionManager"
 
 // Create context (provides to child components and composables)
 const context = createGridMapperContext()
-const versionManager = useGridMapperVersionManager()
 const { isLinkMode, selectedNodeForLink, canvasWidth, canvasHeight, canvasRef, backgroundImage, imageScale, addNode, updateNode, deleteNode } =
   context
-
-function handleSaveVersion(name: string) {
-  const nodes = context.getCurrentNodes()
-  versionManager.saveVersion(name, nodes)
-  alert(`Saved version: ${name}`)
-}
-
-function handleLoadVersion(versionId: string) {
-  const nodes = versionManager.loadVersion(versionId)
-  if (nodes) {
-    context.loadNodes(nodes)
-    alert(`Loaded version with ${nodes.length} nodes`)
-  }
-}
-
-function handleDeleteVersion(versionId: string) {
-  versionManager.deleteVersion(versionId)
-}
 
 // Canvas drawing (pass context since we're in the provider component)
 const { draw } = useGridMapperDrawing(context)
