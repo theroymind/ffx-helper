@@ -21,7 +21,7 @@
 
     <!-- Canvas Area -->
     <div class="flex-1 flex flex-col gap-4">
-      <StatsBar :stats="stats" :counts="overriddenSphereCounts.counts" :total="overriddenSphereCounts.total" />
+      <StatsBar :stats="stats" :counts="overriddenSphereCounts.counts" :total="sphereData.nodes.length" />
 
       <div class="relative flex-1">
         <SphereGridCanvas ref="canvasRef" />
@@ -56,6 +56,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from "vue"
+import { useLocalStorage } from "@vueuse/core"
 import { useSphereData, type GridType } from "@/composables/useSphereData"
 import { useCytoscapeGrid } from "@/composables/useCytoscapeGrid"
 import type { SphereType } from "@/types/sphere"
@@ -72,11 +73,11 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { Image, Hash } from "lucide-vue-next"
 
 // State
-const selectedType = ref<SphereType>("hp")
+const selectedType = useLocalStorage<SphereType>("ffx-sphere-grid-selected-type", "hp")
 const displayMode = ref<"icons" | "numbers">("icons")
 const gridType = ref<GridType>("standard")
 const showIcons = computed(() => displayMode.value === "icons")
-const selectionMode = ref(false)
+const selectionMode = useLocalStorage("ffx-sphere-grid-selection-mode", false)
 const selectedNodeIds = ref<string[]>([])
 const showSelectionModal = ref(false)
 

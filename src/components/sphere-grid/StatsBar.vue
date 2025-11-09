@@ -1,6 +1,6 @@
 <template>
-  <div class="bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-2.5 flex items-center justify-between gap-6">
-    <div class="flex items-center gap-4 flex-wrap">
+  <div class="bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-2.5 flex items-center justify-between gap-2">
+    <div class="flex items-center gap-2 flex-wrap">
       <div v-for="stat in statDisplay" :key="stat.key" class="flex items-center gap-1.5 border rounded-md p-2">
         <span class="font-semibold text-xs" :class="stat.colorClass">{{ stat.label }}</span>
         <div class="font-mono text-sm font-bold tabular-nums flex items-center gap-1">
@@ -16,11 +16,19 @@
       </div>
     </div>
 
-    <div class="flex items-center gap-2 pl-4 border-l">
-      <span class="text-xs text-muted-foreground">Spheres:</span>
-      <Badge variant="secondary" class="font-mono font-bold">
-        {{ total }}
-      </Badge>
+    <div class="flex flex-col items-center gap-2 text-right pl-4 border-l">
+      <div class="flex items-center gap-2">
+        <span class="text-xs text-muted-foreground">Overridden:</span>
+        <Badge variant="secondary" class="font-mono font-bold">
+          {{ totalOverridden }}
+        </Badge>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-xs text-muted-foreground">Total:</span>
+        <Badge variant="secondary" class="font-mono font-bold">
+          {{ total }}
+        </Badge>
+      </div>
     </div>
   </div>
 </template>
@@ -116,6 +124,10 @@ const statDisplayConfig = [
     cap: statCaps.luck,
   },
 ]
+
+const totalOverridden = computed(() => {
+  return Object.values(props.counts).reduce((sum, count) => sum + count, 0)
+})
 
 const statDisplay = computed(() => {
   return statDisplayConfig.map((config) => {

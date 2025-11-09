@@ -5,10 +5,11 @@ import { StatButton } from '.'
 
 const modelValue = defineModel<SphereType>({ required: true })
 
-// Filter out empty and locked types
-const selectableTypes = Object.keys(sphereTypeInfo).filter(
-  (type) => type !== 'empty' && type !== 'locked',
-) as SphereType[]
+// Filter out locked type, put empty at the end
+const selectableTypes = [
+  ...Object.keys(sphereTypeInfo).filter((type) => type !== 'locked' && type !== 'empty'),
+  'empty',
+] as SphereType[]
 </script>
 
 <template>
