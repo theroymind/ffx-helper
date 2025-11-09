@@ -20,6 +20,16 @@ export const badgeVariants = cva(
           "border-transparent bg-warning text-warning-foreground [a&]:hover:bg-warning/90",
         outline:
           "text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
+        hp: "border-transparent bg-sphere-hp text-sphere-hp-foreground [a&]:hover:bg-sphere-hp/90",
+        mp: "border-transparent bg-sphere-mp text-sphere-mp-foreground [a&]:hover:bg-sphere-mp/90",
+        strength: "border-transparent bg-sphere-strength text-sphere-strength-foreground [a&]:hover:bg-sphere-strength/90",
+        defense: "border-transparent bg-sphere-defense text-sphere-defense-foreground [a&]:hover:bg-sphere-defense/90",
+        magic: "border-transparent bg-sphere-magic text-sphere-magic-foreground [a&]:hover:bg-sphere-magic/90",
+        magicDef: "border-transparent bg-sphere-magicDef text-sphere-magicDef-foreground [a&]:hover:bg-sphere-magicDef/90",
+        agility: "border-transparent bg-sphere-agility text-sphere-agility-foreground [a&]:hover:bg-sphere-agility/90",
+        accuracy: "border-transparent bg-sphere-accuracy text-sphere-accuracy-foreground [a&]:hover:bg-sphere-accuracy/90",
+        evasion: "border-transparent bg-sphere-evasion text-sphere-evasion-foreground [a&]:hover:bg-sphere-evasion/90",
+        luck: "border-transparent bg-sphere-luck text-sphere-luck-foreground [a&]:hover:bg-sphere-luck/90",
       },
     },
     defaultVariants: {

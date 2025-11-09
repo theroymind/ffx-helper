@@ -19,26 +19,30 @@
       <InstructionsPanel />
     </div>
 
-    <!-- Canvas with Toggle Overlay -->
-    <div class="relative flex-1">
-      <SphereGridCanvas ref="canvasRef" />
-      <div class="absolute top-4 right-4 z-10 flex flex-col gap-2">
-        <ToggleGroup v-model="gridType" variant="outline" size="lg" type="single">
-          <ToggleGroupItem value="standard" aria-label="Standard Grid">
-            <span class="text-xs px-2">Standard</span>
-          </ToggleGroupItem>
-          <ToggleGroupItem value="expert" aria-label="Expert Grid">
-            <span class="text-xs px-2">Expert</span>
-          </ToggleGroupItem>
-        </ToggleGroup>
-        <ToggleGroup v-model="displayMode" variant="outline" size="lg" type="single">
-          <ToggleGroupItem value="icons" aria-label="Show icons">
-            <Image class="size-4 min-w-12" />
-          </ToggleGroupItem>
-          <ToggleGroupItem value="numbers" aria-label="Show numbers">
-            <Hash class="size-4 min-w-12" />
-          </ToggleGroupItem>
-        </ToggleGroup>
+    <!-- Canvas Area -->
+    <div class="flex-1 flex flex-col gap-4">
+      <StatsBar :stats="stats" :counts="overriddenSphereCounts.counts" :total="overriddenSphereCounts.total" />
+
+      <div class="relative flex-1">
+        <SphereGridCanvas ref="canvasRef" />
+        <div class="absolute top-4 right-4 z-10 flex flex-col gap-2">
+          <ToggleGroup v-model="gridType" variant="outline" size="lg" type="single">
+            <ToggleGroupItem value="standard" aria-label="Standard Grid">
+              <span class="text-xs px-2">Standard</span>
+            </ToggleGroupItem>
+            <ToggleGroupItem value="expert" aria-label="Expert Grid">
+              <span class="text-xs px-2">Expert</span>
+            </ToggleGroupItem>
+          </ToggleGroup>
+          <ToggleGroup v-model="displayMode" variant="outline" size="lg" type="single">
+            <ToggleGroupItem value="icons" aria-label="Show icons">
+              <Image class="size-4 min-w-12" />
+            </ToggleGroupItem>
+            <ToggleGroupItem value="numbers" aria-label="Show numbers">
+              <Hash class="size-4 min-w-12" />
+            </ToggleGroupItem>
+          </ToggleGroup>
+        </div>
       </div>
     </div>
 
@@ -57,6 +61,7 @@ import { useCytoscapeGrid } from "@/composables/useCytoscapeGrid"
 import type { SphereType } from "@/types/sphere"
 import SphereSelector from "./sphere-grid/SphereSelector.vue"
 import StatsPanel from "./sphere-grid/StatsPanel.vue"
+import StatsBar from "./sphere-grid/StatsBar.vue"
 import SphereCountsPanel from "./sphere-grid/SphereCountsPanel.vue"
 import GridControls from "./sphere-grid/GridControls.vue"
 import InstructionsPanel from "./sphere-grid/InstructionsPanel.vue"
