@@ -9,12 +9,25 @@ export function useCytoscapeGrid(
   selectedType: Ref<SphereType>,
   onNodeUpdate: (nodeId: string, type: SphereType, value: number) => void,
   showIcons: Ref<boolean>,
+  selectionMode: Ref<boolean>,
+  onSelectionChange?: (nodeIds: string[]) => void,
 ) {
   let cy: Core | null = null
   const isDragging = ref(false)
+  let wheelEventCleanup: (() => void) | null = null
 
   const initializeCytoscape = () => {
     if (!container.value) return
+
+    // Clean up existing instance and event listeners
+    if (wheelEventCleanup) {
+      wheelEventCleanup()
+      wheelEventCleanup = null
+    }
+    if (cy) {
+      cy.destroy()
+      cy = null
+    }
 
     const { nodes, edges, positions } = gridData.value
     const sphereColors = getSphereColors() // Get colors from CSS at runtime
@@ -32,6 +45,7 @@ export function useCytoscapeGrid(
             abilityName: node.abilityName,
           },
           position: positions[node.id],
+          selectable: !node.abilityId,
         })),
         ...edges.map((edge) => ({
           data: {
@@ -41,6 +55,7 @@ export function useCytoscapeGrid(
           },
         })),
       ],
+      wheelSensitivity: 0.2,
       style: [
         {
           selector: 'node',
@@ -137,6 +152,15 @@ export function useCytoscapeGrid(
           },
         },
         {
+          selector: 'node:selected',
+          style: {
+            'border-width': 4,
+            'border-color': '#fbbf24',
+            'overlay-opacity': 0.2,
+            'overlay-color': '#fbbf24',
+          },
+        },
+        {
           selector: 'edge',
           style: {
             width: 16,
@@ -148,20 +172,58 @@ export function useCytoscapeGrid(
       layout: {
         name: 'preset',
       },
-      userZoomingEnabled: true,
+      userZoomingEnabled: false,
       userPanningEnabled: true,
-      boxSelectionEnabled: false,
-      autoungrabify: true, // Disable node dragging
+      boxSelectionEnabled: true,
+      autoungrabify: true,
       autounselectify: false,
     })
+
+    // Override default wheel behavior for pan/zoom control
+    const containerElement = container.value
+    if (containerElement) {
+      const wheelHandler = (event: WheelEvent) => {
+        event.preventDefault()
+        event.stopPropagation()
+
+        if (!cy) return
+
+        if (event.ctrlKey || event.metaKey) {
+          // Ctrl+scroll or pinch = zoom
+          const zoomFactor = event.deltaY > 0 ? 0.95 : 1.05
+          const currentZoom = cy.zoom()
+          const newZoom = Math.max(0.1, Math.min(10, currentZoom * zoomFactor))
+
+          cy.zoom({
+            level: newZoom,
+            renderedPosition: {
+              x: event.offsetX,
+              y: event.offsetY,
+            },
+          })
+        } else {
+          // Normal scroll = pan
+          const pan = cy.pan()
+          cy.pan({
+            x: pan.x - event.deltaX,
+            y: pan.y - event.deltaY,
+          })
+        }
+      }
+
+      containerElement.addEventListener('wheel', wheelHandler, { passive: false })
+      wheelEventCleanup = () => containerElement.removeEventListener('wheel', wheelHandler)
+    }
 
     // Handle node interactions
     cy.on('mousedown', 'node', (event) => {
       const node = event.target
-      // Don't allow modifying ability nodes
-      if (!node.data('abilityId')) {
-        isDragging.value = true
-        updateNodeType(node)
+      if (!selectionMode.value) {
+        // Paint mode: allow modifying nodes
+        if (!node.data('abilityId')) {
+          isDragging.value = true
+          updateNodeType(node)
+        }
       }
     })
 
@@ -181,8 +243,8 @@ export function useCytoscapeGrid(
         }
         node.data('hoverLabel', hoverLabel)
 
-        // If dragging, also update node type
-        if (isDragging.value) {
+        // If dragging in paint mode, update node type
+        if (isDragging.value && !selectionMode.value) {
           updateNodeType(node)
         }
       }
@@ -198,6 +260,15 @@ export function useCytoscapeGrid(
 
     cy.on('mouseup', () => {
       isDragging.value = false
+    })
+
+    // Handle selection changes
+    cy.on('select unselect', () => {
+      if (selectionMode.value && onSelectionChange) {
+        const selectedNodes = cy.nodes(':selected').filter((node) => !node.data('abilityId'))
+        const nodeIds = selectedNodes.map((node) => node.id())
+        onSelectionChange(nodeIds)
+      }
     })
 
     // Global mouseup to catch when released outside canvas
@@ -244,8 +315,36 @@ export function useCytoscapeGrid(
     })
   }
 
+  const clearSelection = () => {
+    if (cy) {
+      cy.nodes().unselect()
+    }
+  }
+
+  const updateSelectedNodes = (nodeIds: string[], type: SphereType, value: number) => {
+    if (!cy) return
+
+    const sphereColors = getSphereColors()
+    cy.batch(() => {
+      nodeIds.forEach((nodeId) => {
+        const node = cy?.getElementById(nodeId)
+        if (node) {
+          node.data('type', type)
+          node.data('value', value)
+          node.style('background-color', sphereColors[type])
+          node.style('background-image', showIcons.value ? sphereIcons[type] || 'none' : 'none')
+        }
+      })
+    })
+    cy.style().update()
+  }
+
   const destroy = () => {
     document.removeEventListener('mouseup', handleGlobalMouseUp)
+    if (wheelEventCleanup) {
+      wheelEventCleanup()
+      wheelEventCleanup = null
+    }
     if (cy) {
       cy.destroy()
       cy = null
@@ -270,6 +369,14 @@ export function useCytoscapeGrid(
     cy.style().update()
   })
 
+  // Watch for selectionMode changes and toggle panning
+  watch(selectionMode, (isSelectionMode) => {
+    if (!cy) return
+
+    // Disable panning in selection mode, enable in paint mode
+    cy.userPanningEnabled(!isSelectionMode)
+  })
+
   onBeforeUnmount(destroy)
 
   return {
@@ -277,6 +384,8 @@ export function useCytoscapeGrid(
     isDragging,
     initializeCytoscape,
     resetNodes,
+    clearSelection,
+    updateSelectedNodes,
     destroy,
   }
 }

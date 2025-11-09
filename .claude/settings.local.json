@@ -13,7 +13,8 @@
       "Bash(npm run type-check:*)",
       "Bash(pkill:*)",
       "Bash(lsof:*)",
-      "Bash(xargs kill:*)"
+      "Bash(xargs kill:*)",
+      "Bash(git log:*)"
     ],
     "deny": [],
     "ask": []

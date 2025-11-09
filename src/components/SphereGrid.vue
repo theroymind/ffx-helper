@@ -4,36 +4,18 @@
     <div class="w-[320px] overflow-y-auto space-y-5 pr-2">
       <!-- Header -->
       <div class="space-y-1 pb-1">
-        <h1 class="text-2xl font-bold text-amber-400">FFX Sphere Grid</h1>
-        <p class="text-xs text-zinc-400">Plan your character progression</p>
+        <h1 class="text-2xl font-bold text-gold">FFX Sphere Grid</h1>
+        <p class="text-xs text-muted-foreground">Plan your character progression</p>
       </div>
-
-      <Separator class="bg-zinc-700/50" />
-
-      <!-- Sphere Selector -->
+      <Separator />
       <SphereSelector v-model="selectedType" />
-
-      <Separator class="bg-zinc-700/50" />
-
-      <!-- Grid Controls -->
-      <GridControls @reset="handleReset" />
-
-      <Separator class="bg-zinc-700/50" />
-
-      <!-- Stats Panel -->
+      <Separator />
+      <GridControls v-model:selection-mode="selectionMode" @reset="handleReset" @clear="handleClear" />
+      <Separator />
       <StatsPanel :stats="stats" />
-
-      <Separator class="bg-zinc-700/50" />
-
-      <!-- Sphere Counts Panel -->
-      <SphereCountsPanel
-        :counts="overriddenSphereCounts.counts"
-        :total="overriddenSphereCounts.total"
-      />
-
-      <Separator class="bg-zinc-700/50" />
-
-      <!-- Instructions -->
+      <Separator />
+      <SphereCountsPanel :counts="overriddenSphereCounts.counts" :total="overriddenSphereCounts.total" />
+      <Separator />
       <InstructionsPanel />
     </div>
 
@@ -59,44 +41,62 @@
         </ToggleGroup>
       </div>
     </div>
+
+    <NodeSelectionModal
+      v-model:open="showSelectionModal"
+      :selected-count="selectedNodeIds.length"
+      @apply="handleApplyToSelection"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
-import { useSphereData, type GridType } from '@/composables/useSphereData'
-import { useCytoscapeGrid } from '@/composables/useCytoscapeGrid'
-import type { SphereType } from '@/types/sphere'
-import SphereSelector from './sphere-grid/SphereSelector.vue'
-import StatsPanel from './sphere-grid/StatsPanel.vue'
-import SphereCountsPanel from './sphere-grid/SphereCountsPanel.vue'
-import GridControls from './sphere-grid/GridControls.vue'
-import InstructionsPanel from './sphere-grid/InstructionsPanel.vue'
-import SphereGridCanvas from './sphere-grid/SphereGridCanvas.vue'
-import { Separator } from '@/components/ui/separator'
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import { Image, Hash } from 'lucide-vue-next'
+import { ref, computed, onMounted, watch } from "vue"
+import { useSphereData, type GridType } from "@/composables/useSphereData"
+import { useCytoscapeGrid } from "@/composables/useCytoscapeGrid"
+import type { SphereType } from "@/types/sphere"
+import SphereSelector from "./sphere-grid/SphereSelector.vue"
+import StatsPanel from "./sphere-grid/StatsPanel.vue"
+import SphereCountsPanel from "./sphere-grid/SphereCountsPanel.vue"
+import GridControls from "./sphere-grid/GridControls.vue"
+import InstructionsPanel from "./sphere-grid/InstructionsPanel.vue"
+import SphereGridCanvas from "./sphere-grid/SphereGridCanvas.vue"
+import NodeSelectionModal from "./sphere-grid/NodeSelectionModal.vue"
+import { Separator } from "@/components/ui/separator"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+import { Image, Hash } from "lucide-vue-next"
 
 // State
-const selectedType = ref<SphereType>('hp')
-const displayMode = ref<'icons' | 'numbers'>('icons')
-const gridType = ref<GridType>('standard')
-const showIcons = computed(() => displayMode.value === 'icons')
+const selectedType = ref<SphereType>("hp")
+const displayMode = ref<"icons" | "numbers">("icons")
+const gridType = ref<GridType>("standard")
+const showIcons = computed(() => displayMode.value === "icons")
+const selectionMode = ref(false)
+const selectedNodeIds = ref<string[]>([])
+const showSelectionModal = ref(false)
 
 // Composables
-const { sphereData, stats, overriddenSphereCounts, resetGrid, updateNode } = useSphereData(gridType)
+const { sphereData, stats, overriddenSphereCounts, resetGrid, clearGrid, updateNode, updateNodes } = useSphereData(gridType)
 
 // Canvas ref
 const canvasRef = ref<InstanceType<typeof SphereGridCanvas> | null>(null)
 const cyContainer = computed(() => canvasRef.value?.container ?? null)
 
+// Selection change handler
+function handleSelectionChange(nodeIds: string[]) {
+  selectedNodeIds.value = nodeIds
+  showSelectionModal.value = nodeIds.length > 0
+}
+
 // Cytoscape grid
-const { initializeCytoscape, resetNodes } = useCytoscapeGrid(
+const { initializeCytoscape, resetNodes, clearSelection, updateSelectedNodes } = useCytoscapeGrid(
   cyContainer,
   sphereData,
   selectedType,
   updateNode,
   showIcons,
+  selectionMode,
+  handleSelectionChange,
 )
 
 // Initialize Cytoscape on mount
@@ -113,4 +113,26 @@ watch(gridType, () => {
 const handleReset = () => {
   resetGrid(resetNodes)
 }
+
+// Clear handler
+const handleClear = () => {
+  clearGrid(resetNodes)
+}
+
+// Apply selection handler
+function handleApplyToSelection(type: SphereType, value: number) {
+  updateNodes(selectedNodeIds.value, type, value)
+  updateSelectedNodes(selectedNodeIds.value, type, value)
+  clearSelection()
+  selectedNodeIds.value = []
+}
+
+// Clear selection when switching modes
+watch(selectionMode, (isSelectionMode) => {
+  if (!isSelectionMode) {
+    clearSelection()
+    selectedNodeIds.value = []
+    showSelectionModal.value = false
+  }
+})
 </script>

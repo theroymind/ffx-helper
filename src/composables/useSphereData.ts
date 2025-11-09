@@ -189,6 +189,33 @@ export function useSphereData(gridType: Ref<GridType>) {
     }
   }
 
+  // Clear all nodes to empty (except ability nodes)
+  const clearGrid = (updateCallback?: (nodes: SphereNode[]) => void) => {
+    const clearedNodes = sphereData.value.nodes.map((node) => {
+      if (node.abilityId) {
+        return node
+      }
+      return {
+        ...node,
+        type: "empty" as const,
+        value: 0,
+        locked: false,
+      }
+    })
+
+    sphereData.value.nodes = clearedNodes
+
+    if (gridType.value === "expert") {
+      expertNodes.value = clearedNodes
+    } else {
+      standardNodes.value = clearedNodes
+    }
+
+    if (updateCallback) {
+      updateCallback(clearedNodes)
+    }
+  }
+
   // Update a node's type
   const updateNode = (nodeId: string, type: string, value: number) => {
     const node = sphereData.value.nodes.find((n) => n.id === nodeId)
@@ -198,11 +225,20 @@ export function useSphereData(gridType: Ref<GridType>) {
     }
   }
 
+  // Update multiple nodes at once
+  const updateNodes = (nodeIds: string[], type: string, value: number) => {
+    nodeIds.forEach((nodeId) => {
+      updateNode(nodeId, type, value)
+    })
+  }
+
   return {
     sphereData,
     stats,
     overriddenSphereCounts,
     resetGrid,
+    clearGrid,
     updateNode,
+    updateNodes,
   }
 }

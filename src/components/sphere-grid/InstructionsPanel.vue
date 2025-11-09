@@ -23,6 +23,10 @@ import { Info } from "lucide-vue-next"
         </li>
         <li class="flex gap-2">
           <span class="text-gold font-bold">•</span>
+          <span><strong>Drag area</strong> to select multiple nodes</span>
+        </li>
+        <li class="flex gap-2">
+          <span class="text-gold font-bold">•</span>
           <span><strong class="text-pink-400">Pink</strong> = abilities (locked)</span>
         </li>
         <li class="flex gap-2">
@@ -31,7 +35,7 @@ import { Info } from "lucide-vue-next"
         </li>
         <li class="flex gap-2">
           <span class="text-gold font-bold">•</span>
-          <span><strong>Wheel</strong> zoom, <strong>drag</strong> pan</span>
+          <span><strong>2-finger scroll</strong> pan, <strong>pinch</strong> zoom</span>
         </li>
         <li class="flex gap-2">
           <span class="text-gold font-bold">•</span>
