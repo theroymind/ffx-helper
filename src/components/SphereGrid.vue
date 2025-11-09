@@ -40,7 +40,15 @@
     <!-- Canvas with Toggle Overlay -->
     <div class="relative flex-1">
       <SphereGridCanvas ref="canvasRef" />
-      <div class="absolute top-4 right-4 z-10">
+      <div class="absolute top-4 right-4 z-10 flex flex-col gap-2">
+        <ToggleGroup v-model="gridType" variant="outline" size="lg" type="single">
+          <ToggleGroupItem value="standard" aria-label="Standard Grid">
+            <span class="text-xs px-2">Standard</span>
+          </ToggleGroupItem>
+          <ToggleGroupItem value="expert" aria-label="Expert Grid">
+            <span class="text-xs px-2">Expert</span>
+          </ToggleGroupItem>
+        </ToggleGroup>
         <ToggleGroup v-model="displayMode" variant="outline" size="lg" type="single">
           <ToggleGroupItem value="icons" aria-label="Show icons">
             <Image class="size-4 min-w-12" />
@@ -55,8 +63,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useSphereData } from '@/composables/useSphereData'
+import { ref, computed, onMounted, watch } from 'vue'
+import { useSphereData, type GridType } from '@/composables/useSphereData'
 import { useCytoscapeGrid } from '@/composables/useCytoscapeGrid'
 import type { SphereType } from '@/types/sphere'
 import SphereSelector from './sphere-grid/SphereSelector.vue'
@@ -67,16 +75,16 @@ import InstructionsPanel from './sphere-grid/InstructionsPanel.vue'
 import SphereGridCanvas from './sphere-grid/SphereGridCanvas.vue'
 import { Separator } from '@/components/ui/separator'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import { Image, Hash, Bold, Italic, Underline } from 'lucide-vue-next'
-import { Button } from '@/components/ui/button'
+import { Image, Hash } from 'lucide-vue-next'
 
 // State
 const selectedType = ref<SphereType>('hp')
 const displayMode = ref<'icons' | 'numbers'>('icons')
+const gridType = ref<GridType>('standard')
 const showIcons = computed(() => displayMode.value === 'icons')
 
 // Composables
-const { sphereData, stats, overriddenSphereCounts, resetGrid, updateNode } = useSphereData()
+const { sphereData, stats, overriddenSphereCounts, resetGrid, updateNode } = useSphereData(gridType)
 
 // Canvas ref
 const canvasRef = ref<InstanceType<typeof SphereGridCanvas> | null>(null)
@@ -93,6 +101,11 @@ const { initializeCytoscape, resetNodes } = useCytoscapeGrid(
 
 // Initialize Cytoscape on mount
 onMounted(() => {
+  initializeCytoscape()
+})
+
+// Reinitialize when grid type changes
+watch(gridType, () => {
   initializeCytoscape()
 })
 

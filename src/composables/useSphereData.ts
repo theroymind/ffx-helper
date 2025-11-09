@@ -1,9 +1,12 @@
-import { ref, computed, watch } from 'vue'
-import { useLocalStorage } from '@vueuse/core'
-import sphereGridData from '@/nodes.json'
-import abilitiesData from '@/abilities.json'
-import type { SphereNode, SphereGridData, Stats } from '@/types/sphere'
-import { mapAttributeToType, sphereTypeInfo, baseStats } from '@/constants/sphere'
+import { ref, computed, watch, type Ref } from "vue"
+import { useLocalStorage } from "@vueuse/core"
+import standardGridData from "@/standard_grid_nodes.json"
+import expertGridData from "@/expert_grid_nodes.json"
+import abilitiesData from "@/abilities.json"
+import type { SphereNode, SphereGridData, Stats } from "@/types/sphere"
+import { mapAttributeToType, sphereTypeInfo, baseStats } from "@/constants/sphere"
+
+export type GridType = "standard" | "expert"
 
 // Build ability ID to name mapping from abilities.json
 const abilityNames: Record<number, string> = {}
@@ -12,7 +15,8 @@ abilitiesData.forEach((ability: any) => {
 })
 
 // Generate the sphere grid from the data file
-export const generateSphereGrid = (): SphereGridData => {
+export const generateSphereGrid = (gridType: GridType = "standard"): SphereGridData => {
+  const sphereGridData = gridType === "expert" ? expertGridData : standardGridData
   const nodes: SphereNode[] = []
   const edges: Array<{ source: string; target: string }> = []
   const positions: Record<string, { x: number; y: number }> = {}
@@ -23,20 +27,16 @@ export const generateSphereGrid = (): SphereGridData => {
   // Parse the FFX sphere grid data
   sphereGridData.forEach((nodeData: any) => {
     const nodeId = `node-${nodeData.id}`
-    const sphereType = mapAttributeToType(
-      nodeData.attribute_name,
-      nodeData.ability_id,
-      nodeData.lock_level,
-    )
+    const sphereType = mapAttributeToType(nodeData.attribute_name, nodeData.ability_id, nodeData.lock_level)
 
     // For empty nodes, set value to 0 so no number displays
-    const displayValue = sphereType === 'empty' ? 0 : nodeData.value || 0
+    const displayValue = sphereType === "empty" ? 0 : nodeData.value || 0
 
     nodes.push({
       id: nodeId,
       type: sphereType,
       value: displayValue,
-      locked: sphereType === 'locked',
+      locked: sphereType === "locked",
       abilityId: nodeData.ability_id,
       abilityName: nodeData.ability_id
         ? abilityNames[nodeData.ability_id] || `Ability ${nodeData.ability_id}`
@@ -82,31 +82,51 @@ export const generateSphereGrid = (): SphereGridData => {
   return { nodes, edges, positions }
 }
 
-export function useSphereData() {
-  // Generate default sphere grid data
-  const defaultSphereGrid = generateSphereGrid()
-
-  // Use local storage to persist node customizations
-  const storedNodes = useLocalStorage<SphereNode[]>(
-    'ffx-sphere-grid-nodes',
-    defaultSphereGrid.nodes,
+export function useSphereData(gridType: Ref<GridType>) {
+  // Separate localStorage for each grid type
+  const standardNodes = useLocalStorage<SphereNode[]>(
+    "ffx-sphere-grid-nodes-standard",
+    generateSphereGrid("standard").nodes,
+    {
+      mergeDefaults: true,
+    },
+  )
+  const expertNodes = useLocalStorage<SphereNode[]>(
+    "ffx-sphere-grid-nodes-expert",
+    generateSphereGrid("expert").nodes,
     {
       mergeDefaults: true,
     },
   )
 
-  // Create the reactive sphere data, using stored nodes if available
-  const sphereData = ref<SphereGridData>({
-    nodes: storedNodes.value,
-    edges: defaultSphereGrid.edges,
-    positions: defaultSphereGrid.positions,
+  // Get current grid data based on type
+  function getCurrentGridData() {
+    const grid = generateSphereGrid(gridType.value)
+    const nodes = gridType.value === "expert" ? expertNodes.value : standardNodes.value
+    return {
+      nodes,
+      edges: grid.edges,
+      positions: grid.positions,
+    }
+  }
+
+  // Create the reactive sphere data
+  const sphereData = ref<SphereGridData>(getCurrentGridData())
+
+  // Watch for grid type changes and reload data
+  watch(gridType, () => {
+    sphereData.value = getCurrentGridData()
   })
 
-  // Watch for changes to nodes and persist to localStorage
+  // Watch for changes to nodes and persist to correct localStorage
   watch(
     () => sphereData.value.nodes,
     (newNodes) => {
-      storedNodes.value = newNodes
+      if (gridType.value === "expert") {
+        expertNodes.value = newNodes
+      } else {
+        standardNodes.value = newNodes
+      }
     },
     { deep: true },
   )
@@ -127,14 +147,13 @@ export function useSphereData() {
 
   // Calculate sphere counts for overridden nodes only
   const overriddenSphereCounts = computed(() => {
-    const counts = Object.fromEntries(
-      Object.keys(sphereTypeInfo).map((type) => [type, 0]),
-    ) as Record<string, number>
+    const counts = Object.fromEntries(Object.keys(sphereTypeInfo).map((type) => [type, 0])) as Record<string, number>
 
     let totalOverridden = 0
 
+    const defaultGrid = generateSphereGrid(gridType.value)
     sphereData.value.nodes.forEach((node, index) => {
-      const defaultNode = defaultSphereGrid.nodes[index]
+      const defaultNode = defaultGrid.nodes[index]
 
       // Only count if the node has been changed from its default
       // Skip ability nodes as they can't be changed
@@ -156,9 +175,14 @@ export function useSphereData() {
 
   // Reset grid to defaults
   const resetGrid = (updateCallback?: (nodes: SphereNode[]) => void) => {
-    const freshDefaults = generateSphereGrid()
+    const freshDefaults = generateSphereGrid(gridType.value)
     sphereData.value.nodes = freshDefaults.nodes
-    storedNodes.value = freshDefaults.nodes
+
+    if (gridType.value === "expert") {
+      expertNodes.value = freshDefaults.nodes
+    } else {
+      standardNodes.value = freshDefaults.nodes
+    }
 
     if (updateCallback) {
       updateCallback(freshDefaults.nodes)
