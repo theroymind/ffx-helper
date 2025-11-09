@@ -45,12 +45,6 @@
         </div>
       </div>
     </div>
-
-    <NodeSelectionModal
-      v-model:open="showSelectionModal"
-      :selected-count="selectedNodeIds.length"
-      @apply="handleApplyToSelection"
-    />
   </div>
 </template>
 
@@ -67,7 +61,6 @@ import SphereCountsPanel from "./sphere-grid/SphereCountsPanel.vue"
 import GridControls from "./sphere-grid/GridControls.vue"
 import InstructionsPanel from "./sphere-grid/InstructionsPanel.vue"
 import SphereGridCanvas from "./sphere-grid/SphereGridCanvas.vue"
-import NodeSelectionModal from "./sphere-grid/NodeSelectionModal.vue"
 import { Separator } from "@/components/ui/separator"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { Image, Hash } from "lucide-vue-next"
@@ -79,7 +72,22 @@ const gridType = ref<GridType>("standard")
 const showIcons = computed(() => displayMode.value === "icons")
 const selectionMode = useLocalStorage("ffx-sphere-grid-selection-mode", false)
 const selectedNodeIds = ref<string[]>([])
-const showSelectionModal = ref(false)
+
+// Highest values for each sphere type
+const highestValues: Record<SphereType, number> = {
+  hp: 300,
+  mp: 40,
+  strength: 4,
+  defense: 4,
+  magic: 4,
+  magicDef: 4,
+  agility: 4,
+  accuracy: 4,
+  evasion: 4,
+  luck: 4,
+  empty: 0,
+  locked: 0,
+}
 
 // Composables
 const { sphereData, stats, overriddenSphereCounts, resetGrid, clearGrid, updateNode, updateNodes } = useSphereData(gridType)
@@ -88,10 +96,17 @@ const { sphereData, stats, overriddenSphereCounts, resetGrid, clearGrid, updateN
 const canvasRef = ref<InstanceType<typeof SphereGridCanvas> | null>(null)
 const cyContainer = computed(() => canvasRef.value?.container ?? null)
 
-// Selection change handler
+// Selection change handler - automatically apply selected type
 function handleSelectionChange(nodeIds: string[]) {
   selectedNodeIds.value = nodeIds
-  showSelectionModal.value = nodeIds.length > 0
+
+  if (nodeIds.length > 0) {
+    const value = highestValues[selectedType.value]
+    updateNodes(nodeIds, selectedType.value, value)
+    updateSelectedNodes(nodeIds, selectedType.value, value)
+    clearSelection()
+    selectedNodeIds.value = []
+  }
 }
 
 // Cytoscape grid
@@ -125,20 +140,11 @@ const handleClear = () => {
   clearGrid(resetNodes)
 }
 
-// Apply selection handler
-function handleApplyToSelection(type: SphereType, value: number) {
-  updateNodes(selectedNodeIds.value, type, value)
-  updateSelectedNodes(selectedNodeIds.value, type, value)
-  clearSelection()
-  selectedNodeIds.value = []
-}
-
 // Clear selection when switching modes
 watch(selectionMode, (isSelectionMode) => {
   if (!isSelectionMode) {
     clearSelection()
     selectedNodeIds.value = []
-    showSelectionModal.value = false
   }
 })
 </script>
