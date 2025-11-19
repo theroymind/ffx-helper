@@ -92,7 +92,6 @@ const highestValues: Record<SphereType, number> = {
   accuracy: 4,
   evasion: 4,
   luck: 4,
-  ability: 0,
   empty: 0,
   locked: 0,
 };

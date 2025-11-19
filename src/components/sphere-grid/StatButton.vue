@@ -22,9 +22,6 @@ const props = withDefaults(defineProps<Props>(), {
 
 // Get icon for sphere type - either from icons or use letter for HP/MP
 const getSphereIcon = (type: SphereType): { type: "image" | "text"; value: string } | null => {
-  if (type === "hp") return { type: "text", value: "H" };
-  if (type === "mp") return { type: "text", value: "M" };
-
   const iconUrl = sphereIcons[type];
   if (iconUrl) return { type: "image", value: iconUrl };
 
@@ -43,11 +40,8 @@ const icon = getSphereIcon(props.statType);
     :class="cn('justify-start', active && 'ring-2 ring-gold ring-offset-2 ring-offset-background', props.class)"
     :data-active="active"
   >
-    <div
-      class="flex h-6 w-6 items-center justify-center rounded-full border-2 shrink-0"
-      :class="['luck', 'accuracy', 'agility'].includes(statType) ? 'border-black' : 'border-white'"
-    >
-      <img v-if="icon?.type === 'image'" :src="icon.value" :alt="typeInfo.label" class="h-4 w-4" />
+    <div class="flex h-6 w-6 items-center justify-center rounded-full shrink-0">
+      <img v-if="icon?.type === 'image'" :src="icon.value" :alt="typeInfo.label" class="h-6 w-6" />
       <span v-else-if="icon?.type === 'text'" class="font-bold">
         {{ icon.value }}
       </span>

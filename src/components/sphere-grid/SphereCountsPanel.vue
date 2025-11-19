@@ -57,7 +57,6 @@ const textColorClasses: Record<SphereType, string> = {
   accuracy: "text-sphere-accuracy",
   evasion: "text-sphere-evasion",
   luck: "text-sphere-luck",
-  ability: "text-sphere-ability",
   locked: "text-muted-foreground",
 };
 
@@ -73,7 +72,6 @@ const badgeColorClasses: Record<SphereType, string> = {
   accuracy: "bg-sphere-accuracy text-sphere-accuracy-foreground",
   evasion: "bg-sphere-evasion text-sphere-evasion-foreground",
   luck: "bg-sphere-luck text-sphere-luck-foreground",
-  ability: "bg-sphere-ability text-sphere-ability-foreground",
   locked: "bg-muted text-muted-foreground",
 };
 </script>

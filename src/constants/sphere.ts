@@ -1,6 +1,15 @@
 import type { SphereType, SphereTypeInfo, Stats } from "@/types/sphere";
-import defenseIcon from "@/assets/Defense_test.png";
-import strengthIcon from "@/assets/Strength_test.png";
+import defenseIcon from "@/assets/spheres/DEF_Sprite.png";
+import strengthIcon from "@/assets/spheres/STR_Sprite.png";
+import abilityIconImg from "@/assets/spheres/ABI_Sprite.png";
+import accuracyIcon from "@/assets/spheres/ACC_Sprite.png";
+import evasionIcon from "@/assets/spheres/EVA_Sprite.png";
+import agilityIcon from "@/assets/spheres/AGI_Sprite.png";
+import magicIcon from "@/assets/spheres/MAG_Sprite.png";
+import magicDefIcon from "@/assets/spheres/MDF_Sprite.png";
+import luckIcon from "@/assets/spheres/LUC_Sprite.png";
+import hpIcon from "@/assets/spheres/HP_Sprite.png";
+import mpIcon from "@/assets/spheres/MP_Sprite.png";
 
 // Helper to get CSS custom property color values at runtime
 export const getCssColor = (propertyName: string): string => {
@@ -22,24 +31,23 @@ export const getSphereColors = (): Record<SphereType, string> => ({
   accuracy: getCssColor("--sphere-accuracy"),
   evasion: getCssColor("--sphere-evasion"),
   luck: getCssColor("--sphere-luck"),
-  ability: getCssColor("--sphere-ability"),
   locked: getCssColor("--sphere-locked"),
 });
+
+export const abilityNodeColor = getCssColor("--sphere-ability");
+export const abilityIcon = abilityIconImg;
 
 export const sphereIcons: Partial<Record<SphereType, string>> = {
   strength: strengthIcon,
   defense: defenseIcon,
-  magic:
-    "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgY2xhc3M9Imx1Y2lkZSBsdWNpZGUtdHJpYW5nbGUtaWNvbiBsdWNpZGUtdHJpYW5nbGUiPjxwYXRoIGQ9Ik0xMy43MyA0YTIgMiAwIDAgMC0zLjQ2IDBsLTggMTRBMiAyIDAgMCAwIDQgMjFoMTZhMiAyIDAgMCAwIDEuNzMtM1oiLz48L3N2Zz4=",
-  magicDef:
-    "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgY2xhc3M9Imx1Y2lkZSBsdWNpZGUtdHJpYW5nbGUtaWNvbiBsdWNpZGUtdHJpYW5nbGUiPjxwYXRoIGQ9Ik0xMy43MyA0YTIgMiAwIDAgMC0zLjQ2IDBsLTggMTRBMiAyIDAgMCAwIDQgMjFoMTZhMiAyIDAgMCAwIDEuNzMtM1oiLz48L3N2Zz4=",
-  agility:
-    "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgY2xhc3M9Imx1Y2lkZSBsdWNpZGUtd2luZC1pY29uIGx1Y2lkZS13aW5kIj48cGF0aCBkPSJNMTIuOCAxOS42QTIgMiAwIDEgMCAxNCAxNkgyIi8+PHBhdGggZD0iTTE3LjUgOGEyLjUgMi41IDAgMSAxIDIgNEgyIi8+PHBhdGggZD0iTTkuOCA0LjRBMiAyIDAgMSAxIDExIDhIMiIvPjwvc3ZnPg==",
-  accuracy:
-    "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgY2xhc3M9Imx1Y2lkZSBsdWNpZGUtY2lyY2xlLXBsdXMtaWNvbiBsdWNpZGUtY2lyY2xlLXBsdXMiPjxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjEwIi8+PHBhdGggZD0iTTggMTJoOCIvPjxwYXRoIGQ9Ik0xMiA4djgiLz48L3N2Zz4=",
-  evasion:
-    "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgY2xhc3M9Imx1Y2lkZSBsdWNpZGUtZWdnLWZyaWVkLWljb24gbHVjaWRlLWVnZy1mcmllZCI+PGNpcmNsZSBjeD0iMTEuNSIgY3k9IjEyLjUiIHI9IjMuNSIvPjxwYXRoIGQ9Ik0zIDhjMC0zLjUgMi41LTYgNi41LTYgNSAwIDQuODMgMyA3LjUgNXM1IDIgNSA2YzAgNC41LTIuNSA2LjUtNyA2LjUtMi41IDAtMi41IDIuNS02IDIuNXMtNy0yLTctNS41YzAtMyAxLjUtMyAxLjUtNUMzLjUgMTAgMyA5IDMgOFoiLz48L3N2Zz4=",
-  luck: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgY2xhc3M9Imx1Y2lkZSBsdWNpZGUtc3Rhci1pY29uIGx1Y2lkZS1zdGFyIj48cGF0aCBkPSJNMTEuNTI1IDIuMjk1YS41My41MyAwIDAgMSAuOTUgMGwyLjMxIDQuNjc5YTIuMTIzIDIuMTIzIDAgMCAwIDEuNTk1IDEuMTZsNS4xNjYuNzU2YS41My41MyAwIDAgMSAuMjk0LjkwNGwtMy43MzYgMy42MzhhMi4xMjMgMi4xMjMgMCAwIDAtLjYxMSAxLjg3OGwuODgyIDUuMTRhLjUzLjUzIDAgMCAxLS43NzEuNTZsLTQuNjE4LTIuNDI4YTIuMTIyIDIuMTIyIDAgMCAwLTEuOTczIDBMNi4zOTYgMjEuMDFhLjUzLjUzIDAgMCAxLS43Ny0uNTZsLjg4MS01LjEzOWEyLjEyMiAyLjEyMiAwIDAgMC0uNjExLTEuODc5TDIuMTYgOS43OTVhLjUzLjUzIDAgMCAxIC4yOTQtLjkwNmw1LjE2NS0uNzU1YTIuMTIyIDIuMTIyIDAgMCAwIDEuNTk3LTEuMTZ6Ii8+PC9zdmc+",
+  magic: magicIcon,
+  magicDef: magicDefIcon,
+  agility: agilityIcon,
+  accuracy: accuracyIcon,
+  evasion: evasionIcon,
+  luck: luckIcon,
+  hp: hpIcon,
+  mp: mpIcon,
   locked:
     "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWxvY2sta2V5aG9sZS1pY29uIGx1Y2lkZS1sb2NrLWtleWhvbGUiPjxjaXJjbGUgY3g9IjEyIiBjeT0iMTYiIHI9IjEiLz48cmVjdCB4PSIzIiB5PSIxMCIgd2lkdGg9IjE4IiBoZWlnaHQ9IjEyIiByeD0iMiIvPjxwYXRoIGQ9Ik03IDEwVjdhNSA1IDAgMCAxIDEwIDB2MyIvPjwvc3ZnPg==",
 };
@@ -57,7 +65,6 @@ export const sphereTypeInfo: Record<SphereType, SphereTypeInfo> = {
   accuracy: { label: "Accuracy", shortLabel: "ACC", statValue: 4, statKey: "accuracy" },
   evasion: { label: "Evasion", shortLabel: "EVA", statValue: 4, statKey: "evasion" },
   luck: { label: "Luck", shortLabel: "LCK", statValue: 4, statKey: "luck" },
-  ability: { label: "Ability", shortLabel: "ABL", statValue: 0, statKey: null },
   locked: { label: "Locked", shortLabel: "LCKD", statValue: 0, statKey: null },
 };
 
@@ -82,7 +89,7 @@ export const mapAttributeToType = (
   lockLevel: number | null,
 ): SphereType => {
   if (lockLevel !== null) return "locked";
-  if (abilityId !== null) return "ability";
+  if (abilityId !== null) return "empty";
   if (!attributeName) return "empty";
 
   const attributeMap: Record<string, SphereType> = {

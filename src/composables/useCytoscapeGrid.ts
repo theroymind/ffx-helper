@@ -1,7 +1,7 @@
 import { ref, type Ref, onBeforeUnmount, watch } from "vue";
 import cytoscape, { type Core, type NodeSingular } from "cytoscape";
 import type { SphereGridData, SphereType } from "@/types/sphere";
-import { getSphereColors, sphereTypeInfo, sphereIcons } from "@/constants/sphere";
+import { getSphereColors, abilityNodeColor, abilityIcon, sphereTypeInfo, sphereIcons } from "@/constants/sphere";
 
 export function useCytoscapeGrid(
   container: Ref<HTMLElement | null>,
@@ -64,23 +64,25 @@ export function useCytoscapeGrid(
             width: 45,
             height: 45,
             "background-color": (ele) => {
+              const isAbilityNode = ele.data("abilityId") !== null && ele.data("abilityId") !== undefined;
+              if (isAbilityNode) return abilityNodeColor;
               return sphereColors[ele.data("type") as SphereType];
             },
             "background-image": (ele) => {
               // Don't show icons when showIcons is false
               if (!showIcons.value) return "none";
-              // Don't show icons for ability nodes
+              // Show ability icon for ability nodes
               const isAbilityNode = ele.data("abilityId") !== null && ele.data("abilityId") !== undefined;
-              if (isAbilityNode) return "none";
+              if (isAbilityNode) return abilityIcon;
               // Use icon if available for this sphere type
               const type = ele.data("type") as SphereType;
               return sphereIcons[type] || "none";
             },
-            "background-fit": "none",
-            "background-width": 50,
-            "background-height": 50,
-            "border-width": 2,
-            "border-color": "#ffffff",
+            "background-fit": "cover",
+            // "background-width": 90,
+            // "background-height": 90,
+            "border-width": 0,
+            "border-color": "red",
             opacity: (ele) => {
               if (!highlightedType.value) return 1;
               const isAbilityNode = ele.data("abilityId") !== null && ele.data("abilityId") !== undefined;
@@ -104,14 +106,10 @@ export function useCytoscapeGrid(
 
               // When showing icons, show H/M for HP/MP, otherwise empty
               if (showIcons.value) {
-                if (type === "hp") return "H";
-                if (type === "mp") return "M";
                 return ""; // Don't show numbers when icons are visible
               }
 
               // When not showing icons, show all stat values
-              if (type === "hp") return "H";
-              if (type === "mp") return "M";
               return value && value > 0 ? String(value) : "";
             },
             "text-valign": "center",
@@ -144,7 +142,7 @@ export function useCytoscapeGrid(
             // Make ability nodes larger
             width: 65,
             height: 65,
-            "border-width": 3,
+            "border-width": 0,
           },
         },
         {
@@ -292,28 +290,30 @@ export function useCytoscapeGrid(
   const updateNodeType = (node: NodeSingular) => {
     const newType = selectedType.value;
     const statValue = sphereTypeInfo[newType].statValue;
-    const sphereColors = getSphereColors(); // Get colors from CSS at runtime
+    const sphereColors = getSphereColors();
 
     node.data("type", newType);
     node.data("value", statValue);
-    node.style("background-color", sphereColors[newType]);
+
+    const isAbilityNode = node.data("abilityId") !== null && node.data("abilityId") !== undefined;
+    node.style("background-color", isAbilityNode ? abilityNodeColor : sphereColors[newType]);
     node.style("background-image", showIcons.value ? sphereIcons[newType] || "none" : "none");
 
-    // Update the underlying data via callback
     onNodeUpdate(node.id(), newType, statValue);
   };
 
   const resetNodes = (nodes: any[]) => {
     if (!cy) return;
 
-    const sphereColors = getSphereColors(); // Get colors from CSS at runtime
+    const sphereColors = getSphereColors();
 
     cy.nodes().forEach((node) => {
       const defaultNode = nodes.find((n) => n.id === node.id());
       if (defaultNode) {
         node.data("type", defaultNode.type);
         node.data("value", defaultNode.value);
-        node.style("background-color", sphereColors[defaultNode.type]);
+        const isAbilityNode = defaultNode.abilityId !== null && defaultNode.abilityId !== undefined;
+        node.style("background-color", isAbilityNode ? abilityNodeColor : sphereColors[defaultNode.type]);
         node.style("background-image", showIcons.value ? sphereIcons[defaultNode.type] || "none" : "none");
       }
     });
@@ -335,7 +335,8 @@ export function useCytoscapeGrid(
         if (node) {
           node.data("type", type);
           node.data("value", value);
-          node.style("background-color", sphereColors[type]);
+          const isAbilityNode = node.data("abilityId") !== null && node.data("abilityId") !== undefined;
+          node.style("background-color", isAbilityNode ? abilityNodeColor : sphereColors[type]);
           node.style("background-image", showIcons.value ? sphereIcons[type] || "none" : "none");
         }
       });

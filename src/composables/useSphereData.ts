@@ -36,7 +36,7 @@ export const generateSphereGrid = (gridType: GridType = "standard"): SphereGridD
       id: nodeId,
       type: sphereType,
       value: displayValue,
-      locked: sphereType === "locked" || sphereType === "ability",
+      locked: sphereType === "locked" || nodeData.ability_id !== null,
       abilityId: nodeData.ability_id,
       abilityName: nodeData.ability_id
         ? abilityNames[nodeData.ability_id] || `Ability ${nodeData.ability_id}`
@@ -137,7 +137,7 @@ export function useSphereData(gridType: Ref<GridType>) {
 
     sphereData.value.nodes.forEach((node) => {
       const info = sphereTypeInfo[node.type];
-      if (info.statKey && node.value) {
+      if (info && info.statKey && node.value) {
         result[info.statKey] += node.value;
       }
     });

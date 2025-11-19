@@ -1,17 +1,3 @@
-<script setup lang="ts">
-import type { SphereType } from "@/types/sphere";
-import { sphereTypeInfo } from "@/constants/sphere";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { StatButton } from ".";
-
-const modelValue = defineModel<SphereType>({ required: true });
-
-const selectableTypes = [
-  ...Object.keys(sphereTypeInfo).filter((type) => type !== "locked" && type !== "empty"),
-  "empty",
-] as SphereType[];
-</script>
-
 <template>
   <Card>
     <CardHeader>
@@ -29,3 +15,16 @@ const selectableTypes = [
     </CardContent>
   </Card>
 </template>
+<script setup lang="ts">
+import type { SphereType } from "@/types/sphere";
+import { sphereTypeInfo } from "@/constants/sphere";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { StatButton } from ".";
+
+const modelValue = defineModel<SphereType>({ required: true });
+
+const selectableTypes = [
+  ...Object.keys(sphereTypeInfo).filter((type) => type !== "locked" && type !== "empty" && type !== "ability"),
+  "empty",
+] as SphereType[];
+</script>

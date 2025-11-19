@@ -10,7 +10,6 @@ export type SphereType =
   | "accuracy"
   | "evasion"
   | "luck"
-  | "ability"
   | "locked";
 
 export interface SphereNode {

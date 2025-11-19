@@ -11,8 +11,6 @@ export function useGridMapperDrawing(providedContext?: GridMapperContext) {
   const sphereColors = getSphereColors();
 
   function getSphereColor(type: SphereType): string {
-    if (type === "empty") return "#333333";
-    if (type === "locked") return "#71717a";
     return sphereColors[type] || "#10b981";
   }
 
