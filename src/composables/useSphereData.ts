@@ -151,7 +151,8 @@ export function useSphereData(gridType: Ref<GridType>) {
 
     sphereData.value.nodes.forEach((node) => {
       if (!node.abilityId && node.type !== "empty") {
-        counts[node.type]++;
+        const currentCount = counts[node.type] ?? 0;
+        counts[node.type] = currentCount + 1;
       }
     });
 
@@ -174,7 +175,8 @@ export function useSphereData(gridType: Ref<GridType>) {
         const hasChanged = node.type !== defaultNode.type || node.value !== defaultNode.value;
 
         if (hasChanged) {
-          counts[node.type]++;
+          const currentCount = counts[node.type] ?? 0;
+          counts[node.type] = currentCount + 1;
           totalOverridden++;
         }
       }

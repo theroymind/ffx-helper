@@ -10,7 +10,7 @@
         @click="selectionMode = !selectionMode"
       >
         <component :is="selectionMode ? Hand : MousePointer2" class="h-3.5 w-3.5 mr-2" />
-        {{ selectionMode ? "Paint Mode" : "Selection Mode" }}
+        {{ selectionMode ? "Single Mode" : "Selection Mode" }}
       </Button>
 
       <AlertDialog v-model:open="showClearDialog">

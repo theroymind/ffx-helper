@@ -40,8 +40,8 @@ defineProps<{
 
 const getVisibleTypes = (counts: Record<string, number>) => {
   return Object.entries(sphereTypeInfo)
-    .filter(([type]) => type !== "locked" && counts[type] > 0)
-    .map(([type, info]) => ({ type: type as SphereType, info, count: counts[type] }));
+    .filter(([type]) => type !== "locked" && (counts[type] ?? 0) > 0)
+    .map(([type, info]) => ({ type: type as SphereType, info, count: counts[type] ?? 0 }));
 };
 
 // Map sphere types to Tailwind color classes (uses CSS custom properties from styles.css)

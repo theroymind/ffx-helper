@@ -63,7 +63,7 @@ export function useCytoscapeGrid(
           style: {
             width: 45,
             height: 45,
-            "background-color": (ele) => {
+            "background-color": (ele: NodeSingular) => {
               const isAbilityNode = ele.data("abilityId") !== null && ele.data("abilityId") !== undefined;
               if (isAbilityNode) return abilityNodeColor;
               return sphereColors[ele.data("type") as SphereType];
@@ -83,13 +83,13 @@ export function useCytoscapeGrid(
             // "background-height": 90,
             "border-width": 0,
             "border-color": "red",
-            opacity: (ele) => {
+            opacity: (ele: NodeSingular) => {
               if (!highlightedType.value) return 1;
               const isAbilityNode = ele.data("abilityId") !== null && ele.data("abilityId") !== undefined;
               if (isAbilityNode) return highlightedType.value ? 0.2 : 1;
               return ele.data("type") === highlightedType.value ? 1 : 0.2;
             },
-            label: (ele) => {
+            label: (ele: NodeSingular) => {
               // Show hover label if hovering over non-ability nodes
               const hoverLabel = ele.data("hoverLabel");
               if (hoverLabel) {
@@ -115,7 +115,7 @@ export function useCytoscapeGrid(
             "text-valign": "center",
             "text-halign": "center",
             "text-margin-y": 0,
-            "font-size": (ele) => {
+            "font-size": (ele: NodeSingular) => {
               // Smaller font for hover labels
               if (ele.data("hoverLabel")) return "14px";
               // Font size for ability names and stats
@@ -123,10 +123,10 @@ export function useCytoscapeGrid(
             },
             "font-weight": "bold",
             // Enable text wrapping for ability names and hover labels
-            "text-wrap": (ele) => {
+            "text-wrap": (ele: NodeSingular) => {
               return ele.data("abilityName") || ele.data("hoverLabel") ? "wrap" : "none";
             },
-            "text-max-width": (ele) => {
+            "text-max-width": (ele: NodeSingular) => {
               if (ele.data("hoverLabel")) return "80px";
               return ele.data("abilityName") ? "60px" : "0";
             },
@@ -272,7 +272,7 @@ export function useCytoscapeGrid(
 
     // Handle selection changes
     cy.on("select unselect", () => {
-      if (selectionMode.value && onSelectionChange) {
+      if (selectionMode.value && onSelectionChange && cy) {
         const selectedNodes = cy.nodes(":selected").filter((node) => !node.data("abilityId"));
         const nodeIds = selectedNodes.map((node) => node.id());
         onSelectionChange(nodeIds);
@@ -313,8 +313,9 @@ export function useCytoscapeGrid(
         node.data("type", defaultNode.type);
         node.data("value", defaultNode.value);
         const isAbilityNode = defaultNode.abilityId !== null && defaultNode.abilityId !== undefined;
-        node.style("background-color", isAbilityNode ? abilityNodeColor : sphereColors[defaultNode.type]);
-        node.style("background-image", showIcons.value ? sphereIcons[defaultNode.type] || "none" : "none");
+        const nodeType = defaultNode.type as SphereType;
+        node.style("background-color", isAbilityNode ? abilityNodeColor : sphereColors[nodeType]);
+        node.style("background-image", showIcons.value ? (sphereIcons[nodeType] || "none") : "none");
       }
     });
   };

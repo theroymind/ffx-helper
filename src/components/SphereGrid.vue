@@ -8,8 +8,6 @@
           <CardDescription>Plan your character progression</CardDescription>
         </CardHeader>
       </Card>
-      <SphereSelector v-model="selectedType" />
-      <GridControls v-model:selection-mode="selectionMode" @reset="handleReset" @clear="handleClear" />
       <StatsPanel :stats="stats" />
       <SphereCountsPanel :counts="overriddenSphereCounts.counts" :total="overriddenSphereCounts.total" />
       <InstructionsPanel />
@@ -27,26 +25,17 @@
 
       <div class="relative flex-1">
         <SphereGridCanvas ref="canvasRef" />
-        <div class="absolute top-4 left-4 z-10">
-          <ImportExportToolbar @export="handleExport" @import="handleImport" />
-        </div>
-        <div class="absolute top-4 right-4 z-10 flex flex-col gap-2">
-          <ToggleGroup v-model="gridType" variant="outline" size="lg" type="single">
-            <ToggleGroupItem value="standard" aria-label="Standard Grid">
-              <span class="text-xs px-2">Standard</span>
-            </ToggleGroupItem>
-            <ToggleGroupItem value="expert" aria-label="Expert Grid">
-              <span class="text-xs px-2">Expert</span>
-            </ToggleGroupItem>
-          </ToggleGroup>
-          <ToggleGroup v-model="displayMode" variant="outline" size="lg" type="single">
-            <ToggleGroupItem value="icons" aria-label="Show icons">
-              <Image class="size-4 min-w-12" />
-            </ToggleGroupItem>
-            <ToggleGroupItem value="numbers" aria-label="Show numbers">
-              <Hash class="size-4 min-w-12" />
-            </ToggleGroupItem>
-          </ToggleGroup>
+        <div class="absolute top-4 left-4 z-10 flex flex-row gap-2">
+          <SphereGridToolbar
+            :grid-type="gridType"
+            :display-mode="displayMode"
+            @update:grid-type="gridType = $event"
+            @update:display-mode="displayMode = $event"
+            @export="handleExport"
+            @import="handleImport"
+          />
+          <SphereToolbar v-model="selectedType" />
+          <GridControlsToolbar v-model:selection-mode="selectionMode" @reset="handleReset" @clear="handleClear" />
         </div>
       </div>
     </div>
@@ -59,17 +48,15 @@ import { useLocalStorage } from "@vueuse/core";
 import { useSphereData, type GridType } from "@/composables/useSphereData";
 import { useCytoscapeGrid } from "@/composables/useCytoscapeGrid";
 import type { SphereType } from "@/types/sphere";
-import SphereSelector from "./sphere-grid/SphereSelector.vue";
 import StatsPanel from "./sphere-grid/StatsPanel.vue";
 import StatsBar from "./sphere-grid/StatsBar.vue";
 import SphereCountsPanel from "./sphere-grid/SphereCountsPanel.vue";
-import GridControls from "./sphere-grid/GridControls.vue";
 import InstructionsPanel from "./sphere-grid/InstructionsPanel.vue";
 import SphereGridCanvas from "./sphere-grid/SphereGridCanvas.vue";
-import ImportExportToolbar from "./sphere-grid/ImportExportToolbar.vue";
+import SphereGridToolbar from "./sphere-grid/SphereGridToolbar.vue";
+import SphereToolbar from "./sphere-grid/SphereToolbar.vue";
+import GridControlsToolbar from "./sphere-grid/GridControlsToolbar.vue";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { Image, Hash } from "lucide-vue-next";
 
 // State
 const selectedType = useLocalStorage<SphereType>("ffx-sphere-grid-selected-type", "hp");
