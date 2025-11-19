@@ -245,6 +245,82 @@ export function useSphereData(gridType: Ref<GridType>) {
     })
   }
 
+  // Export current grid to JSON file
+  function exportGrid() {
+    const exportData = {
+      version: "1.0",
+      timestamp: new Date().toISOString(),
+      gridType: gridType.value,
+      nodes: sphereData.value.nodes,
+    }
+
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement("a")
+    link.href = url
+    link.download = `ffx-sphere-grid-${gridType.value}-${new Date().toISOString().split("T")[0]}.json`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }
+
+  // Import grid from JSON file
+  function importGrid(file: File, updateCallback?: (nodes: SphereNode[]) => void): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+
+      reader.onload = (e) => {
+        try {
+          const content = e.target?.result as string
+          const importData = JSON.parse(content)
+
+          if (!importData.version || !importData.gridType || !importData.nodes) {
+            reject(new Error("Invalid file format"))
+            return
+          }
+
+          if (importData.gridType !== gridType.value) {
+            reject(
+              new Error(
+                `Grid type mismatch: file contains ${importData.gridType} grid but current grid is ${gridType.value}`,
+              ),
+            )
+            return
+          }
+
+          const defaultGrid = generateSphereGrid(gridType.value)
+          if (importData.nodes.length !== defaultGrid.nodes.length) {
+            reject(new Error("Node count mismatch"))
+            return
+          }
+
+          sphereData.value.nodes = importData.nodes
+
+          if (gridType.value === "expert") {
+            expertNodes.value = importData.nodes
+          } else {
+            standardNodes.value = importData.nodes
+          }
+
+          if (updateCallback) {
+            updateCallback(importData.nodes)
+          }
+
+          resolve()
+        } catch (error) {
+          reject(error)
+        }
+      }
+
+      reader.onerror = () => {
+        reject(new Error("Failed to read file"))
+      }
+
+      reader.readAsText(file)
+    })
+  }
+
   return {
     sphereData,
     stats,
@@ -254,5 +330,7 @@ export function useSphereData(gridType: Ref<GridType>) {
     clearGrid,
     updateNode,
     updateNodes,
+    exportGrid,
+    importGrid,
   }
 }

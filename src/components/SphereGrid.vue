@@ -31,6 +31,9 @@
 
       <div class="relative flex-1">
         <SphereGridCanvas ref="canvasRef" />
+        <div class="absolute top-4 left-4 z-10">
+          <ImportExportToolbar @export="handleExport" @import="handleImport" />
+        </div>
         <div class="absolute top-4 right-4 z-10 flex flex-col gap-2">
           <ToggleGroup v-model="gridType" variant="outline" size="lg" type="single">
             <ToggleGroupItem value="standard" aria-label="Standard Grid">
@@ -67,6 +70,7 @@ import SphereCountsPanel from "./sphere-grid/SphereCountsPanel.vue"
 import GridControls from "./sphere-grid/GridControls.vue"
 import InstructionsPanel from "./sphere-grid/InstructionsPanel.vue"
 import SphereGridCanvas from "./sphere-grid/SphereGridCanvas.vue"
+import ImportExportToolbar from "./sphere-grid/ImportExportToolbar.vue"
 import { Separator } from "@/components/ui/separator"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { Image, Hash } from "lucide-vue-next"
@@ -97,7 +101,18 @@ const highestValues: Record<SphereType, number> = {
 }
 
 // Composables
-const { sphereData, stats, sphereCounts, overriddenSphereCounts, resetGrid, clearGrid, updateNode, updateNodes } = useSphereData(gridType)
+const {
+  sphereData,
+  stats,
+  sphereCounts,
+  overriddenSphereCounts,
+  resetGrid,
+  clearGrid,
+  updateNode,
+  updateNodes,
+  exportGrid,
+  importGrid,
+} = useSphereData(gridType)
 
 // Canvas ref
 const canvasRef = ref<InstanceType<typeof SphereGridCanvas> | null>(null)
@@ -155,4 +170,19 @@ watch(selectionMode, (isSelectionMode) => {
     selectedNodeIds.value = []
   }
 })
+
+// Handle export
+function handleExport() {
+  exportGrid()
+}
+
+// Handle import
+async function handleImport(file: File) {
+  try {
+    await importGrid(file, resetNodes)
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to import grid"
+    alert(message)
+  }
+}
 </script>
