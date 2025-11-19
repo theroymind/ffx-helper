@@ -1,6 +1,6 @@
-import { computed, ref } from 'vue'
-import { useLocalStorage } from '@vueuse/core'
-import monstersData from '@/monsters.json'
+import { computed, ref } from "vue"
+import { useLocalStorage } from "@vueuse/core"
+import monstersData from "@/assets/monsters.json"
 
 export interface MonsterCount {
   [monsterName: string]: number
@@ -21,16 +21,16 @@ export interface LocationProgress {
 
 export function useMonsterArena() {
   // Persistent state - auto-saved on every change
-  const monsterCounts = useLocalStorage<MonsterCount>('ffx-monster-arena-counts', {})
+  const monsterCounts = useLocalStorage<MonsterCount>("ffx-monster-arena-counts", {})
 
   // Checkpoint state - only saved when user manually saves
-  const checkpointCounts = useLocalStorage<MonsterCount>('ffx-monster-arena-checkpoint', {})
+  const checkpointCounts = useLocalStorage<MonsterCount>("ffx-monster-arena-checkpoint", {})
 
   // Track last modified location
-  const lastModifiedLocation = useLocalStorage<string | null>('ffx-monster-arena-last-location', null)
+  const lastModifiedLocation = useLocalStorage<string | null>("ffx-monster-arena-last-location", null)
 
   // Track which locations are open
-  const openLocations = useLocalStorage<Record<string, boolean>>('ffx-monster-arena-open-locations', {})
+  const openLocations = useLocalStorage<Record<string, boolean>>("ffx-monster-arena-open-locations", {})
 
   // Load monster data
   const locations = ref<LocationData[]>(monstersData as LocationData[])
@@ -42,7 +42,7 @@ export function useMonsterArena() {
 
   // Get location for a monster
   const getLocationForMonster = (monsterName: string): string | null => {
-    const location = locations.value.find(loc => loc.monsters.includes(monsterName))
+    const location = locations.value.find((loc) => loc.monsters.includes(monsterName))
     return location?.location || null
   }
 
@@ -92,17 +92,15 @@ export function useMonsterArena() {
 
   // Calculate location progress
   const locationProgress = computed((): LocationProgress[] => {
-    return locations.value.map(location => {
-      const capturedMonsters = location.monsters.filter(monster =>
-        isMonsterComplete(monster)
-      ).length
+    return locations.value.map((location) => {
+      const capturedMonsters = location.monsters.filter((monster) => isMonsterComplete(monster)).length
 
       return {
         location: location.location,
         monsters: location.monsters,
         totalMonsters: location.monsters.length,
         capturedMonsters,
-        isComplete: capturedMonsters === location.monsters.length
+        isComplete: capturedMonsters === location.monsters.length,
       }
     })
   })
@@ -114,8 +112,8 @@ export function useMonsterArena() {
 
   const capturedMonsters = computed(() => {
     let count = 0
-    locations.value.forEach(location => {
-      location.monsters.forEach(monster => {
+    locations.value.forEach((location) => {
+      location.monsters.forEach((monster) => {
         if (isMonsterComplete(monster)) {
           count++
         }
@@ -127,7 +125,7 @@ export function useMonsterArena() {
   const totalLocations = computed(() => locations.value.length)
 
   const completedLocations = computed(() => {
-    return locationProgress.value.filter(loc => loc.isComplete).length
+    return locationProgress.value.filter((loc) => loc.isComplete).length
   })
 
   // Check if a location is open
@@ -163,6 +161,6 @@ export function useMonsterArena() {
     completedLocations,
     isLocationOpen,
     toggleLocationOpen,
-    setLocationOpen
+    setLocationOpen,
   }
 }

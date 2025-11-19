@@ -279,7 +279,7 @@ import { Label } from "@/components/ui/label"
 import { Link, X, Grid3x3, Maximize, Download, ImageIcon, ImageOff, Trash2, Save } from "lucide-vue-next"
 import { useGridMapperContext } from "@/composables/useGridMapperContext"
 import { useGridMapperVersionManager } from "@/composables/useVersionManager"
-import abilitiesData from "@/abilities.json"
+import abilitiesData from "@/assets/abilities.json"
 
 const ctx = useGridMapperContext()
 const versionManager = useGridMapperVersionManager()

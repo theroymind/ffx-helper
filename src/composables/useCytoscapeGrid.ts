@@ -10,6 +10,7 @@ export function useCytoscapeGrid(
   onNodeUpdate: (nodeId: string, type: SphereType, value: number) => void,
   showIcons: Ref<boolean>,
   selectionMode: Ref<boolean>,
+  highlightedType: Ref<SphereType | null>,
   onSelectionChange?: (nodeIds: string[]) => void,
 ) {
   let cy: Core | null = null
@@ -84,6 +85,12 @@ export function useCytoscapeGrid(
             'background-height': 50,
             'border-width': 2,
             'border-color': '#ffffff',
+            opacity: (ele) => {
+              if (!highlightedType.value) return 1
+              const isAbilityNode = ele.data('abilityId') !== null && ele.data('abilityId') !== undefined
+              if (isAbilityNode) return highlightedType.value ? 0.2 : 1
+              return ele.data('type') === highlightedType.value ? 1 : 0.2
+            },
             label: (ele) => {
               // Show hover label if hovering over non-ability nodes
               const hoverLabel = ele.data('hoverLabel')
@@ -149,6 +156,13 @@ export function useCytoscapeGrid(
           style: {
             'border-width': 4,
             'border-color': '#fbbf24',
+          },
+        },
+        {
+          selector: 'node.highlighted',
+          style: {
+            'border-width': 5,
+            'border-color': '#ffffff',
           },
         },
         {
@@ -375,6 +389,27 @@ export function useCytoscapeGrid(
 
     // Disable panning in selection mode, enable in paint mode
     cy.userPanningEnabled(!isSelectionMode)
+  })
+
+  // Watch for highlightedType changes and update node classes and opacity
+  watch(highlightedType, () => {
+    if (!cy) return
+
+    const currentCy = cy
+    currentCy.batch(() => {
+      currentCy.nodes().forEach((node) => {
+        const isAbilityNode = node.data('abilityId') !== null && node.data('abilityId') !== undefined
+        const nodeType = node.data('type') as SphereType
+
+        if (highlightedType.value && !isAbilityNode && nodeType === highlightedType.value) {
+          node.addClass('highlighted')
+        } else {
+          node.removeClass('highlighted')
+        }
+      })
+    })
+
+    currentCy.style().update()
   })
 
   onBeforeUnmount(destroy)

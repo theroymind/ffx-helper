@@ -21,7 +21,13 @@
 
     <!-- Canvas Area -->
     <div class="flex-1 flex flex-col gap-4">
-      <StatsBar :stats="stats" :counts="overriddenSphereCounts.counts" :total="sphereData.nodes.length" />
+      <StatsBar
+        :stats="stats"
+        :counts="sphereCounts"
+        :total="sphereData.nodes.length"
+        :highlighted-type="highlightedType"
+        @highlight="highlightedType = $event"
+      />
 
       <div class="relative flex-1">
         <SphereGridCanvas ref="canvasRef" />
@@ -72,6 +78,7 @@ const gridType = ref<GridType>("standard")
 const showIcons = computed(() => displayMode.value === "icons")
 const selectionMode = useLocalStorage("ffx-sphere-grid-selection-mode", false)
 const selectedNodeIds = ref<string[]>([])
+const highlightedType = ref<SphereType | null>(null)
 
 // Highest values for each sphere type
 const highestValues: Record<SphereType, number> = {
@@ -90,7 +97,7 @@ const highestValues: Record<SphereType, number> = {
 }
 
 // Composables
-const { sphereData, stats, overriddenSphereCounts, resetGrid, clearGrid, updateNode, updateNodes } = useSphereData(gridType)
+const { sphereData, stats, sphereCounts, overriddenSphereCounts, resetGrid, clearGrid, updateNode, updateNodes } = useSphereData(gridType)
 
 // Canvas ref
 const canvasRef = ref<InstanceType<typeof SphereGridCanvas> | null>(null)
@@ -117,6 +124,7 @@ const { initializeCytoscape, resetNodes, clearSelection, updateSelectedNodes } =
   updateNode,
   showIcons,
   selectionMode,
+  highlightedType,
   handleSelectionChange,
 )
 

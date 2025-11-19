@@ -1,8 +1,8 @@
 import { ref, computed, watch, type Ref } from "vue"
 import { useLocalStorage } from "@vueuse/core"
-import standardGridData from "@/standard_grid_nodes.json"
-import expertGridData from "@/expert_grid_nodes.json"
-import abilitiesData from "@/abilities.json"
+import standardGridData from "@/assets/standard_grid_nodes.json"
+import expertGridData from "@/assets/expert_grid_nodes.json"
+import abilitiesData from "@/assets/abilities.json"
 import type { SphereNode, SphereGridData, Stats } from "@/types/sphere"
 import { mapAttributeToType, sphereTypeInfo, baseStats } from "@/constants/sphere"
 
@@ -137,12 +137,25 @@ export function useSphereData(gridType: Ref<GridType>) {
 
     sphereData.value.nodes.forEach((node) => {
       const info = sphereTypeInfo[node.type]
-      if (info.statKey) {
-        result[info.statKey] += info.statValue
+      if (info.statKey && node.value) {
+        result[info.statKey] += node.value
       }
     })
 
     return result
+  })
+
+  // Calculate total sphere counts by type (excluding ability nodes and empty)
+  const sphereCounts = computed(() => {
+    const counts = Object.fromEntries(Object.keys(sphereTypeInfo).map((type) => [type, 0])) as Record<string, number>
+
+    sphereData.value.nodes.forEach((node) => {
+      if (!node.abilityId && node.type !== "empty") {
+        counts[node.type]++
+      }
+    })
+
+    return counts
   })
 
   // Calculate sphere counts for overridden nodes only
@@ -235,6 +248,7 @@ export function useSphereData(gridType: Ref<GridType>) {
   return {
     sphereData,
     stats,
+    sphereCounts,
     overriddenSphereCounts,
     resetGrid,
     clearGrid,

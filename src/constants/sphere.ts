@@ -71,21 +71,6 @@ export const sphereTypeInfo: Record<SphereType, SphereTypeInfo> = {
   locked: { label: "Locked", shortLabel: "LCKD", statValue: 0, statKey: null },
 }
 
-export const sphereButtonClasses: Record<SphereType, string> = {
-  empty: "border-zinc-700/60 bg-zinc-900/80 text-zinc-400 hover:bg-zinc-800/60",
-  hp: "text-white",
-  mp: "text-white",
-  strength: "text-white",
-  defense: "text-white",
-  magic: "text-white",
-  magicDef: "text-white",
-  agility: "text-white",
-  accuracy: "text-white",
-  evasion: "text-white",
-  luck: "text-white",
-  locked: "border-zinc-600 bg-zinc-800 text-zinc-300",
-}
-
 // Base stats from FFX
 export const baseStats: Stats = {
   hp: 380, // lowest stat : Lulu

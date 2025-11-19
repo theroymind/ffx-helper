@@ -5,30 +5,13 @@
         <h1 class="text-xl text-gold font-bold">FFX Planner</h1>
         <div class="flex gap-1">
           <RouterLink to="/" custom v-slot="{ navigate, isActive: isActiveLink }">
-            <Button
-              variant="ghost"
-              @click="navigate"
-              :class="isActiveLink && 'bg-accent text-accent-foreground'"
-            >
+            <Button variant="ghost" @click="navigate" :class="isActiveLink && 'bg-accent text-accent-foreground'">
               Sphere Grid
             </Button>
           </RouterLink>
           <RouterLink to="/monster-arena" custom v-slot="{ navigate, isActive: isActiveLink }">
-            <Button
-              variant="ghost"
-              @click="navigate"
-              :class="isActiveLink && 'bg-accent text-accent-foreground'"
-            >
+            <Button variant="ghost" @click="navigate" :class="isActiveLink && 'bg-accent text-accent-foreground'">
               Monster Arena
-            </Button>
-          </RouterLink>
-          <RouterLink to="/grid-mapper" custom v-slot="{ navigate, isActive: isActiveLink }">
-            <Button
-              variant="ghost"
-              @click="navigate"
-              :class="isActiveLink && 'bg-accent text-accent-foreground'"
-            >
-              Grid Mapper
             </Button>
           </RouterLink>
         </div>
@@ -43,10 +26,7 @@
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Theme</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuRadioGroup
-            :model-value="themeStore.theme"
-            @update:model-value="themeStore.setTheme"
-          >
+          <DropdownMenuRadioGroup :model-value="themeStore.theme" @update:model-value="themeStore.setTheme">
             <DropdownMenuRadioItem value="light"> Light </DropdownMenuRadioItem>
             <DropdownMenuRadioItem value="dark"> Dark </DropdownMenuRadioItem>
           </DropdownMenuRadioGroup>
@@ -57,10 +37,10 @@
 </template>
 
 <script setup lang="ts">
-import { RouterLink } from 'vue-router'
-import { Settings } from 'lucide-vue-next'
-import { useThemeStore } from '@/stores/theme'
-import Button from '@/components/ui/button/Button.vue'
+import { RouterLink } from "vue-router"
+import { Settings } from "lucide-vue-next"
+import { useThemeStore } from "@/stores/theme"
+import Button from "@/components/ui/button/Button.vue"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -69,7 +49,7 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from "@/components/ui/dropdown-menu"
 
 const themeStore = useThemeStore()
 </script>

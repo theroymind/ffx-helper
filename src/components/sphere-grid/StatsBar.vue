@@ -1,7 +1,16 @@
 <template>
   <div class="bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-2.5 flex items-center justify-between gap-2">
     <div class="flex items-center gap-2 flex-wrap">
-      <div v-for="stat in statDisplay" :key="stat.key" class="flex items-center gap-1.5 border rounded-md p-2">
+      <div
+        v-for="stat in statDisplay"
+        :key="stat.key"
+        class="flex items-center gap-1.5 border rounded-md p-2 cursor-pointer transition-all"
+        :class="{
+          'ring-2 ring-white shadow-lg': highlightedType === stat.key,
+          'opacity-50': highlightedType && highlightedType !== stat.key
+        }"
+        @click="handleStatClick(stat.key)"
+      >
         <span class="font-semibold text-xs" :class="stat.colorClass">{{ stat.label }}</span>
         <div class="font-mono text-sm font-bold tabular-nums flex items-center gap-1">
           <template v-if="stat.isCapped">
@@ -36,13 +45,26 @@
 <script setup lang="ts">
 import { computed } from "vue"
 import { Badge } from "@/components/ui/badge"
-import type { Stats } from "@/types/sphere"
+import type { Stats, SphereType } from "@/types/sphere"
 
 const props = defineProps<{
   stats: Stats
   counts: Record<string, number>
   total: number
+  highlightedType: SphereType | null
 }>()
+
+const emit = defineEmits<{
+  highlight: [type: SphereType | null]
+}>()
+
+function handleStatClick(type: SphereType) {
+  if (props.highlightedType === type) {
+    emit('highlight', null)
+  } else {
+    emit('highlight', type)
+  }
+}
 
 const statCaps = {
   hp: 9999,

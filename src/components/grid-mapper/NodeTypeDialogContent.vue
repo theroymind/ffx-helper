@@ -36,7 +36,7 @@
             v-for="value in [1, 2, 3, 4]"
             :key="value"
             @click="selectStatValue(value)"
-            :variant="(selectedStatType as any)"
+            :variant="selectedStatType as any"
             class="flex items-center justify-center py-6 text-lg font-bold"
           >
             +{{ value }}
@@ -86,7 +86,12 @@
       <div>
         <h3 class="m-0 mb-3 text-sm font-semibold text-foreground uppercase tracking-wide">Stat Spheres</h3>
         <div class="grid grid-cols-2 gap-2">
-          <StatButton v-for="statType in statTypes" :key="statType" :stat-type="statType" @click="selectNodeType(statType)" />
+          <StatButton
+            v-for="statType in statTypes"
+            :key="statType"
+            :stat-type="statType"
+            @click="selectNodeType(statType)"
+          />
         </div>
       </div>
 
@@ -108,9 +113,17 @@ import { ref, computed, watch, nextTick, onMounted } from "vue"
 import type { SphereType } from "@/types/sphere"
 import Button from "@/components/ui/button/Button.vue"
 import Label from "@/components/ui/label/Label.vue"
-import { Combobox, ComboboxAnchor, ComboboxInput, ComboboxList, ComboboxEmpty, ComboboxGroup, ComboboxItem } from "@/components/ui/combobox"
+import {
+  Combobox,
+  ComboboxAnchor,
+  ComboboxInput,
+  ComboboxList,
+  ComboboxEmpty,
+  ComboboxGroup,
+  ComboboxItem,
+} from "@/components/ui/combobox"
 import { StatButton } from "@/components/sphere-grid"
-import abilitiesData from "@/abilities.json"
+import abilitiesData from "@/assets/abilities.json"
 
 interface NodeData {
   type: SphereType
@@ -159,7 +172,18 @@ const filteredAbilities = computed(() => {
 })
 
 // List of stat sphere types
-const statTypes: SphereType[] = ["hp", "mp", "strength", "defense", "magic", "magicDef", "agility", "accuracy", "evasion", "luck"]
+const statTypes: SphereType[] = [
+  "hp",
+  "mp",
+  "strength",
+  "defense",
+  "magic",
+  "magicDef",
+  "agility",
+  "accuracy",
+  "evasion",
+  "luck",
+]
 
 // Title and description management
 const updateDialogContent = () => {
@@ -174,7 +198,7 @@ const updateDialogContent = () => {
       agility: "Agility",
       accuracy: "Accuracy",
       evasion: "Evasion",
-      luck: "Luck"
+      luck: "Luck",
     }
     emit("updateTitle", `Select ${typeInfo[selectedStatType.value] || "Stat"} Value`)
     emit("updateDescription", "back")
@@ -240,9 +264,9 @@ onMounted(() => {
     if (node.abilityName) {
       showAbilityInput.value = true
       abilityName.value = node.abilityName
-    } else if (node.type === 'locked' && node.lockLevel) {
+    } else if (node.type === "locked" && node.lockLevel) {
       showLockLevelSelector.value = true
-    } else if (node.type !== 'empty' && node.type !== 'locked') {
+    } else if (node.type !== "empty" && node.type !== "locked") {
       selectedStatType.value = node.type
       showValueSelector.value = true
     }
