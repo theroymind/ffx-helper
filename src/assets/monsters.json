@@ -25,7 +25,18 @@
   },
   {
     "location": "Macalania",
-    "monsters": ["Snow Wolf", "Iguion", "Wasp", "Evil Eye", "Ice Flan", "Blue Element", "Murussu", "Mafdet", "Xiphos", "Chimera"]
+    "monsters": [
+      "Snow Wolf",
+      "Iguion",
+      "Wasp",
+      "Evil Eye",
+      "Ice Flan",
+      "Blue Element",
+      "Murussu",
+      "Mafdet",
+      "Xiphos",
+      "Chimera"
+    ]
   },
   {
     "location": "Bikanel",
@@ -49,10 +60,31 @@
   },
   {
     "location": "Sin",
-    "monsters": ["Exoray", "Gemini A", "Gemini B", "Wraith", "Demonolith", "Great Malboro", "Barbatos", "Adamantoise", "Behemoth King"]
+    "monsters": [
+      "Exoray",
+      "Gemini A",
+      "Gemini B",
+      "Wraith",
+      "Demonolith",
+      "Great Malboro",
+      "Barbatos",
+      "Adamantoise",
+      "Behemoth King"
+    ]
   },
   {
     "location": "Omega Dungeon",
-    "monsters": ["Zaurus", "Floating Death", "Black Element", "Halma", "Puroboros", "Spirit", "Machea", "Master Coeurl", "Master Tonberry", "Varuna"]
+    "monsters": [
+      "Zaurus",
+      "Floating Death",
+      "Black Element",
+      "Halma",
+      "Puroboros",
+      "Spirit",
+      "Machea",
+      "Master Coeurl",
+      "Master Tonberry",
+      "Varuna"
+    ]
   }
 ]

@@ -1,13 +1,13 @@
 <template>
-  <div class="bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-2.5 flex items-center justify-between gap-2">
+  <div class="bg-card border rounded-lg px-4 py-2.5 flex items-center justify-between gap-2">
     <div class="flex items-center gap-2 flex-wrap">
       <div
         v-for="stat in statDisplay"
         :key="stat.key"
         class="flex items-center gap-1.5 border rounded-md p-2 cursor-pointer transition-all"
         :class="{
-          'ring-2 ring-white shadow-lg': highlightedType === stat.key,
-          'opacity-50': highlightedType && highlightedType !== stat.key
+          'ring-2 ring-ring shadow-lg': highlightedType === stat.key,
+          'opacity-50': highlightedType && highlightedType !== stat.key,
         }"
         @click="handleStatClick(stat.key)"
       >
@@ -17,7 +17,7 @@
             <span class="text-success">{{ stat.cappedValue }}</span>
             <span class="text-destructive text-xs">({{ stat.actualValue }})</span>
           </template>
-          <span v-else class="text-white">{{ stat.value }}</span>
+          <span v-else class="text-foreground">{{ stat.value }}</span>
         </div>
         <Badge v-if="stat.count > 0" :variant="stat.badgeVariant" class="font-mono text-xs">
           {{ stat.count }}
@@ -43,26 +43,26 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue"
-import { Badge } from "@/components/ui/badge"
-import type { Stats, SphereType } from "@/types/sphere"
+import { computed } from "vue";
+import { Badge } from "@/components/ui/badge";
+import type { Stats, SphereType } from "@/types/sphere";
 
 const props = defineProps<{
-  stats: Stats
-  counts: Record<string, number>
-  total: number
-  highlightedType: SphereType | null
-}>()
+  stats: Stats;
+  counts: Record<string, number>;
+  total: number;
+  highlightedType: SphereType | null;
+}>();
 
 const emit = defineEmits<{
-  highlight: [type: SphereType | null]
-}>()
+  highlight: [type: SphereType | null];
+}>();
 
 function handleStatClick(type: SphereType) {
   if (props.highlightedType === type) {
-    emit('highlight', null)
+    emit("highlight", null);
   } else {
-    emit('highlight', type)
+    emit("highlight", type);
   }
 }
 
@@ -77,7 +77,7 @@ const statCaps = {
   accuracy: 255,
   evasion: 255,
   luck: 255,
-} as const
+} as const;
 
 const statDisplayConfig = [
   {
@@ -112,7 +112,7 @@ const statDisplayConfig = [
   },
   {
     key: "magicDef" as const,
-    label: "MDEF",
+    label: "MDF",
     colorClass: "text-sphere-magicDef",
     badgeVariant: "magicDef" as const,
     cap: statCaps.magicDef,
@@ -145,18 +145,18 @@ const statDisplayConfig = [
     badgeVariant: "luck" as const,
     cap: statCaps.luck,
   },
-]
+];
 
 const totalOverridden = computed(() => {
-  return Object.values(props.counts).reduce((sum, count) => sum + count, 0)
-})
+  return Object.values(props.counts).reduce((sum, count) => sum + count, 0);
+});
 
 const statDisplay = computed(() => {
   return statDisplayConfig.map((config) => {
-    const value = props.stats[config.key]
-    const isCapped = value > config.cap
-    const isOverCap = config.overCap && value > config.overCap
-    const count = props.counts[config.key] || 0
+    const value = props.stats[config.key];
+    const isCapped = value > config.cap;
+    const isOverCap = config.overCap && value > config.overCap;
+    const count = props.counts[config.key] || 0;
 
     return {
       ...config,
@@ -166,7 +166,7 @@ const statDisplay = computed(() => {
       cappedValue: Math.min(value, config.cap),
       actualValue: value,
       count,
-    }
-  })
-})
+    };
+  });
+});
 </script>

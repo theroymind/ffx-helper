@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import SphereGrid from '@/components/SphereGrid.vue'
+import SphereGrid from "@/components/SphereGrid.vue";
 </script>
 
 <template>

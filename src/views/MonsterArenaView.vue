@@ -50,12 +50,12 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, nextTick } from "vue"
-import { Save, RotateCcw } from "lucide-vue-next"
-import { useMonsterArena } from "@/composables/useMonsterArena"
-import MonsterSummaryCard from "@/components/monster-arena/MonsterSummaryCard.vue"
-import MonsterLocationCollapsible from "@/components/monster-arena/MonsterLocationCollapsible.vue"
-import { Button } from "@/components/ui/button"
+import { onMounted, ref, nextTick } from "vue";
+import { Save, RotateCcw } from "lucide-vue-next";
+import { useMonsterArena } from "@/composables/useMonsterArena";
+import MonsterSummaryCard from "@/components/monster-arena/MonsterSummaryCard.vue";
+import MonsterLocationCollapsible from "@/components/monster-arena/MonsterLocationCollapsible.vue";
+import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -66,7 +66,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
+} from "@/components/ui/alert-dialog";
 
 const {
   hasUnsavedChanges,
@@ -78,36 +78,36 @@ const {
   capturedMonsters,
   totalLocations,
   completedLocations,
-} = useMonsterArena()
+} = useMonsterArena();
 
 function handleSaveCheckpoint() {
-  saveCheckpoint()
+  saveCheckpoint();
 }
 
 function handleDeathReset() {
-  deathReset()
+  deathReset();
 }
 
 onMounted(async () => {
   // Wait for next tick to ensure DOM is fully rendered
-  await nextTick()
+  await nextTick();
 
   // If there's a last modified location, scroll to it and pulse it
   if (lastModifiedLocation.value) {
-    const element = document.querySelector(`[data-location="${lastModifiedLocation.value}"]`)
+    const element = document.querySelector(`[data-location="${lastModifiedLocation.value}"]`);
     if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "center" })
+      element.scrollIntoView({ behavior: "smooth", block: "center" });
 
       // Small delay to ensure scroll completes before animation
       setTimeout(() => {
-        element.classList.add("animate-pulse-bg")
+        element.classList.add("animate-pulse-bg");
 
         // Remove class after animation completes (1s)
         setTimeout(() => {
-          element.classList.remove("animate-pulse-bg")
-        }, 1000)
-      }, 300)
+          element.classList.remove("animate-pulse-bg");
+        }, 1000);
+      }, 300);
     }
   }
-})
+});
 </script>

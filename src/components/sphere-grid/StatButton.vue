@@ -1,38 +1,38 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from "vue"
-import type { ButtonVariants } from "@/components/ui/button"
-import { Button } from "@/components/ui/button"
-import type { SphereType } from "@/types/sphere"
-import { sphereTypeInfo, sphereIcons } from "@/constants/sphere"
-import { cn } from "@/lib/utils"
+import type { HTMLAttributes } from "vue";
+import type { ButtonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
+import type { SphereType } from "@/types/sphere";
+import { sphereTypeInfo, sphereIcons } from "@/constants/sphere";
+import { cn } from "@/lib/utils";
 
 interface Props {
-  statType: SphereType
-  variant?: ButtonVariants["variant"]
-  size?: ButtonVariants["size"]
-  class?: HTMLAttributes["class"]
-  showValue?: boolean
-  active?: boolean
+  statType: SphereType;
+  variant?: ButtonVariants["variant"];
+  size?: ButtonVariants["size"];
+  class?: HTMLAttributes["class"];
+  showValue?: boolean;
+  active?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   showValue: true,
   active: false,
-})
+});
 
 // Get icon for sphere type - either from icons or use letter for HP/MP
 const getSphereIcon = (type: SphereType): { type: "image" | "text"; value: string } | null => {
-  if (type === "hp") return { type: "text", value: "H" }
-  if (type === "mp") return { type: "text", value: "M" }
+  if (type === "hp") return { type: "text", value: "H" };
+  if (type === "mp") return { type: "text", value: "M" };
 
-  const iconUrl = sphereIcons[type]
-  if (iconUrl) return { type: "image", value: iconUrl }
+  const iconUrl = sphereIcons[type];
+  if (iconUrl) return { type: "image", value: iconUrl };
 
-  return null
-}
+  return null;
+};
 
-const typeInfo = sphereTypeInfo[props.statType]
-const icon = getSphereIcon(props.statType)
+const typeInfo = sphereTypeInfo[props.statType];
+const icon = getSphereIcon(props.statType);
 </script>
 
 <template>

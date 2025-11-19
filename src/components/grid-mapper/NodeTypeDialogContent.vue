@@ -109,10 +109,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, onMounted } from "vue"
-import type { SphereType } from "@/types/sphere"
-import Button from "@/components/ui/button/Button.vue"
-import Label from "@/components/ui/label/Label.vue"
+import { ref, computed, watch, nextTick, onMounted } from "vue";
+import type { SphereType } from "@/types/sphere";
+import Button from "@/components/ui/button/Button.vue";
+import Label from "@/components/ui/label/Label.vue";
 import {
   Combobox,
   ComboboxAnchor,
@@ -121,55 +121,55 @@ import {
   ComboboxEmpty,
   ComboboxGroup,
   ComboboxItem,
-} from "@/components/ui/combobox"
-import { StatButton } from "@/components/sphere-grid"
-import abilitiesData from "@/assets/abilities.json"
+} from "@/components/ui/combobox";
+import { StatButton } from "@/components/sphere-grid";
+import abilitiesData from "@/assets/abilities.json";
 
 interface NodeData {
-  type: SphereType
-  value?: number
-  lockLevel?: number | null
-  abilityName?: string | null
+  type: SphereType;
+  value?: number;
+  lockLevel?: number | null;
+  abilityName?: string | null;
 }
 
 interface GridNode {
-  id: number
-  x: number
-  y: number
-  connections: number[]
-  type: SphereType
-  value?: number
-  lockLevel?: number | null
-  abilityId?: number | null
-  abilityName?: string | null
+  id: number;
+  x: number;
+  y: number;
+  connections: number[];
+  type: SphereType;
+  value?: number;
+  lockLevel?: number | null;
+  abilityId?: number | null;
+  abilityName?: string | null;
 }
 
 const props = defineProps<{
-  pendingNodePosition: { x: number; y: number }
-  existingNode?: GridNode | null
-}>()
+  pendingNodePosition: { x: number; y: number };
+  existingNode?: GridNode | null;
+}>();
 
 const emit = defineEmits<{
-  confirm: [nodeData: NodeData]
-  cancel: []
-  updateTitle: [title: string]
-  updateDescription: [description: string]
-}>()
+  confirm: [nodeData: NodeData];
+  cancel: [];
+  updateTitle: [title: string];
+  updateDescription: [description: string];
+}>();
 
-const abilityInputRef = ref<HTMLInputElement | null>(null)
-const showAbilityInput = ref(false)
-const abilityName = ref("")
-const abilitySearchTerm = ref("")
-const selectedStatType = ref<SphereType | null>(null)
-const showValueSelector = ref(false)
-const showLockLevelSelector = ref(false)
+const abilityInputRef = ref<HTMLInputElement | null>(null);
+const showAbilityInput = ref(false);
+const abilityName = ref("");
+const abilitySearchTerm = ref("");
+const selectedStatType = ref<SphereType | null>(null);
+const showValueSelector = ref(false);
+const showLockLevelSelector = ref(false);
 
 // Abilities list and filtering
-const abilities = abilitiesData.map((ability) => ability.name).sort()
+const abilities = abilitiesData.map((ability) => ability.name).sort();
 const filteredAbilities = computed(() => {
-  if (!abilitySearchTerm.value) return abilities
-  return abilities.filter((ability) => ability.toLowerCase().includes(abilitySearchTerm.value.toLowerCase()))
-})
+  if (!abilitySearchTerm.value) return abilities;
+  return abilities.filter((ability) => ability.toLowerCase().includes(abilitySearchTerm.value.toLowerCase()));
+});
 
 // List of stat sphere types
 const statTypes: SphereType[] = [
@@ -183,7 +183,7 @@ const statTypes: SphereType[] = [
   "accuracy",
   "evasion",
   "luck",
-]
+];
 
 // Title and description management
 const updateDialogContent = () => {
@@ -199,78 +199,78 @@ const updateDialogContent = () => {
       accuracy: "Accuracy",
       evasion: "Evasion",
       luck: "Luck",
-    }
-    emit("updateTitle", `Select ${typeInfo[selectedStatType.value] || "Stat"} Value`)
-    emit("updateDescription", "back")
+    };
+    emit("updateTitle", `Select ${typeInfo[selectedStatType.value] || "Stat"} Value`);
+    emit("updateDescription", "back");
   } else if (showLockLevelSelector.value) {
-    emit("updateTitle", "Select Lock Level")
-    emit("updateDescription", "back")
+    emit("updateTitle", "Select Lock Level");
+    emit("updateDescription", "back");
   } else if (showAbilityInput.value) {
-    emit("updateTitle", "Add Ability Node")
-    emit("updateDescription", "back")
+    emit("updateTitle", "Add Ability Node");
+    emit("updateDescription", "back");
   } else {
-    emit("updateTitle", "Select Node Type")
-    emit("updateDescription", "default")
+    emit("updateTitle", "Select Node Type");
+    emit("updateDescription", "default");
   }
-}
+};
 
 // Node type selection handlers
 function selectNodeType(type: SphereType) {
   if (type === "empty") {
-    emit("confirm", { type: "empty", value: 0 })
+    emit("confirm", { type: "empty", value: 0 });
   } else {
-    selectedStatType.value = type
-    showValueSelector.value = true
+    selectedStatType.value = type;
+    showValueSelector.value = true;
   }
 }
 
 function selectStatValue(value: number) {
-  if (!selectedStatType.value) return
-  emit("confirm", { type: selectedStatType.value, value })
+  if (!selectedStatType.value) return;
+  emit("confirm", { type: selectedStatType.value, value });
 }
 
 function showLockedNodeSelector() {
-  showLockLevelSelector.value = true
+  showLockLevelSelector.value = true;
 }
 
 function selectLockedNode(level: number) {
-  emit("confirm", { type: "locked", lockLevel: level, value: 0 })
+  emit("confirm", { type: "locked", lockLevel: level, value: 0 });
 }
 
 function confirmAbilityNode() {
-  emit("confirm", { type: "locked", abilityName: abilityName.value || "Ability", value: 0 })
+  emit("confirm", { type: "locked", abilityName: abilityName.value || "Ability", value: 0 });
 }
 
 // Watch for state changes to update dialog title/description
 watch([showValueSelector, showLockLevelSelector, showAbilityInput, selectedStatType], () => {
-  updateDialogContent()
-})
+  updateDialogContent();
+});
 
 // Auto-focus ability input when shown
 watch(showAbilityInput, async (isShown) => {
   if (isShown) {
-    await nextTick()
+    await nextTick();
     // Give the combobox time to fully render
     setTimeout(() => {
-      const input = document.querySelector('[placeholder="Search abilities..."]') as HTMLInputElement
-      input?.focus()
-    }, 100)
+      const input = document.querySelector('[placeholder="Search abilities..."]') as HTMLInputElement;
+      input?.focus();
+    }, 100);
   }
-})
+});
 
 onMounted(() => {
   if (props.existingNode) {
-    const node = props.existingNode
+    const node = props.existingNode;
     if (node.abilityName) {
-      showAbilityInput.value = true
-      abilityName.value = node.abilityName
+      showAbilityInput.value = true;
+      abilityName.value = node.abilityName;
     } else if (node.type === "locked" && node.lockLevel) {
-      showLockLevelSelector.value = true
+      showLockLevelSelector.value = true;
     } else if (node.type !== "empty" && node.type !== "locked") {
-      selectedStatType.value = node.type
-      showValueSelector.value = true
+      selectedStatType.value = node.type;
+      showValueSelector.value = true;
     }
   }
-  updateDialogContent()
-})
+  updateDialogContent();
+});
 </script>

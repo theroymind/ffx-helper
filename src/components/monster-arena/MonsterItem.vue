@@ -28,31 +28,31 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { Minus, Plus } from 'lucide-vue-next'
-import { Button } from '@/components/ui/button'
-import { Item } from '@/components/ui/item'
-import { useMonsterArena } from '@/composables/useMonsterArena'
+import { computed } from "vue";
+import { Minus, Plus } from "lucide-vue-next";
+import { Button } from "@/components/ui/button";
+import { Item } from "@/components/ui/item";
+import { useMonsterArena } from "@/composables/useMonsterArena";
 
 const props = defineProps<{
-  monsterName: string
-}>()
+  monsterName: string;
+}>();
 
-const { getMonsterCount, incrementMonster, decrementMonster } = useMonsterArena()
+const { getMonsterCount, incrementMonster, decrementMonster } = useMonsterArena();
 
-const count = computed(() => getMonsterCount(props.monsterName))
+const count = computed(() => getMonsterCount(props.monsterName));
 
 function handleIncrement() {
-  incrementMonster(props.monsterName)
+  incrementMonster(props.monsterName);
 }
 
 function handleDecrement() {
-  decrementMonster(props.monsterName)
+  decrementMonster(props.monsterName);
 }
 
 function handleClick() {
   if (count.value < 10) {
-    incrementMonster(props.monsterName)
+    incrementMonster(props.monsterName);
   }
 }
 </script>

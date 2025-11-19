@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-import { Info } from "lucide-vue-next"
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Info } from "lucide-vue-next";
 </script>
 
 <template>
-  <Card class="shadow-lg">
-    <CardHeader class="pb-2">
+  <Card>
+    <CardHeader>
       <CardTitle class="text-gold font-semibold flex items-center gap-2">
         <Info class="h-4 w-4" />
         How to Use
@@ -27,11 +27,11 @@ import { Info } from "lucide-vue-next"
         </li>
         <li class="flex gap-2">
           <span class="text-gold font-bold">•</span>
-          <span><strong class="text-pink-400">Pink</strong> = abilities (locked)</span>
+          <span><strong class="text-sphere-ability">Pink</strong> = abilities (locked)</span>
         </li>
         <li class="flex gap-2">
           <span class="text-gold font-bold">•</span>
-          <span><strong class="text-zinc-400">Gray</strong> = locks (locked)</span>
+          <span><strong class="text-muted-foreground">Gray</strong> = locks (locked)</span>
         </li>
         <li class="flex gap-2">
           <span class="text-gold font-bold">•</span>

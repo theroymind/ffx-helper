@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from "vue";
 
-const container = ref<HTMLElement | null>(null)
+const container = ref<HTMLElement | null>(null);
 
 defineExpose({
   container,
-})
+});
 </script>
 
 <template>

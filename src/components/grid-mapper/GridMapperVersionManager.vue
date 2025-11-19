@@ -21,9 +21,7 @@
         <DialogContent class="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Save Grid Version</DialogTitle>
-            <DialogDescription>
-              Give your grid mapping a name to save it for later.
-            </DialogDescription>
+            <DialogDescription> Give your grid mapping a name to save it for later. </DialogDescription>
           </DialogHeader>
           <div class="grid gap-4 py-4">
             <div class="grid gap-2">
@@ -37,9 +35,7 @@
             </div>
           </div>
           <DialogFooter>
-            <Button type="button" variant="secondary" @click="showSaveDialog = false">
-              Cancel
-            </Button>
+            <Button type="button" variant="secondary" @click="showSaveDialog = false"> Cancel </Button>
             <Button type="button" @click="handleSave" :disabled="!versionName.trim()">
               <Save class="h-4 w-4 mr-2" />
               Save
@@ -66,12 +62,7 @@
               </div>
             </div>
             <div class="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                class="flex-1 text-xs"
-                @click="$emit('load', version.id)"
-              >
+              <Button variant="outline" size="sm" class="flex-1 text-xs" @click="$emit('load', version.id)">
                 <Download class="h-3 w-3 mr-1.5" />
                 Load
               </Button>
@@ -85,15 +76,12 @@
                   <AlertDialogHeader>
                     <AlertDialogTitle>Delete Version?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      Are you sure you want to delete "{{ version.name }}"? This action cannot be
-                      undone.
+                      Are you sure you want to delete "{{ version.name }}"? This action cannot be undone.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction @click="$emit('delete', version.id)">
-                      Delete
-                    </AlertDialogAction>
+                    <AlertDialogAction @click="$emit('delete', version.id)"> Delete </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
@@ -106,10 +94,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import { ref } from "vue";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   Dialog,
   DialogContent,
@@ -118,7 +106,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog'
+} from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -129,51 +117,51 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Save, Download, Trash2, ChevronsUpDown } from 'lucide-vue-next'
-import type { GridMapperVersion } from '@/composables/useVersionManager'
+} from "@/components/ui/alert-dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Save, Download, Trash2, ChevronsUpDown } from "lucide-vue-next";
+import type { GridMapperVersion } from "@/composables/useVersionManager";
 
 defineProps<{
-  versions: GridMapperVersion[]
-}>()
+  versions: GridMapperVersion[];
+}>();
 
 const emit = defineEmits<{
-  save: [name: string]
-  load: [versionId: string]
-  delete: [versionId: string]
-}>()
+  save: [name: string];
+  load: [versionId: string];
+  delete: [versionId: string];
+}>();
 
-const isOpen = ref(false)
-const showSaveDialog = ref(false)
-const versionName = ref('')
+const isOpen = ref(false);
+const showSaveDialog = ref(false);
+const versionName = ref("");
 
 function handleSave() {
   if (versionName.value.trim()) {
-    emit('save', versionName.value.trim())
-    versionName.value = ''
-    showSaveDialog.value = false
+    emit("save", versionName.value.trim());
+    versionName.value = "";
+    showSaveDialog.value = false;
   }
 }
 
 function formatDate(dateString: string) {
-  const date = new Date(dateString)
-  const now = new Date()
-  const diffMs = now.getTime() - date.getTime()
-  const diffMins = Math.floor(diffMs / 60000)
-  const diffHours = Math.floor(diffMs / 3600000)
-  const diffDays = Math.floor(diffMs / 86400000)
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
 
-  if (diffMins < 1) return 'Just now'
-  if (diffMins < 60) return `${diffMins}m ago`
-  if (diffHours < 24) return `${diffHours}h ago`
-  if (diffDays < 7) return `${diffDays}d ago`
+  if (diffMins < 1) return "Just now";
+  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffDays < 7) return `${diffDays}d ago`;
 
-  return date.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined,
-  })
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: date.getFullYear() !== now.getFullYear() ? "numeric" : undefined,
+  });
 }
 </script>

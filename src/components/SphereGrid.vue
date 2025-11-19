@@ -1,21 +1,17 @@
 <template>
-  <div class="flex gap-6 h-screen p-6 bg-zinc-950 text-white">
+  <div class="flex gap-6 h-screen p-6">
     <!-- Sidebar Controls -->
-    <div class="w-[320px] overflow-y-auto space-y-5 pr-2">
-      <!-- Header -->
-      <div class="space-y-1 pb-1">
-        <h1 class="text-2xl font-bold text-gold">FFX Sphere Grid</h1>
-        <p class="text-xs text-muted-foreground">Plan your character progression</p>
-      </div>
-      <Separator />
+    <div class="w-[320px] overflow-y-auto space-y-4 pr-2">
+      <Card>
+        <CardHeader>
+          <CardTitle class="text-2xl font-bold text-gold">FFX Sphere Grid</CardTitle>
+          <CardDescription>Plan your character progression</CardDescription>
+        </CardHeader>
+      </Card>
       <SphereSelector v-model="selectedType" />
-      <Separator />
       <GridControls v-model:selection-mode="selectionMode" @reset="handleReset" @clear="handleClear" />
-      <Separator />
       <StatsPanel :stats="stats" />
-      <Separator />
       <SphereCountsPanel :counts="overriddenSphereCounts.counts" :total="overriddenSphereCounts.total" />
-      <Separator />
       <InstructionsPanel />
     </div>
 
@@ -58,31 +54,31 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from "vue"
-import { useLocalStorage } from "@vueuse/core"
-import { useSphereData, type GridType } from "@/composables/useSphereData"
-import { useCytoscapeGrid } from "@/composables/useCytoscapeGrid"
-import type { SphereType } from "@/types/sphere"
-import SphereSelector from "./sphere-grid/SphereSelector.vue"
-import StatsPanel from "./sphere-grid/StatsPanel.vue"
-import StatsBar from "./sphere-grid/StatsBar.vue"
-import SphereCountsPanel from "./sphere-grid/SphereCountsPanel.vue"
-import GridControls from "./sphere-grid/GridControls.vue"
-import InstructionsPanel from "./sphere-grid/InstructionsPanel.vue"
-import SphereGridCanvas from "./sphere-grid/SphereGridCanvas.vue"
-import ImportExportToolbar from "./sphere-grid/ImportExportToolbar.vue"
-import { Separator } from "@/components/ui/separator"
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-import { Image, Hash } from "lucide-vue-next"
+import { ref, computed, onMounted, watch } from "vue";
+import { useLocalStorage } from "@vueuse/core";
+import { useSphereData, type GridType } from "@/composables/useSphereData";
+import { useCytoscapeGrid } from "@/composables/useCytoscapeGrid";
+import type { SphereType } from "@/types/sphere";
+import SphereSelector from "./sphere-grid/SphereSelector.vue";
+import StatsPanel from "./sphere-grid/StatsPanel.vue";
+import StatsBar from "./sphere-grid/StatsBar.vue";
+import SphereCountsPanel from "./sphere-grid/SphereCountsPanel.vue";
+import GridControls from "./sphere-grid/GridControls.vue";
+import InstructionsPanel from "./sphere-grid/InstructionsPanel.vue";
+import SphereGridCanvas from "./sphere-grid/SphereGridCanvas.vue";
+import ImportExportToolbar from "./sphere-grid/ImportExportToolbar.vue";
+import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Image, Hash } from "lucide-vue-next";
 
 // State
-const selectedType = useLocalStorage<SphereType>("ffx-sphere-grid-selected-type", "hp")
-const displayMode = ref<"icons" | "numbers">("icons")
-const gridType = ref<GridType>("standard")
-const showIcons = computed(() => displayMode.value === "icons")
-const selectionMode = useLocalStorage("ffx-sphere-grid-selection-mode", false)
-const selectedNodeIds = ref<string[]>([])
-const highlightedType = ref<SphereType | null>(null)
+const selectedType = useLocalStorage<SphereType>("ffx-sphere-grid-selected-type", "hp");
+const displayMode = ref<"icons" | "numbers">("icons");
+const gridType = ref<GridType>("standard");
+const showIcons = computed(() => displayMode.value === "icons");
+const selectionMode = useLocalStorage("ffx-sphere-grid-selection-mode", false);
+const selectedNodeIds = ref<string[]>([]);
+const highlightedType = ref<SphereType | null>(null);
 
 // Highest values for each sphere type
 const highestValues: Record<SphereType, number> = {
@@ -96,9 +92,10 @@ const highestValues: Record<SphereType, number> = {
   accuracy: 4,
   evasion: 4,
   luck: 4,
+  ability: 0,
   empty: 0,
   locked: 0,
-}
+};
 
 // Composables
 const {
@@ -112,22 +109,22 @@ const {
   updateNodes,
   exportGrid,
   importGrid,
-} = useSphereData(gridType)
+} = useSphereData(gridType);
 
 // Canvas ref
-const canvasRef = ref<InstanceType<typeof SphereGridCanvas> | null>(null)
-const cyContainer = computed(() => canvasRef.value?.container ?? null)
+const canvasRef = ref<InstanceType<typeof SphereGridCanvas> | null>(null);
+const cyContainer = computed(() => canvasRef.value?.container ?? null);
 
 // Selection change handler - automatically apply selected type
 function handleSelectionChange(nodeIds: string[]) {
-  selectedNodeIds.value = nodeIds
+  selectedNodeIds.value = nodeIds;
 
   if (nodeIds.length > 0) {
-    const value = highestValues[selectedType.value]
-    updateNodes(nodeIds, selectedType.value, value)
-    updateSelectedNodes(nodeIds, selectedType.value, value)
-    clearSelection()
-    selectedNodeIds.value = []
+    const value = highestValues[selectedType.value];
+    updateNodes(nodeIds, selectedType.value, value);
+    updateSelectedNodes(nodeIds, selectedType.value, value);
+    clearSelection();
+    selectedNodeIds.value = [];
   }
 }
 
@@ -141,48 +138,48 @@ const { initializeCytoscape, resetNodes, clearSelection, updateSelectedNodes } =
   selectionMode,
   highlightedType,
   handleSelectionChange,
-)
+);
 
 // Initialize Cytoscape on mount
 onMounted(() => {
-  initializeCytoscape()
-})
+  initializeCytoscape();
+});
 
 // Reinitialize when grid type changes
 watch(gridType, () => {
-  initializeCytoscape()
-})
+  initializeCytoscape();
+});
 
 // Reset handler
 const handleReset = () => {
-  resetGrid(resetNodes)
-}
+  resetGrid(resetNodes);
+};
 
 // Clear handler
 const handleClear = () => {
-  clearGrid(resetNodes)
-}
+  clearGrid(resetNodes);
+};
 
 // Clear selection when switching modes
 watch(selectionMode, (isSelectionMode) => {
   if (!isSelectionMode) {
-    clearSelection()
-    selectedNodeIds.value = []
+    clearSelection();
+    selectedNodeIds.value = [];
   }
-})
+});
 
 // Handle export
 function handleExport() {
-  exportGrid()
+  exportGrid();
 }
 
 // Handle import
 async function handleImport(file: File) {
   try {
-    await importGrid(file, resetNodes)
+    await importGrid(file, resetNodes);
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to import grid"
-    alert(message)
+    const message = error instanceof Error ? error.message : "Failed to import grid";
+    alert(message);
   }
 }
 </script>

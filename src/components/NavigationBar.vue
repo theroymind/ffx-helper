@@ -37,10 +37,10 @@
 </template>
 
 <script setup lang="ts">
-import { RouterLink } from "vue-router"
-import { Settings } from "lucide-vue-next"
-import { useThemeStore } from "@/stores/theme"
-import Button from "@/components/ui/button/Button.vue"
+import { RouterLink } from "vue-router";
+import { Settings } from "lucide-vue-next";
+import { useThemeStore } from "@/stores/theme";
+import Button from "@/components/ui/button/Button.vue";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -49,7 +49,7 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 
-const themeStore = useThemeStore()
+const themeStore = useThemeStore();
 </script>

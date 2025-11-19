@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { computed } from "vue"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-import type { Stats } from "@/types/sphere"
+import { computed } from "vue";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import type { Stats } from "@/types/sphere";
 
 const props = defineProps<{
-  stats: Stats
-}>()
+  stats: Stats;
+}>();
 
 const statCaps = {
   hp: 9999,
@@ -18,7 +18,7 @@ const statCaps = {
   accuracy: 255,
   evasion: 255,
   luck: 255,
-} as const
+} as const;
 
 const statDisplayConfig = [
   { key: "hp" as const, label: "HP", colorClass: "text-sphere-hp", cap: statCaps.hp, overCap: 99999 },
@@ -31,13 +31,13 @@ const statDisplayConfig = [
   { key: "accuracy" as const, label: "Accuracy", colorClass: "text-sphere-accuracy", cap: statCaps.accuracy },
   { key: "evasion" as const, label: "Evasion", colorClass: "text-sphere-evasion", cap: statCaps.evasion },
   { key: "luck" as const, label: "Luck", colorClass: "text-sphere-luck", cap: statCaps.luck },
-]
+];
 
 const statDisplay = computed(() => {
   return statDisplayConfig.map((config) => {
-    const value = props.stats[config.key]
-    const isCapped = value > config.cap
-    const isOverCap = config.overCap && value > config.overCap
+    const value = props.stats[config.key];
+    const isCapped = value > config.cap;
+    const isOverCap = config.overCap && value > config.overCap;
 
     return {
       ...config,
@@ -46,17 +46,17 @@ const statDisplay = computed(() => {
       isOverCap,
       cappedValue: Math.min(value, config.cap),
       actualValue: value,
-    }
-  })
-})
+    };
+  });
+});
 </script>
 
 <template>
-  <Card class="shadow-lg">
-    <CardHeader class="pb-2">
+  <Card>
+    <CardHeader>
       <CardTitle class="text-gold text-base font-semibold">Current Stats</CardTitle>
     </CardHeader>
-    <CardContent class="space-y-1.5">
+    <CardContent>
       <div
         v-for="stat in statDisplay"
         :key="stat.key"
@@ -69,7 +69,7 @@ const statDisplay = computed(() => {
             <span class="text-destructive">({{ stat.actualValue }})</span>
             <span v-if="stat.isOverCap" class="text-xs text-destructive">!</span>
           </template>
-          <span v-else class="text-white">{{ stat.value }}</span>
+          <span v-else class="text-foreground">{{ stat.value }}</span>
         </div>
       </div>
     </CardContent>

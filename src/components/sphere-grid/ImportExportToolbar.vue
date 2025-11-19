@@ -23,44 +23,38 @@
         </TooltipContent>
       </Tooltip>
 
-      <input
-        ref="fileInputRef"
-        type="file"
-        accept=".json"
-        class="hidden"
-        @change="handleFileChange"
-      />
+      <input ref="fileInputRef" type="file" accept=".json" class="hidden" @change="handleFileChange" />
     </div>
   </TooltipProvider>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue"
-import { Button } from "@/components/ui/button"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { Download, Upload } from "lucide-vue-next"
+import { ref } from "vue";
+import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Download, Upload } from "lucide-vue-next";
 
 const emit = defineEmits<{
-  export: []
-  import: [file: File]
-}>()
+  export: [];
+  import: [file: File];
+}>();
 
-const fileInputRef = ref<HTMLInputElement | null>(null)
+const fileInputRef = ref<HTMLInputElement | null>(null);
 
 function handleExport() {
-  emit("export")
+  emit("export");
 }
 
 function handleImportClick() {
-  fileInputRef.value?.click()
+  fileInputRef.value?.click();
 }
 
 function handleFileChange(event: Event) {
-  const input = event.target as HTMLInputElement
-  const file = input.files?.[0]
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0];
   if (file) {
-    emit("import", file)
-    input.value = ""
+    emit("import", file);
+    input.value = "";
   }
 }
 </script>

@@ -241,19 +241,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue"
-import Button from "@/components/ui/button/Button.vue"
-import { Card } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { Badge } from "@/components/ui/badge"
+import { ref } from "vue";
+import Button from "@/components/ui/button/Button.vue";
+import { Card } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import {
   Dialog,
   DialogContent,
@@ -262,7 +262,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -273,38 +273,38 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Link, X, Grid3x3, Maximize, Download, ImageIcon, ImageOff, Trash2, Save } from "lucide-vue-next"
-import { useGridMapperContext } from "@/composables/useGridMapperContext"
-import { useGridMapperVersionManager } from "@/composables/useVersionManager"
-import abilitiesData from "@/assets/abilities.json"
+} from "@/components/ui/alert-dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Link, X, Grid3x3, Maximize, Download, ImageIcon, ImageOff, Trash2, Save } from "lucide-vue-next";
+import { useGridMapperContext } from "@/composables/useGridMapperContext";
+import { useGridMapperVersionManager } from "@/composables/useVersionManager";
+import abilitiesData from "@/assets/abilities.json";
 
-const ctx = useGridMapperContext()
-const versionManager = useGridMapperVersionManager()
+const ctx = useGridMapperContext();
+const versionManager = useGridMapperVersionManager();
 
-const showSaveDialog = ref(false)
-const versionName = ref("")
+const showSaveDialog = ref(false);
+const versionName = ref("");
 
 const abilityNameToId = abilitiesData.reduce(
   (map, ability) => {
-    map[ability.name] = ability.id
-    return map
+    map[ability.name] = ability.id;
+    return map;
   },
   {} as Record<string, number>,
-)
+);
 
 function triggerImageUpload() {
-  const input = document.getElementById("toolbar-image-upload") as HTMLInputElement
-  if (input) input.click()
+  const input = document.getElementById("toolbar-image-upload") as HTMLInputElement;
+  if (input) input.click();
 }
 
 async function handleImageUpload(event: Event) {
   try {
-    await ctx.handleImageUpload(event)
+    await ctx.handleImageUpload(event);
   } catch (error) {
-    console.error("Failed to load image:", error)
+    console.error("Failed to load image:", error);
   }
 }
 
@@ -322,15 +322,15 @@ function handleExport() {
     luck: "Luck",
     empty: null,
     locked: null,
-  }
+  };
 
   const exportedNodes = ctx.nodes.value.map((node) => {
     const connectedNodes = node.connections
       .map((connectedId) => {
-        const connectedNode = ctx.nodes.value.find((n) => n.id === connectedId)
-        return connectedNode ? [connectedNode.x, connectedNode.y] : null
+        const connectedNode = ctx.nodes.value.find((n) => n.id === connectedId);
+        return connectedNode ? [connectedNode.x, connectedNode.y] : null;
       })
-      .filter((conn) => conn !== null)
+      .filter((conn) => conn !== null);
 
     return {
       id: node.id,
@@ -341,59 +341,59 @@ function handleExport() {
       value: node.value || null,
       lock_level: node.lockLevel || null,
       ability_id: node.abilityName ? abilityNameToId[node.abilityName] || null : null,
-    }
-  })
+    };
+  });
 
-  const jsonData = JSON.stringify(exportedNodes, null, 2)
-  const blob = new Blob([jsonData], { type: "application/json" })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement("a")
-  a.href = url
-  a.download = "standard_grid_nodes.json"
-  a.click()
-  URL.revokeObjectURL(url)
+  const jsonData = JSON.stringify(exportedNodes, null, 2);
+  const blob = new Blob([jsonData], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "standard_grid_nodes.json";
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 function handleSaveVersion() {
   if (versionName.value.trim()) {
-    const name = versionName.value.trim()
-    const nodes = ctx.getCurrentNodes()
-    versionManager.saveVersion(name, nodes)
-    versionName.value = ""
-    showSaveDialog.value = false
-    alert(`Saved version: ${name}`)
+    const name = versionName.value.trim();
+    const nodes = ctx.getCurrentNodes();
+    versionManager.saveVersion(name, nodes);
+    versionName.value = "";
+    showSaveDialog.value = false;
+    alert(`Saved version: ${name}`);
   }
 }
 
 function handleLoadVersion(versionId: string) {
-  const nodes = versionManager.loadVersion(versionId)
+  const nodes = versionManager.loadVersion(versionId);
   if (nodes) {
-    ctx.loadNodes(nodes)
-    alert(`Loaded version with ${nodes.length} nodes`)
+    ctx.loadNodes(nodes);
+    alert(`Loaded version with ${nodes.length} nodes`);
   }
 }
 
 function handleDeleteVersion(versionId: string) {
-  versionManager.deleteVersion(versionId)
+  versionManager.deleteVersion(versionId);
 }
 
 function formatDate(dateString: string) {
-  const date = new Date(dateString)
-  const now = new Date()
-  const diffMs = now.getTime() - date.getTime()
-  const diffMins = Math.floor(diffMs / 60000)
-  const diffHours = Math.floor(diffMs / 3600000)
-  const diffDays = Math.floor(diffMs / 86400000)
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
 
-  if (diffMins < 1) return "Just now"
-  if (diffMins < 60) return `${diffMins}m ago`
-  if (diffHours < 24) return `${diffHours}h ago`
-  if (diffDays < 7) return `${diffDays}d ago`
+  if (diffMins < 1) return "Just now";
+  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffDays < 7) return `${diffDays}d ago`;
 
   return date.toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
     year: date.getFullYear() !== now.getFullYear() ? "numeric" : undefined,
-  })
+  });
 }
 </script>

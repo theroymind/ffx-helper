@@ -6,10 +6,10 @@
 </template>
 
 <script setup lang="ts">
-import { RouterView } from 'vue-router'
-import NavigationBar from './components/NavigationBar.vue'
-import { useThemeStore } from '@/stores/theme'
+import { RouterView } from "vue-router";
+import NavigationBar from "./components/NavigationBar.vue";
+import { useThemeStore } from "@/stores/theme";
 
 // Initialize theme store - useDark will automatically manage the body class
-const themeStore = useThemeStore()
+const themeStore = useThemeStore();
 </script>

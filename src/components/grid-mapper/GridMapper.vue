@@ -6,7 +6,9 @@
           <div>
             <CardTitle class="text-xl">Grid Mapper</CardTitle>
             <CardDescription class="text-xs mt-1">
-              <template v-if="!isLinkMode"> Click to place • Drag from node to create & link • Shift+drag to pan • Scroll to zoom </template>
+              <template v-if="!isLinkMode">
+                Click to place • Drag from node to create & link • Shift+drag to pan • Scroll to zoom
+              </template>
               <template v-else-if="!selectedNodeForLink"> Click node to start connecting </template>
               <template v-else> Click another node to toggle connection </template>
             </CardDescription>
@@ -74,7 +76,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from "vue"
+import { ref, onMounted, nextTick } from "vue";
 import {
   Dialog,
   DialogContent,
@@ -82,121 +84,138 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import Button from "@/components/ui/button/Button.vue"
-import NodeTypeDialogContent from "@/components/grid-mapper/NodeTypeDialogContent.vue"
-import GridMapperToolbar from "@/components/grid-mapper/GridMapperToolbar.vue"
-import GridMapperStats from "@/components/grid-mapper/GridMapperStats.vue"
-import { useImageCache } from "@/composables/useImageCache"
-import { createGridMapperContext, type NodeData, type GridNode } from "@/composables/useGridMapperContext"
-import { useGridMapperDrawing } from "@/composables/useGridMapperDrawing"
-import { useGridMapperEvents } from "@/composables/useGridMapperEvents"
+} from "@/components/ui/dialog";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import Button from "@/components/ui/button/Button.vue";
+import NodeTypeDialogContent from "@/components/grid-mapper/NodeTypeDialogContent.vue";
+import GridMapperToolbar from "@/components/grid-mapper/GridMapperToolbar.vue";
+import GridMapperStats from "@/components/grid-mapper/GridMapperStats.vue";
+import { useImageCache } from "@/composables/useImageCache";
+import { createGridMapperContext, type NodeData, type GridNode } from "@/composables/useGridMapperContext";
+import { useGridMapperDrawing } from "@/composables/useGridMapperDrawing";
+import { useGridMapperEvents } from "@/composables/useGridMapperEvents";
 
 // Create context (provides to child components and composables)
-const context = createGridMapperContext()
-const { isLinkMode, selectedNodeForLink, canvasWidth, canvasHeight, canvasRef, backgroundImage, imageScale, addNode, updateNode, deleteNode, toggleConnection } =
-  context
+const context = createGridMapperContext();
+const {
+  isLinkMode,
+  selectedNodeForLink,
+  canvasWidth,
+  canvasHeight,
+  canvasRef,
+  backgroundImage,
+  imageScale,
+  addNode,
+  updateNode,
+  deleteNode,
+  toggleConnection,
+} = context;
 
 // Canvas drawing (pass context since we're in the provider component)
-const { draw } = useGridMapperDrawing(context)
+const { draw } = useGridMapperDrawing(context);
 
 // Canvas events (pass context since we're in the provider component)
-const { handleCanvasClick, handleMouseDown, handleMouseUp: handleMouseUpEvent, handleMouseMove, handleWheel } = useGridMapperEvents(context)
+const {
+  handleCanvasClick,
+  handleMouseDown,
+  handleMouseUp: handleMouseUpEvent,
+  handleMouseMove,
+  handleWheel,
+} = useGridMapperEvents(context);
 
 // Image caching
-const { loadImage } = useImageCache()
+const { loadImage } = useImageCache();
 
 // Dialog state (UI-specific, stays in component)
-const showNodeTypeDialog = ref(false)
-const pendingNodePosition = ref({ x: 0, y: 0 })
-const editingNode = ref<GridNode | null>(null)
-const pendingLinkSourceNode = ref<GridNode | null>(null)
-const dialogTitle = ref("Select Node Type")
-const dialogDescription = ref("default")
-const dialogKey = ref(0)
+const showNodeTypeDialog = ref(false);
+const pendingNodePosition = ref({ x: 0, y: 0 });
+const editingNode = ref<GridNode | null>(null);
+const pendingLinkSourceNode = ref<GridNode | null>(null);
+const dialogTitle = ref("Select Node Type");
+const dialogDescription = ref("default");
+const dialogKey = ref(0);
 
 // Dialog handlers
 function handleNodeConfirm(nodeData: NodeData) {
   if (editingNode.value) {
-    updateNode(editingNode.value.id, nodeData)
+    updateNode(editingNode.value.id, nodeData);
   } else {
-    const newNode = addNode(pendingNodePosition.value.x, pendingNodePosition.value.y, nodeData)
+    const newNode = addNode(pendingNodePosition.value.x, pendingNodePosition.value.y, nodeData);
 
     if (pendingLinkSourceNode.value) {
-      toggleConnection(pendingLinkSourceNode.value, newNode)
-      pendingLinkSourceNode.value = null
+      toggleConnection(pendingLinkSourceNode.value, newNode);
+      pendingLinkSourceNode.value = null;
     }
   }
-  showNodeTypeDialog.value = false
-  editingNode.value = null
-  dialogKey.value++
-  draw()
+  showNodeTypeDialog.value = false;
+  editingNode.value = null;
+  dialogKey.value++;
+  draw();
 }
 
 function handleNodeDelete() {
   if (editingNode.value) {
-    deleteNode(editingNode.value.id)
-    showNodeTypeDialog.value = false
-    editingNode.value = null
-    dialogKey.value++
-    draw()
+    deleteNode(editingNode.value.id);
+    showNodeTypeDialog.value = false;
+    editingNode.value = null;
+    dialogKey.value++;
+    draw();
   }
 }
 
 function cancelNodePlacement() {
-  showNodeTypeDialog.value = false
-  editingNode.value = null
-  dialogKey.value++
+  showNodeTypeDialog.value = false;
+  editingNode.value = null;
+  dialogKey.value++;
 }
 
 function resetDialog() {
-  dialogKey.value++
+  dialogKey.value++;
 }
 
 // Canvas click handler (delegates to events, handles place mode)
 function handleClick(event: MouseEvent) {
-  const result = handleCanvasClick(event)
+  const result = handleCanvasClick(event);
   if (result && !isLinkMode.value) {
-    pendingNodePosition.value = { x: result.worldX, y: result.worldY }
-    if ('existingNode' in result && result.existingNode) {
-      editingNode.value = result.existingNode
+    pendingNodePosition.value = { x: result.worldX, y: result.worldY };
+    if ("existingNode" in result && result.existingNode) {
+      editingNode.value = result.existingNode;
     } else {
-      editingNode.value = null
+      editingNode.value = null;
     }
-    showNodeTypeDialog.value = true
+    showNodeTypeDialog.value = true;
   }
 }
 
 function handleMouseUp(event: MouseEvent) {
-  const result = handleMouseUpEvent(event)
+  const result = handleMouseUpEvent(event);
 
-  if (result && result.type === 'drag-to-create') {
-    pendingNodePosition.value = { x: result.worldX, y: result.worldY }
-    pendingLinkSourceNode.value = result.sourceNode
-    editingNode.value = null
-    showNodeTypeDialog.value = true
+  if (result && result.type === "drag-to-create") {
+    pendingNodePosition.value = { x: result.worldX, y: result.worldY };
+    pendingLinkSourceNode.value = result.sourceNode;
+    editingNode.value = null;
+    showNodeTypeDialog.value = true;
   }
 }
 
 // Initialization
 onMounted(async () => {
-  await nextTick()
+  await nextTick();
 
   // Automatically load the standard sphere grid image
-  const img = await loadImage("/src/assets/standard_sphere_grid.jpeg")
+  const img = await loadImage("/src/assets/standard_sphere_grid.jpeg");
   if (img) {
-    const maxDimension = Math.max(img.width, img.height)
-    const scale = 3000 / maxDimension
+    const maxDimension = Math.max(img.width, img.height);
+    const scale = 3000 / maxDimension;
 
-    canvasWidth.value = Math.round(img.width * scale)
-    canvasHeight.value = Math.round(img.height * scale)
-    imageScale.value = scale
-    backgroundImage.value = img
+    canvasWidth.value = Math.round(img.width * scale);
+    canvasHeight.value = Math.round(img.height * scale);
+    imageScale.value = scale;
+    backgroundImage.value = img;
 
-    await nextTick()
-    draw()
+    await nextTick();
+    draw();
   }
-})
+});
 </script>

@@ -29,15 +29,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue"
-import { Separator } from "@/components/ui/separator"
-import { useGridMapperContext } from "@/composables/useGridMapperContext"
+import { computed } from "vue";
+import { Separator } from "@/components/ui/separator";
+import { useGridMapperContext } from "@/composables/useGridMapperContext";
 
-const ctx = useGridMapperContext()
+const ctx = useGridMapperContext();
 
 const connectionsCount = computed(() => {
-  return ctx.nodes.value.reduce((sum, node) => sum + node.connections.length, 0) / 2
-})
+  return ctx.nodes.value.reduce((sum, node) => sum + node.connections.length, 0) / 2;
+});
 
-const zoomPercentage = computed(() => (ctx.viewScale.value * 100).toFixed(0))
+const zoomPercentage = computed(() => (ctx.viewScale.value * 100).toFixed(0));
 </script>
