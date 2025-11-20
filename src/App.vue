@@ -11,5 +11,5 @@ import NavigationBar from "./components/NavigationBar.vue";
 import { useThemeStore } from "@/stores/theme";
 
 // Initialize theme store - useDark will automatically manage the body class
-const themeStore = useThemeStore();
+useThemeStore();
 </script>

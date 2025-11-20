@@ -11,15 +11,7 @@
         <ul class="space-y-2 text-sm">
           <li class="flex gap-2">
             <span class="text-gold font-bold">•</span>
-            <span><strong>Toggle</strong> between Single/Selection mode to assign one or multiple nodes</span>
-          </li>
-          <li class="flex gap-2">
-            <span class="text-gold font-bold">•</span>
-            <span><strong class="text-sphere-ability">Pink</strong> = abilities (locked)</span>
-          </li>
-          <li class="flex gap-2">
-            <span class="text-gold font-bold">•</span>
-            <span><strong>2-finger scroll</strong> pan, <strong>pinch</strong> zoom</span>
+            <span><strong class="text-sphere-ability">Pink</strong> = Ability nodes which can't be edited/erased</span>
           </li>
           <li class="flex gap-2">
             <span class="text-gold font-bold">•</span>

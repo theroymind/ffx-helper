@@ -47,7 +47,6 @@ npm run format
 4. **State Management**:
    - Local state uses Vue 3 Composition API with `ref` and `computed`
    - Persists user customizations to localStorage via `@vueuse/core`
-   - No Pinia stores are actively used (counter.ts is template boilerplate)
 5. **User Interaction**: Click/drag on nodes to override sphere types, view stats and counts in sidebar
 
 ### Key Composables

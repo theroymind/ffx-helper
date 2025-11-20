@@ -2,26 +2,6 @@
   <TooltipProvider>
     <Card v-bind="$attrs" class="p-2">
       <div class="flex gap-1">
-        <Tooltip>
-          <TooltipTrigger as-child>
-            <Button
-              variant="ghost"
-              size="icon"
-              class="h-8 w-8"
-              :class="{ 'bg-accent': selectionMode }"
-              @click="selectionMode = !selectionMode"
-            >
-              <Hand v-if="selectionMode" class="h-4 w-4" />
-              <MousePointer2 v-else class="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>{{ selectionMode ? "Single Mode" : "Selection Mode" }}</p>
-          </TooltipContent>
-        </Tooltip>
-
-        <Separator orientation="vertical" class="h-8 mx-1" />
-
         <DropdownMenu>
           <DropdownMenuTrigger as-child>
             <Button variant="ghost" size="icon" class="h-8 w-8">
@@ -80,14 +60,11 @@
 import { ref } from "vue";
 import Button from "@/components/ui/button/Button.vue";
 import { Card } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -100,9 +77,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { RotateCcw, Trash2, MousePointer2, Hand } from "lucide-vue-next";
-
-const selectionMode = defineModel<boolean>("selectionMode", { default: false });
+import { RotateCcw, Trash2 } from "lucide-vue-next";
 
 const emit = defineEmits<{
   reset: [];

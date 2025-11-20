@@ -17,7 +17,9 @@
       "Bash(git log:*)",
       "Bash(node -e:*)",
       "Bash(npm run build:*)",
-      "Bash(sips:*)"
+      "Bash(sips:*)",
+      "Bash(npm run lint)",
+      "Bash(npx vue-tsc:*)"
     ],
     "deny": [],
     "ask": []

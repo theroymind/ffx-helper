@@ -9,7 +9,6 @@ export function useCytoscapeGrid(
   selectedType: Ref<SphereType>,
   onNodeUpdate: (nodeId: string, type: SphereType, value: number) => void,
   showIcons: Ref<boolean>,
-  selectionMode: Ref<boolean>,
   highlightedType: Ref<SphereType | null>,
   onSelectionChange?: (nodeIds: string[]) => void,
 ) {
@@ -20,7 +19,6 @@ export function useCytoscapeGrid(
   const initializeCytoscape = () => {
     if (!container.value) return;
 
-    // Clean up existing instance and event listeners
     if (wheelEventCleanup) {
       wheelEventCleanup();
       wheelEventCleanup = null;
@@ -125,7 +123,6 @@ export function useCytoscapeGrid(
               return ele.data("abilityName") ? "60px" : "0";
             },
             color: "#ffffff",
-            // Text outline for both ability names and stat numbers
             "text-outline-color": "#000000",
             "text-outline-width": 3,
           },
@@ -174,26 +171,64 @@ export function useCytoscapeGrid(
       layout: {
         name: "preset",
       },
-      userPanningEnabled: true,
+      userPanningEnabled: false,
+      userZoomingEnabled: false,
       boxSelectionEnabled: true,
       autoungrabify: true,
       autounselectify: false,
     });
 
+    const containerElement = container.value;
+    if (containerElement) {
+      const wheelHandler = (event: WheelEvent) => {
+        event.preventDefault();
+
+        if (!cy) return;
+
+        if (event.ctrlKey || event.metaKey) {
+          const zoomFactor = event.deltaY > 0 ? 0.95 : 1.05;
+          const currentZoom = cy.zoom();
+          const newZoom = Math.max(0.1, Math.min(10, currentZoom * zoomFactor));
+
+          cy.zoom({
+            level: newZoom,
+            renderedPosition: {
+              x: event.offsetX,
+              y: event.offsetY,
+            },
+          });
+        } else {
+          const pan = cy.pan();
+          cy.pan({
+            x: pan.x - event.deltaX,
+            y: pan.y - event.deltaY,
+          });
+        }
+      };
+
+      containerElement.addEventListener("wheel", wheelHandler, { passive: false });
+      wheelEventCleanup = () => containerElement.removeEventListener("wheel", wheelHandler);
+    }
+
     // Handle node interactions
     cy.on("mousedown", "node", (event) => {
       const node = event.target;
-      if (!selectionMode.value) {
-        // Paint mode: allow modifying nodes
-        if (!node.data("abilityId")) {
-          isDragging.value = true;
-          updateNodeType(node);
-        }
+      if (!node.data("abilityId")) {
+        isDragging.value = true;
+        updateNodeType(node);
       }
     });
 
     cy.on("mouseover", "node", (event) => {
       const node = event.target;
+
+      // Change cursor to pointer for non-ability nodes
+      if (!node.data("abilityId") && containerElement) {
+        const canvas = containerElement.querySelector("canvas");
+        if (canvas) {
+          (canvas as HTMLElement).style.cursor = "pointer";
+        }
+      }
 
       // Show hover label for non-ability nodes
       if (!node.data("abilityId")) {
@@ -208,8 +243,8 @@ export function useCytoscapeGrid(
         }
         node.data("hoverLabel", hoverLabel);
 
-        // If dragging in paint mode, update node type
-        if (isDragging.value && !selectionMode.value) {
+        // If dragging, update node type
+        if (isDragging.value) {
           updateNodeType(node);
         }
       }
@@ -217,6 +252,15 @@ export function useCytoscapeGrid(
 
     cy.on("mouseout", "node", (event) => {
       const node = event.target;
+
+      // Reset cursor to crosshair
+      if (containerElement) {
+        const canvas = containerElement.querySelector("canvas");
+        if (canvas) {
+          (canvas as HTMLElement).style.cursor = "crosshair";
+        }
+      }
+
       // Clear hover label for non-ability nodes
       if (!node.data("abilityId")) {
         node.data("hoverLabel", null);
@@ -229,14 +273,13 @@ export function useCytoscapeGrid(
 
     // Handle selection changes
     cy.on("select unselect", () => {
-      if (selectionMode.value && onSelectionChange && cy) {
+      if (onSelectionChange && cy) {
         const selectedNodes = cy.nodes(":selected").filter((node) => !node.data("abilityId"));
         const nodeIds = selectedNodes.map((node) => node.id());
         onSelectionChange(nodeIds);
       }
     });
 
-    // Global mouseup to catch when released outside canvas
     document.addEventListener("mouseup", handleGlobalMouseUp);
   };
 
@@ -330,14 +373,6 @@ export function useCytoscapeGrid(
 
     // Force redraw
     cy.style().update();
-  });
-
-  // Watch for selectionMode changes and toggle panning
-  watch(selectionMode, (isSelectionMode) => {
-    if (!cy) return;
-
-    // Disable panning in selection mode, enable in paint mode
-    cy.userPanningEnabled(!isSelectionMode);
   });
 
   // Watch for highlightedType changes and update node classes and opacity
