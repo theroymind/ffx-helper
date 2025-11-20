@@ -1,18 +1,18 @@
 <template>
-  <div class="bg-card border rounded-lg px-4 py-2.5 flex items-center justify-between gap-2">
-    <div class="flex items-center gap-2 flex-wrap">
+  <div class="bg-card border rounded-lg px-3 py-2 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 min-w-0">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-1.5 flex-1 min-w-0">
       <div
         v-for="stat in statDisplay"
         :key="stat.key"
-        class="flex items-center gap-1.5 border rounded-md p-2 cursor-pointer transition-all"
+        class="flex items-center gap-1 border rounded-md p-1.5 cursor-pointer transition-all min-w-0"
         :class="{
           'ring-2 ring-ring shadow-lg': highlightedType === stat.key,
           'opacity-50': highlightedType && highlightedType !== stat.key,
         }"
         @click="handleStatClick(stat.key)"
       >
-        <span class="font-semibold text-xs" :class="stat.colorClass">{{ stat.label }}</span>
-        <div class="font-mono text-sm font-bold tabular-nums flex items-center gap-1">
+        <span class="font-semibold text-xs whitespace-nowrap" :class="stat.colorClass">{{ stat.label }}</span>
+        <div class="font-mono text-sm font-bold tabular-nums flex items-center gap-1 min-w-0">
           <template v-if="stat.isCapped">
             <span class="text-success">{{ stat.cappedValue }}</span>
             <span class="text-destructive text-xs">({{ stat.actualValue }})</span>
@@ -25,18 +25,20 @@
       </div>
     </div>
 
-    <div class="flex flex-col items-center gap-2 text-right pl-4 border-l">
-      <div class="flex items-center gap-2">
-        <span class="text-xs text-muted-foreground">Overridden:</span>
+    <div class="flex items-center gap-3 md:pl-3 md:border-l flex-shrink-0">
+      <div class="grid grid-cols-[auto_auto] gap-x-2 gap-y-2 items-center">
+        <span class="text-xs text-muted-foreground text-right">Overridden:</span>
         <Badge variant="secondary" class="font-mono font-bold">
           {{ totalOverridden }}
         </Badge>
-      </div>
-      <div class="flex items-center gap-2">
-        <span class="text-xs text-muted-foreground">Total:</span>
+        <span class="text-xs text-muted-foreground text-right">Total:</span>
         <Badge variant="secondary" class="font-mono font-bold">
           {{ total }}
         </Badge>
+      </div>
+      <div class="flex flex-col gap-2">
+        <Button variant="outline" size="sm" @click="emit('openDetails')">Details</Button>
+        <Button variant="outline" size="sm" @click="emit('openHelp')">Help</Button>
       </div>
     </div>
   </div>
@@ -45,6 +47,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import type { Stats, SphereType } from "@/types/sphere";
 
 const props = defineProps<{
@@ -56,6 +59,8 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   highlight: [type: SphereType | null];
+  openDetails: [];
+  openHelp: [];
 }>();
 
 function handleStatClick(type: SphereType) {

@@ -1,41 +1,40 @@
 <template>
-  <div class="flex gap-6 h-screen p-6">
-    <!-- Sidebar Controls -->
-    <div class="w-[320px] overflow-y-auto space-y-4 pr-2">
-      <Card>
-        <CardHeader>
-          <CardTitle class="text-2xl font-bold text-gold">FFX Sphere Grid</CardTitle>
-          <CardDescription>Plan your character progression</CardDescription>
-        </CardHeader>
-      </Card>
-      <StatsPanel :stats="stats" />
-      <SphereCountsPanel :counts="overriddenSphereCounts.counts" :total="overriddenSphereCounts.total" />
-      <InstructionsPanel />
-    </div>
-
-    <!-- Canvas Area -->
-    <div class="flex-1 flex flex-col gap-4">
+  <div class="h-screen p-6">
+    <div class="flex flex-col gap-4 h-full">
       <StatsBar
         :stats="stats"
         :counts="sphereCounts"
         :total="sphereData.nodes.length"
         :highlighted-type="highlightedType"
         @highlight="highlightedType = $event"
+        @open-details="showDetailsDialog = true"
+        @open-help="showHelpDialog = true"
       />
+
+      <StatsDetailsDialog
+        v-model:open="showDetailsDialog"
+        :stats="stats"
+        :counts="overriddenSphereCounts.counts"
+        :total="overriddenSphereCounts.total"
+      />
+
+      <HelpDialog v-model:open="showHelpDialog" :grid-type="gridType" @export="handleExport" @import="handleImport" />
 
       <div class="relative flex-1">
         <SphereGridCanvas ref="canvasRef" />
-        <div class="absolute top-4 left-4 z-10 flex flex-row gap-2">
-          <SphereGridToolbar
-            :grid-type="gridType"
-            :display-mode="displayMode"
-            @update:grid-type="gridType = $event"
-            @update:display-mode="displayMode = $event"
-            @export="handleExport"
-            @import="handleImport"
-          />
-          <SphereToolbar v-model="selectedType" />
-          <GridControlsToolbar v-model:selection-mode="selectionMode" @reset="handleReset" @clear="handleClear" />
+        <div class="absolute top-4 left-0 right-0 z-10 flex justify-center">
+          <div class="flex flex-row gap-2">
+            <SphereGridToolbar
+              :grid-type="gridType"
+              :display-mode="displayMode"
+              @update:grid-type="gridType = $event"
+              @update:display-mode="displayMode = $event"
+              @export="handleExport"
+              @import="handleImport"
+            />
+            <SphereToolbar v-model="selectedType" />
+            <GridControlsToolbar v-model:selection-mode="selectionMode" @reset="handleReset" @clear="handleClear" />
+          </div>
         </div>
       </div>
     </div>
@@ -48,15 +47,13 @@ import { useLocalStorage } from "@vueuse/core";
 import { useSphereData, type GridType } from "@/composables/useSphereData";
 import { useCytoscapeGrid } from "@/composables/useCytoscapeGrid";
 import type { SphereType } from "@/types/sphere";
-import StatsPanel from "./sphere-grid/StatsPanel.vue";
 import StatsBar from "./sphere-grid/StatsBar.vue";
-import SphereCountsPanel from "./sphere-grid/SphereCountsPanel.vue";
-import InstructionsPanel from "./sphere-grid/InstructionsPanel.vue";
+import StatsDetailsDialog from "./sphere-grid/StatsDetailsDialog.vue";
+import HelpDialog from "./sphere-grid/HelpDialog.vue";
 import SphereGridCanvas from "./sphere-grid/SphereGridCanvas.vue";
 import SphereGridToolbar from "./sphere-grid/SphereGridToolbar.vue";
 import SphereToolbar from "./sphere-grid/SphereToolbar.vue";
 import GridControlsToolbar from "./sphere-grid/GridControlsToolbar.vue";
-import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 // State
 const selectedType = useLocalStorage<SphereType>("ffx-sphere-grid-selected-type", "hp");
@@ -66,9 +63,10 @@ const showIcons = computed(() => displayMode.value === "icons");
 const selectionMode = useLocalStorage("ffx-sphere-grid-selection-mode", false);
 const selectedNodeIds = ref<string[]>([]);
 const highlightedType = ref<SphereType | null>(null);
+const showDetailsDialog = ref(false);
+const showHelpDialog = ref(false);
 
-// Highest values for each sphere type
-const highestValues: Record<SphereType, number> = {
+const lowestValues: Record<SphereType, number> = {
   hp: 300,
   mp: 40,
   strength: 4,
@@ -106,7 +104,7 @@ function handleSelectionChange(nodeIds: string[]) {
   selectedNodeIds.value = nodeIds;
 
   if (nodeIds.length > 0) {
-    const value = highestValues[selectedType.value];
+    const value = lowestValues[selectedType.value];
     updateNodes(nodeIds, selectedType.value, value);
     updateSelectedNodes(nodeIds, selectedType.value, value);
     clearSelection();
@@ -163,6 +161,7 @@ function handleExport() {
 async function handleImport(file: File) {
   try {
     await importGrid(file, resetNodes);
+    showHelpDialog.value = false;
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to import grid";
     alert(message);
