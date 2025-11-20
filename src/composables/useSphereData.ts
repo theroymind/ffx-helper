@@ -3,12 +3,14 @@ import { useLocalStorage } from "@vueuse/core";
 import standardGridData from "@/assets/standard_grid_nodes.json";
 import expertGridData from "@/assets/expert_grid_nodes.json";
 import abilitiesData from "@/assets/abilities.json";
-import type { SphereNode, SphereGridData, Stats, SphereType } from "@/types/sphere";
+import { SphereType } from "@/domain/grid/SphereType";
+import type { SphereNode } from "@/domain/grid/SphereNode";
+import type { SphereGridData } from "@/domain/grid/SphereGridData";
+import type { Stats } from "@/domain/grid/Stats";
 import { mapAttributeToType, sphereTypeInfo, baseStats } from "@/constants/sphere";
 import { useGridSharingStore } from "@/stores/gridSharing";
 import { useAnalytics } from "@/composables/useAnalytics";
-
-export type GridType = "standard" | "expert";
+import { GridType } from "@/domain/grid/GridType";
 
 interface AbilityData {
   id: number;
@@ -33,8 +35,8 @@ abilitiesData.forEach((ability: AbilityData) => {
   abilityNames[ability.id] = ability.name;
 });
 
-export function generateSphereGrid(gridType: GridType = "standard"): SphereGridData {
-  const sphereGridData = (gridType === "expert" ? expertGridData : standardGridData) as NodeData[];
+export function generateSphereGrid(gridType: GridType = GridType.Standard): SphereGridData {
+  const sphereGridData = (gridType === GridType.Expert ? expertGridData : standardGridData) as NodeData[];
   const nodes: SphereNode[] = [];
   const edges: Array<{ source: string; target: string }> = [];
   const positions: Record<string, { x: number; y: number }> = {};
@@ -45,13 +47,13 @@ export function generateSphereGrid(gridType: GridType = "standard"): SphereGridD
     const nodeId = `node-${nodeData.id}`;
     const sphereType = mapAttributeToType(nodeData.attribute_name, nodeData.ability_id, nodeData.lock_level);
 
-    const displayValue = sphereType === "empty" ? 0 : nodeData.value || 0;
+    const displayValue = sphereType === SphereType.Empty ? 0 : nodeData.value || 0;
 
     nodes.push({
       id: nodeId,
       type: sphereType,
       value: displayValue,
-      locked: sphereType === "locked" || nodeData.ability_id !== null,
+      locked: sphereType === SphereType.Locked || nodeData.ability_id !== null,
       abilityId: nodeData.ability_id,
       abilityName: nodeData.ability_id
         ? abilityNames[nodeData.ability_id] || `Ability ${nodeData.ability_id}`
@@ -102,14 +104,14 @@ export function useSphereData(gridType: Ref<GridType>, sharedNodes?: Ref<SphereN
   // Separate localStorage for each grid type
   const standardNodes = useLocalStorage<SphereNode[]>(
     "ffx-sphere-grid-nodes-standard",
-    generateSphereGrid("standard").nodes,
+    generateSphereGrid(GridType.Standard).nodes,
     {
       mergeDefaults: true,
     },
   );
   const expertNodes = useLocalStorage<SphereNode[]>(
     "ffx-sphere-grid-nodes-expert",
-    generateSphereGrid("expert").nodes,
+    generateSphereGrid(GridType.Expert).nodes,
     {
       mergeDefaults: true,
     },
@@ -122,7 +124,7 @@ export function useSphereData(gridType: Ref<GridType>, sharedNodes?: Ref<SphereN
     if (isSharedView && sharedNodesInternal.value) {
       nodes = sharedNodesInternal.value;
     } else {
-      nodes = gridType.value === "expert" ? expertNodes.value : standardNodes.value;
+      nodes = gridType.value === GridType.Expert ? expertNodes.value : standardNodes.value;
     }
 
     return {
@@ -164,7 +166,7 @@ export function useSphereData(gridType: Ref<GridType>, sharedNodes?: Ref<SphereN
     () => sphereData.value.nodes,
     (newNodes) => {
       if (!isSharedView) {
-        if (gridType.value === "expert") {
+        if (gridType.value === GridType.Expert) {
           expertNodes.value = newNodes;
         } else {
           standardNodes.value = newNodes;
@@ -193,7 +195,7 @@ export function useSphereData(gridType: Ref<GridType>, sharedNodes?: Ref<SphereN
     const counts = Object.fromEntries(Object.keys(sphereTypeInfo).map((type) => [type, 0])) as Record<string, number>;
 
     sphereData.value.nodes.forEach((node) => {
-      if (!node.abilityId && node.type !== "empty") {
+      if (!node.abilityId && node.type !== SphereType.Empty) {
         const currentCount = counts[node.type] ?? 0;
         counts[node.type] = currentCount + 1;
       }
@@ -235,7 +237,7 @@ export function useSphereData(gridType: Ref<GridType>, sharedNodes?: Ref<SphereN
     const freshDefaults = generateSphereGrid(gridType.value);
     sphereData.value.nodes = freshDefaults.nodes;
 
-    if (gridType.value === "expert") {
+    if (gridType.value === GridType.Expert) {
       expertNodes.value = freshDefaults.nodes;
     } else {
       standardNodes.value = freshDefaults.nodes;
@@ -255,7 +257,7 @@ export function useSphereData(gridType: Ref<GridType>, sharedNodes?: Ref<SphereN
       }
       return {
         ...node,
-        type: "empty" as const,
+        type: SphereType.Empty,
         value: 0,
         locked: false,
       };
@@ -263,7 +265,7 @@ export function useSphereData(gridType: Ref<GridType>, sharedNodes?: Ref<SphereN
 
     sphereData.value.nodes = clearedNodes;
 
-    if (gridType.value === "expert") {
+    if (gridType.value === GridType.Expert) {
       expertNodes.value = clearedNodes;
     } else {
       standardNodes.value = clearedNodes;
@@ -343,7 +345,7 @@ export function useSphereData(gridType: Ref<GridType>, sharedNodes?: Ref<SphereN
 
           sphereData.value.nodes = importData.nodes;
 
-          if (gridType.value === "expert") {
+          if (gridType.value === GridType.Expert) {
             expertNodes.value = importData.nodes;
           } else {
             standardNodes.value = importData.nodes;
@@ -372,7 +374,7 @@ export function useSphereData(gridType: Ref<GridType>, sharedNodes?: Ref<SphereN
     if (!isSharedView) return;
 
     const nodes = sphereData.value.nodes;
-    if (gridType.value === "expert") {
+    if (gridType.value === GridType.Expert) {
       expertNodes.value = nodes;
     } else {
       standardNodes.value = nodes;

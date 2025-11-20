@@ -76,11 +76,12 @@
 import { ref, computed, onMounted, watch } from "vue";
 import { useLocalStorage } from "@vueuse/core";
 import { storeToRefs } from "pinia";
-import { useSphereData, type GridType, generateSphereGrid } from "@/composables/useSphereData";
+import { useSphereData, generateSphereGrid } from "@/composables/useSphereData";
+import { GridType } from "@/domain/grid/GridType";
 import { useCytoscapeGrid } from "@/composables/useCytoscapeGrid";
 import { useSphereGridTour } from "@/composables/useSphereGridTour";
 import { useGridSharingStore } from "@/stores/gridSharing";
-import type { SphereType } from "@/types/sphere";
+import { SphereType } from "@/domain/grid/SphereType";
 import StatsBar from "./sphere-grid/StatsBar.vue";
 import StatsDetailsDialog from "./sphere-grid/StatsDetailsDialog.vue";
 import HelpDialog from "./sphere-grid/HelpDialog.vue";
@@ -97,10 +98,10 @@ const gridSharingStore = useGridSharingStore();
 const { isSharedView, sharedGridType } = storeToRefs(gridSharingStore);
 
 // State
-const selectedType = useLocalStorage<SphereType>("ffx-sphere-grid-selected-type", "hp");
+const selectedType = useLocalStorage<SphereType>("ffx-sphere-grid-selected-type", SphereType.Hp);
 const displayMode = useLocalStorage<"icons" | "numbers">("ffx-sphere-grid-display-mode", "icons");
 
-const storedGridType = useLocalStorage<GridType>("ffx-sphere-grid-type", "standard");
+const storedGridType = useLocalStorage<GridType>("ffx-sphere-grid-type", GridType.Standard);
 const gridType = ref<GridType>(sharedGridType.value || storedGridType.value);
 
 const showIcons = computed(() => displayMode.value === "icons");

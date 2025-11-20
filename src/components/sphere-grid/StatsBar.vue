@@ -10,10 +10,10 @@
           :key="stat.key"
           class="flex items-center gap-1 border rounded-md p-1.5 cursor-pointer transition-all min-w-0"
           :class="{
-            'ring-2 ring-ring shadow-lg': highlightedType === stat.key,
-            'opacity-50': highlightedType && highlightedType !== stat.key,
+            'ring-2 ring-ring shadow-lg': highlightedType === stat.sphereType,
+            'opacity-50': highlightedType && highlightedType !== stat.sphereType,
           }"
-          @click="handleStatClick(stat.key)"
+          @click="handleStatClick(stat.sphereType)"
         >
           <span class="font-semibold text-xs whitespace-nowrap" :class="stat.colorClass">{{ stat.label }}</span>
           <div class="font-mono text-sm font-bold tabular-nums flex items-center gap-1 min-w-0">
@@ -54,7 +54,8 @@ import { computed } from "vue";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import type { Stats, SphereType } from "@/types/sphere";
+import { SphereType } from "@/domain/grid/SphereType";
+import type { Stats } from "@/domain/grid/Stats";
 
 const props = defineProps<{
   stats: Stats;
@@ -93,15 +94,17 @@ const statCaps = {
 const statDisplayConfig = [
   {
     key: "hp" as const,
+    sphereType: SphereType.Hp,
     label: "HP",
     colorClass: "text-sphere-hp",
     badgeVariant: "hp" as const,
     cap: statCaps.hp,
     overCap: 99999,
   },
-  { key: "mp" as const, label: "MP", colorClass: "text-sphere-mp", badgeVariant: "mp" as const, cap: statCaps.mp },
+  { key: "mp" as const, sphereType: SphereType.Mp, label: "MP", colorClass: "text-sphere-mp", badgeVariant: "mp" as const, cap: statCaps.mp },
   {
     key: "strength" as const,
+    sphereType: SphereType.Strength,
     label: "STR",
     colorClass: "text-sphere-strength",
     badgeVariant: "strength" as const,
@@ -109,6 +112,7 @@ const statDisplayConfig = [
   },
   {
     key: "defense" as const,
+    sphereType: SphereType.Defense,
     label: "DEF",
     colorClass: "text-sphere-defense",
     badgeVariant: "defense" as const,
@@ -116,6 +120,7 @@ const statDisplayConfig = [
   },
   {
     key: "magic" as const,
+    sphereType: SphereType.Magic,
     label: "MAG",
     colorClass: "text-sphere-magic",
     badgeVariant: "magic" as const,
@@ -123,6 +128,7 @@ const statDisplayConfig = [
   },
   {
     key: "magicDef" as const,
+    sphereType: SphereType.MagicDef,
     label: "MDF",
     colorClass: "text-sphere-magicDef",
     badgeVariant: "magicDef" as const,
@@ -130,6 +136,7 @@ const statDisplayConfig = [
   },
   {
     key: "agility" as const,
+    sphereType: SphereType.Agility,
     label: "AGI",
     colorClass: "text-sphere-agility",
     badgeVariant: "agility" as const,
@@ -137,6 +144,7 @@ const statDisplayConfig = [
   },
   {
     key: "accuracy" as const,
+    sphereType: SphereType.Accuracy,
     label: "ACC",
     colorClass: "text-sphere-accuracy",
     badgeVariant: "accuracy" as const,
@@ -144,6 +152,7 @@ const statDisplayConfig = [
   },
   {
     key: "evasion" as const,
+    sphereType: SphereType.Evasion,
     label: "EVA",
     colorClass: "text-sphere-evasion",
     badgeVariant: "evasion" as const,
@@ -151,6 +160,7 @@ const statDisplayConfig = [
   },
   {
     key: "luck" as const,
+    sphereType: SphereType.Luck,
     label: "LCK",
     colorClass: "text-sphere-luck",
     badgeVariant: "luck" as const,

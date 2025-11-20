@@ -1,4 +1,6 @@
-import type { SphereType, SphereTypeInfo, Stats } from "@/types/sphere";
+import { SphereType } from "@/domain/grid/SphereType";
+import type { SphereTypeInfo } from "@/domain/grid/SphereTypeInfo";
+import type { Stats } from "@/domain/grid/Stats";
 import defenseIcon from "@/assets/spheres/DEF_Sprite.png";
 import strengthIcon from "@/assets/spheres/STR_Sprite.png";
 import abilityIconImg from "@/assets/spheres/ABI_Sprite.png";
@@ -20,52 +22,52 @@ export const getCssColor = (propertyName: string): string => {
 
 // Get sphere colors from CSS custom properties (single source of truth from styles.css)
 export const getSphereColors = (): Record<SphereType, string> => ({
-  empty: "#333333",
-  hp: getCssColor("--sphere-hp"),
-  mp: getCssColor("--sphere-mp"),
-  strength: getCssColor("--sphere-strength"),
-  defense: getCssColor("--sphere-defense"),
-  magic: getCssColor("--sphere-magic"),
-  magicDef: getCssColor("--sphere-magicDef"),
-  agility: getCssColor("--sphere-agility"),
-  accuracy: getCssColor("--sphere-accuracy"),
-  evasion: getCssColor("--sphere-evasion"),
-  luck: getCssColor("--sphere-luck"),
-  locked: getCssColor("--sphere-locked"),
+  [SphereType.Empty]: "#333333",
+  [SphereType.Hp]: getCssColor("--sphere-hp"),
+  [SphereType.Mp]: getCssColor("--sphere-mp"),
+  [SphereType.Strength]: getCssColor("--sphere-strength"),
+  [SphereType.Defense]: getCssColor("--sphere-defense"),
+  [SphereType.Magic]: getCssColor("--sphere-magic"),
+  [SphereType.MagicDef]: getCssColor("--sphere-magicDef"),
+  [SphereType.Agility]: getCssColor("--sphere-agility"),
+  [SphereType.Accuracy]: getCssColor("--sphere-accuracy"),
+  [SphereType.Evasion]: getCssColor("--sphere-evasion"),
+  [SphereType.Luck]: getCssColor("--sphere-luck"),
+  [SphereType.Locked]: getCssColor("--sphere-locked"),
 });
 
 export const abilityNodeColor = getCssColor("--sphere-ability");
 export const abilityIcon = abilityIconImg;
 
 export const sphereIcons: Partial<Record<SphereType, string>> = {
-  strength: strengthIcon,
-  defense: defenseIcon,
-  magic: magicIcon,
-  magicDef: magicDefIcon,
-  agility: agilityIcon,
-  accuracy: accuracyIcon,
-  evasion: evasionIcon,
-  luck: luckIcon,
-  hp: hpIcon,
-  mp: mpIcon,
-  locked:
+  [SphereType.Strength]: strengthIcon,
+  [SphereType.Defense]: defenseIcon,
+  [SphereType.Magic]: magicIcon,
+  [SphereType.MagicDef]: magicDefIcon,
+  [SphereType.Agility]: agilityIcon,
+  [SphereType.Accuracy]: accuracyIcon,
+  [SphereType.Evasion]: evasionIcon,
+  [SphereType.Luck]: luckIcon,
+  [SphereType.Hp]: hpIcon,
+  [SphereType.Mp]: mpIcon,
+  [SphereType.Locked]:
     "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWxvY2sta2V5aG9sZS1pY29uIGx1Y2lkZS1sb2NrLWtleWhvbGUiPjxjaXJjbGUgY3g9IjEyIiBjeT0iMTYiIHI9IjEiLz48cmVjdCB4PSIzIiB5PSIxMCIgd2lkdGg9IjE4IiBoZWlnaHQ9IjEyIiByeD0iMiIvPjxwYXRoIGQ9Ik03IDEwVjdhNSA1IDAgMCAxIDEwIDB2MyIvPjwvc3ZnPg==",
 };
 
 // Sphere type labels and values
 export const sphereTypeInfo: Record<SphereType, SphereTypeInfo> = {
-  empty: { label: "Empty", shortLabel: "---", statValue: 0, statKey: null },
-  hp: { label: "HP", shortLabel: "HP", statValue: 300, statKey: "hp" },
-  mp: { label: "MP", shortLabel: "MP", statValue: 40, statKey: "mp" },
-  strength: { label: "Strength", shortLabel: "STR", statValue: 4, statKey: "strength" },
-  defense: { label: "Defense", shortLabel: "DEF", statValue: 4, statKey: "defense" },
-  magic: { label: "Magic", shortLabel: "MAG", statValue: 4, statKey: "magic" },
-  magicDef: { label: "Magic Def", shortLabel: "MDF", statValue: 4, statKey: "magicDef" },
-  agility: { label: "Agility", shortLabel: "AGI", statValue: 4, statKey: "agility" },
-  accuracy: { label: "Accuracy", shortLabel: "ACC", statValue: 4, statKey: "accuracy" },
-  evasion: { label: "Evasion", shortLabel: "EVA", statValue: 4, statKey: "evasion" },
-  luck: { label: "Luck", shortLabel: "LCK", statValue: 4, statKey: "luck" },
-  locked: { label: "Locked", shortLabel: "LCKD", statValue: 0, statKey: null },
+  [SphereType.Empty]: { label: "Empty", shortLabel: "---", statValue: 0, statKey: null },
+  [SphereType.Hp]: { label: "HP", shortLabel: "HP", statValue: 300, statKey: "hp" },
+  [SphereType.Mp]: { label: "MP", shortLabel: "MP", statValue: 40, statKey: "mp" },
+  [SphereType.Strength]: { label: "Strength", shortLabel: "STR", statValue: 4, statKey: "strength" },
+  [SphereType.Defense]: { label: "Defense", shortLabel: "DEF", statValue: 4, statKey: "defense" },
+  [SphereType.Magic]: { label: "Magic", shortLabel: "MAG", statValue: 4, statKey: "magic" },
+  [SphereType.MagicDef]: { label: "Magic Def", shortLabel: "MDF", statValue: 4, statKey: "magicDef" },
+  [SphereType.Agility]: { label: "Agility", shortLabel: "AGI", statValue: 4, statKey: "agility" },
+  [SphereType.Accuracy]: { label: "Accuracy", shortLabel: "ACC", statValue: 4, statKey: "accuracy" },
+  [SphereType.Evasion]: { label: "Evasion", shortLabel: "EVA", statValue: 4, statKey: "evasion" },
+  [SphereType.Luck]: { label: "Luck", shortLabel: "LCK", statValue: 4, statKey: "luck" },
+  [SphereType.Locked]: { label: "Locked", shortLabel: "LCKD", statValue: 0, statKey: null },
 };
 
 // Base stats from FFX
@@ -88,22 +90,22 @@ export const mapAttributeToType = (
   abilityId: number | null,
   lockLevel: number | null,
 ): SphereType => {
-  if (lockLevel !== null) return "locked";
-  if (abilityId !== null) return "empty";
-  if (!attributeName) return "empty";
+  if (lockLevel !== null) return SphereType.Locked;
+  if (abilityId !== null) return SphereType.Empty;
+  if (!attributeName) return SphereType.Empty;
 
   const attributeMap: Record<string, SphereType> = {
-    HP: "hp",
-    MP: "mp",
-    Strength: "strength",
-    Defense: "defense",
-    Magic: "magic",
-    "Magic Defense": "magicDef",
-    Agility: "agility",
-    Accuracy: "accuracy",
-    Evasion: "evasion",
-    Luck: "luck",
+    HP: SphereType.Hp,
+    MP: SphereType.Mp,
+    Strength: SphereType.Strength,
+    Defense: SphereType.Defense,
+    Magic: SphereType.Magic,
+    "Magic Defense": SphereType.MagicDef,
+    Agility: SphereType.Agility,
+    Accuracy: SphereType.Accuracy,
+    Evasion: SphereType.Evasion,
+    Luck: SphereType.Luck,
   };
 
-  return attributeMap[attributeName] || "empty";
+  return attributeMap[attributeName] || SphereType.Empty;
 };

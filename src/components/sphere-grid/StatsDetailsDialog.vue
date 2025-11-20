@@ -16,7 +16,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import StatsPanel from "./StatsPanel.vue";
 import SphereCountsPanel from "./SphereCountsPanel.vue";
-import type { Stats } from "@/types/sphere";
+import type { Stats } from "@/domain/grid/Stats";
 
 const isOpen = defineModel<boolean>("open", { required: true });
 

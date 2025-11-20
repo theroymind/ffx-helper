@@ -30,7 +30,7 @@
 <script setup lang="ts">
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import type { SphereType } from "@/types/sphere";
+import type { SphereType } from "@/domain/grid/SphereType";
 import { sphereTypeInfo } from "@/constants/sphere";
 
 defineProps<{

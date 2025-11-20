@@ -1,6 +1,6 @@
-import { ref, computed, provide, inject, watch, type Ref, type InjectionKey } from "vue";
+import { ref, computed, provide, inject, type Ref, type InjectionKey } from "vue";
 import { useLocalStorage } from "@vueuse/core";
-import type { SphereType } from "@/types/sphere";
+import type { SphereType } from "@/domain/grid/SphereType";
 
 export interface GridNode {
   id: number;
@@ -276,19 +276,6 @@ export function createGridMapperContext() {
       };
       reader.onerror = () => reject(new Error("Failed to read file"));
       reader.readAsDataURL(file);
-    });
-  }
-
-  function loadImageFromUrl(url: string): Promise<HTMLImageElement> {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.onload = () => {
-        scaleImageToCanvas(img);
-        backgroundImage.value = img;
-        resolve(img);
-      };
-      img.onerror = () => reject(new Error(`Failed to load image from ${url}`));
-      img.src = url;
     });
   }
 

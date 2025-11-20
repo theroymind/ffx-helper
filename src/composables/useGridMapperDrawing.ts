@@ -1,5 +1,5 @@
 import { watch } from "vue";
-import type { SphereType } from "@/types/sphere";
+import type { SphereType } from "@/domain/grid/SphereType";
 import { getSphereColors, sphereTypeInfo } from "@/constants/sphere";
 import { type GridMapperContext, useGridMapperContext } from "./useGridMapperContext";
 

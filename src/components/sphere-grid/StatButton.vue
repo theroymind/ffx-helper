@@ -2,7 +2,7 @@
 import type { HTMLAttributes } from "vue";
 import type { ButtonVariants } from "@/components/ui/button";
 import { Button } from "@/components/ui/button";
-import type { SphereType } from "@/types/sphere";
+import type { SphereType } from "@/domain/grid/SphereType";
 import { sphereTypeInfo, sphereIcons } from "@/constants/sphere";
 import { cn } from "@/lib/utils";
 

@@ -16,7 +16,7 @@
   </Card>
 </template>
 <script setup lang="ts">
-import type { SphereType } from "@/types/sphere";
+import type { SphereType } from "@/domain/grid/SphereType";
 import { sphereTypeInfo } from "@/constants/sphere";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { StatButton } from ".";

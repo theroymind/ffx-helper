@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import type { Stats } from "@/types/sphere";
+import type { Stats } from "@/domain/grid/Stats";
 
 const props = defineProps<{
   stats: Stats;

@@ -19,7 +19,9 @@
       "Bash(npm run build:*)",
       "Bash(sips:*)",
       "Bash(npm run lint)",
-      "Bash(npx vue-tsc:*)"
+      "Bash(npx vue-tsc:*)",
+      "Bash(xargs sed -i '' 's|from \"\"\"\"@/types/sphere\"\"\"\"|from \"\"\"\"@/domain/grid/SphereType\"\"\"\"|g')",
+      "Bash(xargs sed:*)"
     ],
     "deny": [],
     "ask": []

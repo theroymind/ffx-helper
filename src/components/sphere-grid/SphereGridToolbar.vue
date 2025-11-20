@@ -9,8 +9,8 @@
                 variant="ghost"
                 size="icon"
                 class="h-8 w-8"
-                :class="{ 'bg-accent': gridType === 'standard' }"
-                @click="emit('update:gridType', 'standard')"
+                :class="{ 'bg-accent': gridType === GridType.Standard }"
+                @click="emit('update:gridType', GridType.Standard)"
               >
                 <span class="text-xs font-medium">STD</span>
               </Button>
@@ -26,8 +26,8 @@
                 variant="ghost"
                 size="icon"
                 class="h-8 w-8"
-                :class="{ 'bg-accent': gridType === 'expert' }"
-                @click="emit('update:gridType', 'expert')"
+                :class="{ 'bg-accent': gridType === GridType.Expert }"
+                @click="emit('update:gridType', GridType.Expert)"
               >
                 <span class="text-xs font-medium">EXP</span>
               </Button>
@@ -85,7 +85,7 @@ import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Image, Hash } from "lucide-vue-next";
-import type { GridType } from "@/composables/useSphereData";
+import { GridType } from "@/domain/grid/GridType";
 import { useGridSharingStore } from "@/stores/gridSharing";
 
 const { isSharedView } = storeToRefs(useGridSharingStore());

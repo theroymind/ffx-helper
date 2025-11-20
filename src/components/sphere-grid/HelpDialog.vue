@@ -29,7 +29,7 @@
           <h3 class="font-semibold text-sm">Import / Export</h3>
           <p class="text-xs text-muted-foreground">
             Import and export only work on the currently viewed sphere grid type ({{
-              gridType === "standard" ? "Standard" : "Expert"
+              gridType === GridType.Standard ? "Standard" : "Expert"
             }}).
           </p>
           <div class="flex gap-2">
@@ -64,7 +64,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Info, Upload, Download } from "lucide-vue-next";
-import type { GridType } from "@/composables/useSphereData";
+import { GridType } from "@/domain/grid/GridType";
 
 const isOpen = defineModel<boolean>("open", { required: true });
 

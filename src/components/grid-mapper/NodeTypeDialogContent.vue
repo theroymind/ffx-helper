@@ -99,7 +99,7 @@
       <div>
         <h3 class="m-0 mb-3 text-sm font-semibold text-foreground uppercase tracking-wide">Special Types</h3>
         <div class="grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-2">
-          <Button @click="selectNodeType('empty')" variant="secondary"> Empty </Button>
+          <Button @click="selectNodeType(SphereType.Empty)" variant="secondary"> Empty </Button>
           <Button @click="showAbilityInput = true" variant="ability"> Ability </Button>
           <Button @click="showLockedNodeSelector" variant="locked"> Locked Node </Button>
         </div>
@@ -110,7 +110,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, nextTick, onMounted } from "vue";
-import type { SphereType } from "@/types/sphere";
+import { SphereType } from "@/domain/grid/SphereType";
 import Button from "@/components/ui/button/Button.vue";
 import Label from "@/components/ui/label/Label.vue";
 import {
@@ -173,16 +173,16 @@ const filteredAbilities = computed(() => {
 
 // List of stat sphere types
 const statTypes: SphereType[] = [
-  "hp",
-  "mp",
-  "strength",
-  "defense",
-  "magic",
-  "magicDef",
-  "agility",
-  "accuracy",
-  "evasion",
-  "luck",
+  SphereType.Hp,
+  SphereType.Mp,
+  SphereType.Strength,
+  SphereType.Defense,
+  SphereType.Magic,
+  SphereType.MagicDef,
+  SphereType.Agility,
+  SphereType.Accuracy,
+  SphereType.Evasion,
+  SphereType.Luck,
 ];
 
 // Title and description management
@@ -216,8 +216,8 @@ const updateDialogContent = () => {
 
 // Node type selection handlers
 function selectNodeType(type: SphereType) {
-  if (type === "empty") {
-    emit("confirm", { type: "empty", value: 0 });
+  if (type === SphereType.Empty) {
+    emit("confirm", { type: SphereType.Empty, value: 0 });
   } else {
     selectedStatType.value = type;
     showValueSelector.value = true;
@@ -234,11 +234,11 @@ function showLockedNodeSelector() {
 }
 
 function selectLockedNode(level: number) {
-  emit("confirm", { type: "locked", lockLevel: level, value: 0 });
+  emit("confirm", { type: SphereType.Locked, lockLevel: level, value: 0 });
 }
 
 function confirmAbilityNode() {
-  emit("confirm", { type: "locked", abilityName: abilityName.value || "Ability", value: 0 });
+  emit("confirm", { type: SphereType.Locked, abilityName: abilityName.value || "Ability", value: 0 });
 }
 
 // Watch for state changes to update dialog title/description

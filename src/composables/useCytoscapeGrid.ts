@@ -1,6 +1,8 @@
 import { ref, type Ref, onBeforeUnmount, watch } from "vue";
 import cytoscape, { type Core, type NodeSingular } from "cytoscape";
-import type { SphereGridData, SphereNode, SphereType } from "@/types/sphere";
+import { SphereType } from "@/domain/grid/SphereType";
+import type { SphereGridData } from "@/domain/grid/SphereGridData";
+import type { SphereNode } from "@/domain/grid/SphereNode";
 import { getSphereColors, abilityNodeColor, abilityIcon, sphereTypeInfo, sphereIcons } from "@/constants/sphere";
 
 export function useCytoscapeGrid(

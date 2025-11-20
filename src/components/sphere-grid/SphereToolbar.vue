@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import type { SphereType } from "@/types/sphere";
+import type { SphereType } from "@/domain/grid/SphereType";
 import { sphereTypeInfo, sphereIcons } from "@/constants/sphere";
 import Button from "@/components/ui/button/Button.vue";
 import { Card } from "@/components/ui/card";
