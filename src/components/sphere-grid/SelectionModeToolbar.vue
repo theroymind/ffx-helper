@@ -41,10 +41,17 @@
 </template>
 
 <script setup lang="ts">
+import { watch } from "vue";
 import Button from "@/components/ui/button/Button.vue";
 import { Card } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { MousePointer2, Pointer } from "lucide-vue-next";
+import { useAnalytics } from "@/composables/useAnalytics";
 
 const selectionMode = defineModel<boolean>("selectionMode", { default: false });
+const { trackSelectionModeChanged } = useAnalytics();
+
+watch(selectionMode, (newMode) => {
+  trackSelectionModeChanged(newMode ? "multi" : "single");
+});
 </script>

@@ -1,11 +1,12 @@
-import { fileURLToPath, URL } from 'node:url'
+import { sentryVitePlugin } from "@sentry/vite-plugin";
+import { fileURLToPath, URL } from "node:url";
 
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import vueDevTools from 'vite-plugin-vue-devtools'
-import tailwindcss from '@tailwindcss/vite'
-import { VitePWA } from 'vite-plugin-pwa'
-import viteImagemin from 'vite-plugin-imagemin'
+import { defineConfig } from "vite";
+import vue from "@vitejs/plugin-vue";
+import vueDevTools from "vite-plugin-vue-devtools";
+import tailwindcss from "@tailwindcss/vite";
+import { VitePWA } from "vite-plugin-pwa";
+import viteImagemin from "vite-plugin-imagemin";
 
 export default defineConfig({
   plugins: [
@@ -13,109 +14,115 @@ export default defineConfig({
     vueDevTools(),
     tailwindcss(),
     VitePWA({
-      registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'favicon.svg', 'apple-touch-icon.png', 'favicon-96x96.png'],
+      registerType: "autoUpdate",
+      includeAssets: ["favicon.ico", "favicon.svg", "apple-touch-icon.png", "favicon-96x96.png"],
       manifest: {
-        name: 'FFX Sphere Grid Planner & Monster Arena Tracker',
-        short_name: 'FFX Planner',
-        description: 'Final Fantasy X Sphere Grid Planner & Monster Arena Tracker',
-        theme_color: '#09090b',
-        background_color: '#09090b',
-        display: 'standalone',
-        start_url: '/ffx-helper/',
+        name: "FFX Sphere Grid Planner & Monster Arena Tracker",
+        short_name: "FFX Planner",
+        description: "Final Fantasy X Sphere Grid Planner & Monster Arena Tracker",
+        theme_color: "#09090b",
+        background_color: "#09090b",
+        display: "standalone",
+        start_url: "/ffx-helper/",
         icons: [
           {
-            src: '/ffx-helper/web-app-manifest-192x192.png',
-            sizes: '192x192',
-            type: 'image/png',
-            purpose: 'any'
+            src: "/ffx-helper/web-app-manifest-192x192.png",
+            sizes: "192x192",
+            type: "image/png",
+            purpose: "any",
           },
           {
-            src: '/ffx-helper/web-app-manifest-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any'
+            src: "/ffx-helper/web-app-manifest-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "any",
           },
           {
-            src: '/ffx-helper/web-app-manifest-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'maskable'
-          }
-        ]
+            src: "/ffx-helper/web-app-manifest-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "maskable",
+          },
+        ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,json}'],
-        globIgnores: ['**/standard_sphere_grid.jpeg'],
+        globPatterns: ["**/*.{js,css,html,ico,png,svg,json}"],
+        globIgnores: ["**/standard_sphere_grid.jpeg"],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/.*\.(?:png|jpg|jpeg|svg|webp)$/,
-            handler: 'CacheFirst',
+            handler: "CacheFirst",
             options: {
-              cacheName: 'external-images',
+              cacheName: "external-images",
               expiration: {
                 maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 24 * 30
-              }
-            }
+                maxAgeSeconds: 60 * 60 * 24 * 30,
+              },
+            },
           },
           {
             urlPattern: /\/src\/assets\/standard_sphere_grid\.jpeg$/,
-            handler: 'NetworkFirst',
+            handler: "NetworkFirst",
             options: {
-              cacheName: 'grid-mapper-assets',
+              cacheName: "grid-mapper-assets",
               expiration: {
                 maxEntries: 1,
-                maxAgeSeconds: 60 * 60 * 24 * 7
-              }
-            }
-          }
-        ]
-      }
+                maxAgeSeconds: 60 * 60 * 24 * 7,
+              },
+            },
+          },
+        ],
+      },
     }),
     viteImagemin({
       gifsicle: {
         optimizationLevel: 7,
-        interlaced: false
+        interlaced: false,
       },
       optipng: {
-        optimizationLevel: 7
+        optimizationLevel: 7,
       },
       mozjpeg: {
-        quality: 80
+        quality: 80,
       },
       pngquant: {
         quality: [0.8, 0.9],
-        speed: 4
+        speed: 4,
       },
       svgo: {
         plugins: [
           {
-            name: 'removeViewBox'
+            name: "removeViewBox",
           },
           {
-            name: 'removeEmptyAttrs',
-            active: false
-          }
-        ]
-      }
-    })
+            name: "removeEmptyAttrs",
+            active: false,
+          },
+        ],
+      },
+    }),
+    sentryVitePlugin({
+      org: "eric-roy",
+      project: "javascript-vue",
+    }),
   ],
   build: {
     rollupOptions: {
       output: {
         manualChunks: {
-          'cytoscape': ['cytoscape'],
-          'vendor': ['vue', '@vueuse/core'],
-          'driver': ['driver.js']
-        }
-      }
-    }
+          cytoscape: ["cytoscape"],
+          vendor: ["vue", "@vueuse/core"],
+          driver: ["driver.js"],
+        },
+      },
+    },
+
+    sourcemap: true,
   },
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
-  base: process.env.NODE_ENV === 'production' ? '/ffx-helper/' : '/',
-})
+  base: process.env.NODE_ENV === "production" ? "/ffx-helper/" : "/",
+});

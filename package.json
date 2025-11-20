@@ -24,6 +24,8 @@
     ]
   },
   "dependencies": {
+    "@sentry/vite-plugin": "^4.6.0",
+    "@sentry/vue": "^10.26.0",
     "@tailwindcss/vite": "^4.1.17",
     "@types/cytoscape": "^3.21.9",
     "@vueuse/core": "^14.0.0",

@@ -6,6 +6,7 @@ import abilitiesData from "@/assets/abilities.json";
 import type { SphereNode, SphereGridData, Stats, SphereType } from "@/types/sphere";
 import { mapAttributeToType, sphereTypeInfo, baseStats } from "@/constants/sphere";
 import { useGridSharingStore } from "@/stores/gridSharing";
+import { useAnalytics } from "@/composables/useAnalytics";
 
 export type GridType = "standard" | "expert";
 
@@ -96,6 +97,7 @@ export function useSphereData(gridType: Ref<GridType>, sharedNodes?: Ref<SphereN
   const gridSharingStore = useGridSharingStore();
   const isSharedView = gridSharingStore.isSharedView;
   const sharedNodesInternal = sharedNodes ?? ref(null);
+  const { trackSphereModification, trackGridReset, trackGridImported, trackGridShared } = useAnalytics();
 
   // Separate localStorage for each grid type
   const standardNodes = useLocalStorage<SphereNode[]>(
@@ -150,9 +152,12 @@ export function useSphereData(gridType: Ref<GridType>, sharedNodes?: Ref<SphereN
   );
 
   // Watch for shared view changes and reload
-  watch(() => isSharedView, () => {
-    sphereData.value = getCurrentGridData();
-  });
+  watch(
+    () => isSharedView,
+    () => {
+      sphereData.value = getCurrentGridData();
+    },
+  );
 
   // Watch for changes to nodes and persist to localStorage only if not shared view
   watch(
@@ -239,6 +244,8 @@ export function useSphereData(gridType: Ref<GridType>, sharedNodes?: Ref<SphereN
     if (updateCallback) {
       updateCallback(freshDefaults.nodes);
     }
+
+    trackGridReset();
   }
 
   function clearGrid(updateCallback?: (nodes: SphereNode[]) => void) {
@@ -272,6 +279,7 @@ export function useSphereData(gridType: Ref<GridType>, sharedNodes?: Ref<SphereN
     if (node) {
       node.type = type;
       node.value = value;
+      trackSphereModification(type, value);
     }
   }
 
@@ -299,6 +307,8 @@ export function useSphereData(gridType: Ref<GridType>, sharedNodes?: Ref<SphereN
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+
+    trackGridShared("export");
   }
 
   // Import grid from JSON file
@@ -343,6 +353,7 @@ export function useSphereData(gridType: Ref<GridType>, sharedNodes?: Ref<SphereN
             updateCallback(importData.nodes);
           }
 
+          trackGridImported();
           resolve();
         } catch (error) {
           reject(error);

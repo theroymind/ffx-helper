@@ -1,7 +1,10 @@
 <template>
   <div class="h-screen p-6">
     <div class="flex flex-col gap-4 h-full">
-      <div v-if="isSharedView" class="bg-sphere-ability/20 border border-sphere-ability rounded-md p-3 flex items-center justify-between">
+      <div
+        v-if="isSharedView"
+        class="bg-sphere-ability/20 border border-sphere-ability rounded-md p-3 flex items-center justify-between"
+      >
         <div class="flex items-center gap-2">
           <Info class="h-4 w-4 text-sphere-ability" />
           <span class="text-sm font-medium">Viewing shared grid (read-only)</span>
@@ -35,17 +38,19 @@
         :total="overriddenSphereCounts.total"
       />
 
-      <HelpDialog v-model:open="showHelpDialog" :grid-type="gridType" @export="handleExport" @import="handleImport" @take-tour="startTour" />
+      <HelpDialog
+        v-model:open="showHelpDialog"
+        :grid-type="gridType"
+        @export="handleExport"
+        @import="handleImport"
+        @take-tour="startTour"
+      />
 
       <div class="relative flex-1">
         <SphereGridCanvas ref="canvasRef" />
         <div class="absolute top-4 left-0 right-0 z-10 flex justify-center">
           <div class="flex flex-row gap-2">
-            <FileActionsToolbar
-              @export="handleExport"
-              @import="handleImport"
-              @share="handleShare"
-            />
+            <FileActionsToolbar @export="handleExport" @import="handleImport" @share="handleShare" />
             <SphereGridToolbar
               data-tour="grid-toolbar"
               :grid-type="gridType"
@@ -54,7 +59,12 @@
               @update:display-mode="displayMode = $event"
             />
             <SphereToolbar v-if="!isSharedView" data-tour="sphere-toolbar" v-model="selectedType" />
-            <GridControlsToolbar v-if="!isSharedView" data-tour="controls-toolbar" @reset="handleReset" @clear="handleClear" />
+            <GridControlsToolbar
+              v-if="!isSharedView"
+              data-tour="controls-toolbar"
+              @reset="handleReset"
+              @clear="handleClear"
+            />
           </div>
         </div>
       </div>
@@ -88,18 +98,32 @@ const { isSharedView, sharedGridType } = storeToRefs(gridSharingStore);
 
 // State
 const selectedType = useLocalStorage<SphereType>("ffx-sphere-grid-selected-type", "hp");
-const displayMode = ref<"icons" | "numbers">("icons");
-const gridType = ref<GridType>(sharedGridType.value || "standard");
+const displayMode = useLocalStorage<"icons" | "numbers">("ffx-sphere-grid-display-mode", "icons");
+
+const storedGridType = useLocalStorage<GridType>("ffx-sphere-grid-type", "standard");
+const gridType = ref<GridType>(sharedGridType.value || storedGridType.value);
+
 const showIcons = computed(() => displayMode.value === "icons");
 const selectedNodeIds = ref<string[]>([]);
 const highlightedType = ref<SphereType | null>(null);
 const showDetailsDialog = ref(false);
 const showHelpDialog = ref(false);
 
-// Watch shared grid type changes from URL
+watch(gridType, (newType) => {
+  if (!isSharedView.value) {
+    storedGridType.value = newType;
+  }
+});
+
 watch(sharedGridType, (newType) => {
   if (newType) {
     gridType.value = newType;
+  }
+});
+
+watch(isSharedView, (isShared) => {
+  if (!isShared) {
+    gridType.value = storedGridType.value;
   }
 });
 
@@ -111,8 +135,8 @@ const sharedNodes = computed(() => {
 });
 
 const lowestValues: Record<SphereType, number> = {
-  hp: 300,
-  mp: 40,
+  hp: 200,
+  mp: 20,
   strength: 4,
   defense: 4,
   magic: 4,

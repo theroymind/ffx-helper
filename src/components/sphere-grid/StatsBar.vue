@@ -29,7 +29,7 @@
         </div>
       </div>
 
-      <div class="flex items-center gap-3 md:pl-3 md:border-l flex-shrink-0">
+      <div class="flex items-start gap-3 md:pl-3 md:border-l flex-shrink-0">
         <div class="grid grid-cols-[auto_auto] gap-x-2 gap-y-2 items-center">
           <span class="text-xs text-muted-foreground text-right">Overridden:</span>
           <Badge variant="secondary" class="font-mono font-bold">

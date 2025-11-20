@@ -3,6 +3,7 @@ import { defineStore } from "pinia";
 import { useUrlSearchParams } from "@vueuse/core";
 import type { SphereNode, SphereType } from "@/types/sphere";
 import type { GridType } from "@/composables/useSphereData";
+import { useAnalytics } from "@/composables/useAnalytics";
 
 const MAX_NODES_STANDARD = 860;
 const MAX_NODES_EXPERT = 803;
@@ -97,7 +98,7 @@ const SPHERE_TYPES: SphereType[] = [
   "locked",
 ];
 
-const VALID_VALUES = [0, 1, 2, 3, 4, 20, 40, 200];
+const VALID_VALUES = [0, 1, 2, 3, 4, 10, 20, 40, 200];
 
 function typeToInt(type: SphereType): number {
   const index = SPHERE_TYPES.indexOf(type);
@@ -212,7 +213,9 @@ function decodeModifiedNodes(encoded: string, gridType: GridType = "standard"): 
 
 function extractModifiedNodes(nodes: SphereNode[], defaultNodes: SphereNode[]): ModifiedNode[] {
   if (nodes.length !== defaultNodes.length) {
-    throw new Error(`Node count mismatch: current grid has ${nodes.length} nodes, default grid has ${defaultNodes.length} nodes`);
+    throw new Error(
+      `Node count mismatch: current grid has ${nodes.length} nodes, default grid has ${defaultNodes.length} nodes`,
+    );
   }
 
   const modifications: ModifiedNode[] = [];
@@ -288,6 +291,7 @@ export const useGridSharingStore = defineStore("gridSharing", () => {
   const isSharedView = ref(false);
   const sharedGridType = ref<GridType | null>(null);
   const sharedModifications = ref<ModifiedNode[]>([]);
+  const { trackGridShared } = useAnalytics();
 
   function loadFromUrl() {
     const gridData = params.g as string | null;
@@ -335,6 +339,7 @@ export const useGridSharingStore = defineStore("gridSharing", () => {
       );
     }
 
+    trackGridShared("link");
     return urlString;
   }
 
