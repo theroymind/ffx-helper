@@ -1,6 +1,6 @@
 import { ref, type Ref, onBeforeUnmount, watch } from "vue";
 import cytoscape, { type Core, type NodeSingular } from "cytoscape";
-import type { SphereGridData, SphereType } from "@/types/sphere";
+import type { SphereGridData, SphereNode, SphereType } from "@/types/sphere";
 import { getSphereColors, abilityNodeColor, abilityIcon, sphereTypeInfo, sphereIcons } from "@/constants/sphere";
 
 export function useCytoscapeGrid(
@@ -56,7 +56,6 @@ export function useCytoscapeGrid(
           },
         })),
       ],
-      wheelSensitivity: 0.2,
       style: [
         {
           selector: "node",
@@ -79,10 +78,6 @@ export function useCytoscapeGrid(
               return sphereIcons[type] || "none";
             },
             "background-fit": "cover",
-            // "background-width": 90,
-            // "background-height": 90,
-            "border-width": 0,
-            "border-color": "red",
             opacity: (ele: NodeSingular) => {
               if (!highlightedType.value) return 1;
               const isAbilityNode = ele.data("abilityId") !== null && ele.data("abilityId") !== undefined;
@@ -101,7 +96,6 @@ export function useCytoscapeGrid(
                 return ele.data("abilityName");
               }
 
-              const type = ele.data("type") as SphereType;
               const value = ele.data("value");
 
               // When showing icons, show H/M for HP/MP, otherwise empty
@@ -180,48 +174,11 @@ export function useCytoscapeGrid(
       layout: {
         name: "preset",
       },
-      userZoomingEnabled: false,
       userPanningEnabled: true,
       boxSelectionEnabled: true,
       autoungrabify: true,
       autounselectify: false,
     });
-
-    // Override default wheel behavior for pan/zoom control
-    const containerElement = container.value;
-    if (containerElement) {
-      const wheelHandler = (event: WheelEvent) => {
-        event.preventDefault();
-        event.stopPropagation();
-
-        if (!cy) return;
-
-        if (event.ctrlKey || event.metaKey) {
-          // Ctrl+scroll or pinch = zoom
-          const zoomFactor = event.deltaY > 0 ? 0.95 : 1.05;
-          const currentZoom = cy.zoom();
-          const newZoom = Math.max(0.1, Math.min(10, currentZoom * zoomFactor));
-
-          cy.zoom({
-            level: newZoom,
-            renderedPosition: {
-              x: event.offsetX,
-              y: event.offsetY,
-            },
-          });
-        } else {
-          // Normal scroll = pan
-          const pan = cy.pan();
-          cy.pan({
-            x: pan.x - event.deltaX,
-            y: pan.y - event.deltaY,
-          });
-        }
-      };
-
-      containerElement.addEventListener("wheel", wheelHandler, { passive: false });
-      wheelEventCleanup = () => containerElement.removeEventListener("wheel", wheelHandler);
-    }
 
     // Handle node interactions
     cy.on("mousedown", "node", (event) => {
@@ -302,7 +259,7 @@ export function useCytoscapeGrid(
     onNodeUpdate(node.id(), newType, statValue);
   };
 
-  const resetNodes = (nodes: any[]) => {
+  const resetNodes = (nodes: SphereNode[]) => {
     if (!cy) return;
 
     const sphereColors = getSphereColors();
@@ -315,7 +272,7 @@ export function useCytoscapeGrid(
         const isAbilityNode = defaultNode.abilityId !== null && defaultNode.abilityId !== undefined;
         const nodeType = defaultNode.type as SphereType;
         node.style("background-color", isAbilityNode ? abilityNodeColor : sphereColors[nodeType]);
-        node.style("background-image", showIcons.value ? (sphereIcons[nodeType] || "none") : "none");
+        node.style("background-image", showIcons.value ? sphereIcons[nodeType] || "none" : "none");
       }
     });
   };

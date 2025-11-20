@@ -1,53 +1,57 @@
 <template>
-  <div
-    class="bg-card border rounded-lg px-3 py-2 flex flex-col md:flex-row items-stretch justify-between gap-3 min-w-0"
-  >
-    <div data-tour="stats-bar" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-1.5 flex-1 min-w-0">
+  <Card>
+    <CardContent class="flex flex-col md:flex-row items-stretch justify-between gap-3 min-w-0">
       <div
-        v-for="stat in statDisplay"
-        :key="stat.key"
-        class="flex items-center gap-1 border rounded-md p-1.5 cursor-pointer transition-all min-w-0"
-        :class="{
-          'ring-2 ring-ring shadow-lg': highlightedType === stat.key,
-          'opacity-50': highlightedType && highlightedType !== stat.key,
-        }"
-        @click="handleStatClick(stat.key)"
+        data-tour="stats-bar"
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-1.5 flex-1 min-w-0"
       >
-        <span class="font-semibold text-xs whitespace-nowrap" :class="stat.colorClass">{{ stat.label }}</span>
-        <div class="font-mono text-sm font-bold tabular-nums flex items-center gap-1 min-w-0">
-          <template v-if="stat.isCapped">
-            <span class="text-success">{{ stat.cappedValue }}</span>
-            <span class="text-destructive text-xs">({{ stat.actualValue }})</span>
-          </template>
-          <span v-else class="text-foreground">{{ stat.value }}</span>
+        <div
+          v-for="stat in statDisplay"
+          :key="stat.key"
+          class="flex items-center gap-1 border rounded-md p-1.5 cursor-pointer transition-all min-w-0"
+          :class="{
+            'ring-2 ring-ring shadow-lg': highlightedType === stat.key,
+            'opacity-50': highlightedType && highlightedType !== stat.key,
+          }"
+          @click="handleStatClick(stat.key)"
+        >
+          <span class="font-semibold text-xs whitespace-nowrap" :class="stat.colorClass">{{ stat.label }}</span>
+          <div class="font-mono text-sm font-bold tabular-nums flex items-center gap-1 min-w-0">
+            <template v-if="stat.isCapped">
+              <span class="text-success">{{ stat.cappedValue }}</span>
+              <span class="text-destructive text-xs">({{ stat.actualValue }})</span>
+            </template>
+            <span v-else class="text-foreground">{{ stat.value }}</span>
+          </div>
+          <Badge v-if="stat.count > 0" :variant="stat.badgeVariant" class="font-mono text-xs">
+            {{ stat.count }}
+          </Badge>
         </div>
-        <Badge v-if="stat.count > 0" :variant="stat.badgeVariant" class="font-mono text-xs">
-          {{ stat.count }}
-        </Badge>
       </div>
-    </div>
 
-    <div class="flex items-center gap-3 md:pl-3 md:border-l flex-shrink-0">
-      <div class="grid grid-cols-[auto_auto] gap-x-2 gap-y-2 items-center">
-        <span class="text-xs text-muted-foreground text-right">Overridden:</span>
-        <Badge variant="secondary" class="font-mono font-bold">
-          {{ totalOverridden }}
-        </Badge>
-        <span class="text-xs text-muted-foreground text-right">Total Spheres:</span>
-        <Badge variant="secondary" class="font-mono font-bold">
-          {{ total }}
-        </Badge>
+      <div class="flex items-center gap-3 md:pl-3 md:border-l flex-shrink-0">
+        <div class="grid grid-cols-[auto_auto] gap-x-2 gap-y-2 items-center">
+          <span class="text-xs text-muted-foreground text-right">Overridden:</span>
+          <Badge variant="secondary" class="font-mono font-bold">
+            {{ totalOverridden }}
+          </Badge>
+          <span class="text-xs text-muted-foreground text-right">Total Spheres:</span>
+          <Badge variant="secondary" class="font-mono font-bold">
+            {{ total }}
+          </Badge>
+        </div>
+        <div class="flex flex-col gap-2">
+          <Button data-tour="details-button" variant="outline" size="sm" @click="emit('openDetails')">Details</Button>
+          <Button data-tour="help-button" variant="outline" size="sm" @click="emit('openHelp')">Help</Button>
+        </div>
       </div>
-      <div class="flex flex-col gap-2">
-        <Button data-tour="details-button" variant="outline" size="sm" @click="emit('openDetails')">Details</Button>
-        <Button data-tour="help-button" variant="outline" size="sm" @click="emit('openHelp')">Help</Button>
-      </div>
-    </div>
-  </div>
+    </CardContent>
+  </Card>
 </template>
 
 <script setup lang="ts">
 import { computed } from "vue";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { Stats, SphereType } from "@/types/sphere";
