@@ -5,10 +5,9 @@ import { useDark, useToggle } from "@vueuse/core";
 export type Theme = "light" | "dark";
 
 export const useThemeStore = defineStore("theme", () => {
-  // useDark will automatically manage the 'dark' class on the body element
   const isDark = useDark({
     storageKey: "ffx-theme",
-    selector: "body",
+    selector: "html",
     attribute: "class",
     valueDark: "dark",
     valueLight: "",

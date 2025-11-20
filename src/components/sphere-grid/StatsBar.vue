@@ -1,6 +1,8 @@
 <template>
-  <div class="bg-card border rounded-lg px-3 py-2 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 min-w-0">
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-1.5 flex-1 min-w-0">
+  <div
+    class="bg-card border rounded-lg px-3 py-2 flex flex-col md:flex-row items-stretch justify-between gap-3 min-w-0"
+  >
+    <div data-tour="stats-bar" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-1.5 flex-1 min-w-0">
       <div
         v-for="stat in statDisplay"
         :key="stat.key"
@@ -31,14 +33,14 @@
         <Badge variant="secondary" class="font-mono font-bold">
           {{ totalOverridden }}
         </Badge>
-        <span class="text-xs text-muted-foreground text-right">Total:</span>
+        <span class="text-xs text-muted-foreground text-right">Total Spheres:</span>
         <Badge variant="secondary" class="font-mono font-bold">
           {{ total }}
         </Badge>
       </div>
       <div class="flex flex-col gap-2">
-        <Button variant="outline" size="sm" @click="emit('openDetails')">Details</Button>
-        <Button variant="outline" size="sm" @click="emit('openHelp')">Help</Button>
+        <Button data-tour="details-button" variant="outline" size="sm" @click="emit('openDetails')">Details</Button>
+        <Button data-tour="help-button" variant="outline" size="sm" @click="emit('openHelp')">Help</Button>
       </div>
     </div>
   </div>

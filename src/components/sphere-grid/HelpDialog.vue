@@ -51,6 +51,15 @@
             </Button>
           </div>
         </div>
+
+        <Separator />
+
+        <div class="space-y-3">
+          <Button variant="outline" size="sm" class="w-full" @click="handleTakeTour">
+            <Info class="h-4 w-4 mr-2" />
+            Take Tour
+          </Button>
+        </div>
       </div>
     </DialogContent>
     <input ref="fileInputRef" type="file" accept=".json" class="hidden" @change="handleFileChange" />
@@ -74,6 +83,7 @@ defineProps<{
 const emit = defineEmits<{
   export: [];
   import: [file: File];
+  takeTour: [];
 }>();
 
 const fileInputRef = ref<HTMLInputElement | null>(null);
@@ -84,6 +94,11 @@ function handleExport() {
 
 function handleImportClick() {
   fileInputRef.value?.click();
+}
+
+function handleTakeTour() {
+  isOpen.value = false;
+  emit("takeTour");
 }
 
 function handleFileChange(event: Event) {

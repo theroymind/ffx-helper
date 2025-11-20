@@ -1,6 +1,6 @@
 <template>
   <TooltipProvider>
-    <Card class="p-2">
+    <Card v-bind="$attrs" class="p-2">
       <div class="flex gap-1 flex-wrap">
         <Tooltip v-for="type in selectableTypes" :key="type">
           <TooltipTrigger as-child>

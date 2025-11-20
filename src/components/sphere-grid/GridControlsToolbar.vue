@@ -1,6 +1,6 @@
 <template>
   <TooltipProvider>
-    <Card class="p-2">
+    <Card v-bind="$attrs" class="p-2">
       <div class="flex gap-1">
         <Tooltip>
           <TooltipTrigger as-child>

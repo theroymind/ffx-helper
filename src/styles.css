@@ -207,3 +207,66 @@
 .animate-pulse-bg [data-slot="collapsible-trigger"] > div {
   animation: pulse-bg 1s ease-in-out;
 }
+
+.driver-popover {
+  background: var(--color-popover) !important;
+  color: var(--color-popover-foreground) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.3) !important;
+}
+
+.driver-popover-title {
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  color: var(--color-popover-foreground) !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.driver-popover-description {
+  font-size: 0.875rem !important;
+  color: var(--color-muted-foreground) !important;
+  line-height: 1.5 !important;
+}
+
+.driver-popover-close-btn {
+  color: var(--color-muted-foreground) !important;
+  transition: color 0.2s !important;
+}
+
+.driver-popover-close-btn:hover {
+  color: var(--color-foreground) !important;
+}
+
+.driver-popover-footer {
+  margin-top: 1rem !important;
+  padding-top: 1rem !important;
+  border-top: 1px solid var(--color-border) !important;
+}
+
+.driver-popover-next-btn,
+.driver-popover-prev-btn {
+  background: var(--color-primary) !important;
+  color: var(--color-primary-foreground) !important;
+  border: none !important;
+  padding: 0.5rem 1rem !important;
+  border-radius: calc(var(--radius-lg) - 2px) !important;
+  font-weight: 500 !important;
+  font-size: 0.875rem !important;
+  transition: opacity 0.2s !important;
+}
+
+.driver-popover-next-btn:hover,
+.driver-popover-prev-btn:hover {
+  opacity: 0.9 !important;
+}
+
+.driver-popover-prev-btn {
+  background: var(--color-secondary) !important;
+  color: var(--color-secondary-foreground) !important;
+}
+
+.driver-popover-progress-text {
+  color: var(--color-muted-foreground) !important;
+  font-size: 0.875rem !important;
+}

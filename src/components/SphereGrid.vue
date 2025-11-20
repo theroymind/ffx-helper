@@ -18,13 +18,14 @@
         :total="overriddenSphereCounts.total"
       />
 
-      <HelpDialog v-model:open="showHelpDialog" :grid-type="gridType" @export="handleExport" @import="handleImport" />
+      <HelpDialog v-model:open="showHelpDialog" :grid-type="gridType" @export="handleExport" @import="handleImport" @take-tour="startTour" />
 
       <div class="relative flex-1">
         <SphereGridCanvas ref="canvasRef" />
         <div class="absolute top-4 left-0 right-0 z-10 flex justify-center">
           <div class="flex flex-row gap-2">
             <SphereGridToolbar
+              data-tour="grid-toolbar"
               :grid-type="gridType"
               :display-mode="displayMode"
               @update:grid-type="gridType = $event"
@@ -32,8 +33,8 @@
               @export="handleExport"
               @import="handleImport"
             />
-            <SphereToolbar v-model="selectedType" />
-            <GridControlsToolbar v-model:selection-mode="selectionMode" @reset="handleReset" @clear="handleClear" />
+            <SphereToolbar data-tour="sphere-toolbar" v-model="selectedType" />
+            <GridControlsToolbar data-tour="controls-toolbar" v-model:selection-mode="selectionMode" @reset="handleReset" @clear="handleClear" />
           </div>
         </div>
       </div>
@@ -46,6 +47,7 @@ import { ref, computed, onMounted, watch } from "vue";
 import { useLocalStorage } from "@vueuse/core";
 import { useSphereData, type GridType } from "@/composables/useSphereData";
 import { useCytoscapeGrid } from "@/composables/useCytoscapeGrid";
+import { useSphereGridTour } from "@/composables/useSphereGridTour";
 import type { SphereType } from "@/types/sphere";
 import StatsBar from "./sphere-grid/StatsBar.vue";
 import StatsDetailsDialog from "./sphere-grid/StatsDetailsDialog.vue";
@@ -124,9 +126,15 @@ const { initializeCytoscape, resetNodes, clearSelection, updateSelectedNodes } =
   handleSelectionChange,
 );
 
+// Tour
+const { startTour, shouldAutoStart } = useSphereGridTour();
+
 // Initialize Cytoscape on mount
 onMounted(() => {
   initializeCytoscape();
+  if (shouldAutoStart()) {
+    setTimeout(() => startTour(), 500);
+  }
 });
 
 // Reinitialize when grid type changes
