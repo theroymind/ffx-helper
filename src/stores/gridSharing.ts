@@ -8,12 +8,15 @@ import type { ModifiedNode } from "@/domain/grid/ModifiedNode";
 import { BitWriter } from "@/utils/BitWriter";
 import { BitReader } from "@/utils/BitReader";
 import { useAnalytics } from "@/composables/useAnalytics";
+import { sphereTypeInfo } from "@/constants/sphere";
 
 const MAX_NODES_STANDARD = 860;
 const MAX_NODES_EXPERT = 803;
 const MAX_URL_LENGTH = 4000;
 const SPHERE_TYPES = Object.values(SphereType);
-const VALID_VALUES = [0, 1, 2, 3, 4, 10, 20, 40, 200, 300];
+
+const MAGIC_NUMBER = 0b1011;
+const ENCODING_VERSION = 1;
 
 export const useGridSharingStore = defineStore("gridSharing", () => {
   const params = useUrlSearchParams("history");
@@ -41,24 +44,6 @@ export const useGridSharingStore = defineStore("gridSharing", () => {
     return type;
   }
 
-  function valueToInt(value: number): number {
-    const index = VALID_VALUES.indexOf(value);
-    if (index === -1) {
-      throw new Error(`Invalid sphere value: ${value} (expected one of: ${VALID_VALUES.join(", ")})`);
-    }
-    return index;
-  }
-
-  function intToValue(index: number): number {
-    if (index < 0 || index >= VALID_VALUES.length) {
-      throw new Error(`Invalid value index: ${index} (must be 0-${VALID_VALUES.length - 1})`);
-    }
-    const value = VALID_VALUES[index];
-    if (value === undefined) {
-      throw new Error(`Invalid value index: ${index}`);
-    }
-    return value;
-  }
 
   function base64UrlEncode(bytes: Uint8Array): string {
     let binary = "";
@@ -89,24 +74,25 @@ export const useGridSharingStore = defineStore("gridSharing", () => {
     }
   }
 
-  function encodeModifiedNodes(modifications: ModifiedNode[]): string {
+  function encodeModifiedNodes(modifications: ModifiedNode[], gridType: GridType): string {
     const writer = new BitWriter();
 
+    writer.write(MAGIC_NUMBER, 4);
+    writer.write(ENCODING_VERSION, 4);
+    writer.write(gridType === GridType.Expert ? 1 : 0, 1);
     writer.write(modifications.length, 10);
 
     modifications.forEach((mod) => {
       writer.write(mod.index, 10);
       writer.write(typeToInt(mod.type), 4);
-      writer.write(valueToInt(mod.value), 4);
     });
 
     return base64UrlEncode(writer.toBytes());
   }
 
-  function decodeModifiedNodes(encoded: string, gridType: GridType = GridType.Standard): ModifiedNode[] {
-    const bytes = base64UrlDecode(encoded);
-    const reader = new BitReader(bytes);
-
+  function decodeV1(reader: BitReader): { modifications: ModifiedNode[]; gridType: GridType } {
+    const gridTypeBit = reader.read(1);
+    const gridType = gridTypeBit === 1 ? GridType.Expert : GridType.Standard;
     const maxNodes = gridType === GridType.Expert ? MAX_NODES_EXPERT : MAX_NODES_STANDARD;
     const count = reader.read(10);
 
@@ -123,14 +109,36 @@ export const useGridSharingStore = defineStore("gridSharing", () => {
         throw new Error(`Invalid node index: ${index} exceeds maximum ${maxNodes - 1} for ${gridType} grid`);
       }
 
+      const type = intToType(reader.read(4));
+      const value = sphereTypeInfo[type].statValue;
+
       modifications.push({
         index,
-        type: intToType(reader.read(4)),
-        value: intToValue(reader.read(4)),
+        type,
+        value,
       });
     }
 
-    return modifications;
+    return { modifications, gridType };
+  }
+
+  function decodeModifiedNodes(encoded: string): { modifications: ModifiedNode[]; gridType: GridType } {
+    const bytes = base64UrlDecode(encoded);
+    const reader = new BitReader(bytes);
+
+    const magic = reader.read(4);
+
+    if (magic !== MAGIC_NUMBER) {
+      throw new Error(`Invalid data format: expected magic number ${MAGIC_NUMBER.toString(2)}, got ${magic.toString(2)}`);
+    }
+
+    const version = reader.read(4);
+
+    if (version === 1) {
+      return decodeV1(reader);
+    } else {
+      throw new Error(`Unsupported encoding version: ${version}`);
+    }
   }
 
   function extractModifiedNodes(nodes: SphereNode[], defaultNodes: SphereNode[]): ModifiedNode[] {
@@ -210,12 +218,10 @@ export const useGridSharingStore = defineStore("gridSharing", () => {
 
   function loadFromUrl() {
     const gridData = params.g as string | null;
-    const gridTypeParam = params.t as string | null;
 
-    if (gridData && gridTypeParam) {
+    if (gridData) {
       try {
-        const gridType = gridTypeParam === GridType.Expert ? GridType.Expert : GridType.Standard;
-        const modifications = decodeModifiedNodes(gridData, gridType);
+        const { modifications, gridType } = decodeModifiedNodes(gridData);
 
         sharedModifications.value = modifications;
         sharedGridType.value = gridType;
@@ -238,11 +244,10 @@ export const useGridSharingStore = defineStore("gridSharing", () => {
 
   function generateShareUrl(nodes: SphereNode[], defaultNodes: SphereNode[], gridType: GridType): string {
     const modifications = extractModifiedNodes(nodes, defaultNodes);
-    const encoded = encodeModifiedNodes(modifications);
+    const encoded = encodeModifiedNodes(modifications, gridType);
 
     const url = new URL(window.location.href);
     url.searchParams.set("g", encoded);
-    url.searchParams.set("t", gridType);
 
     const urlString = url.toString();
 
@@ -267,12 +272,11 @@ export const useGridSharingStore = defineStore("gridSharing", () => {
 
   function clearShareParams() {
     delete params.g;
-    delete params.t;
     clearSharedView();
   }
 
   watch(
-    () => [params.g, params.t],
+    () => params.g,
     () => {
       loadFromUrl();
     },

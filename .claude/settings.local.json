@@ -23,7 +23,8 @@
       "Bash(xargs sed -i '' 's|from \"\"\"\"@/types/sphere\"\"\"\"|from \"\"\"\"@/domain/grid/SphereType\"\"\"\"|g')",
       "Bash(xargs sed:*)",
       "Bash(npm uninstall:*)",
-      "Bash(npm run test:unit:*)"
+      "Bash(npm run test:unit:*)",
+      "Bash(node /tmp/analyze.mjs:*)"
     ],
     "deny": [],
     "ask": []
