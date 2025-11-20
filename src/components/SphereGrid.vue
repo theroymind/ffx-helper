@@ -91,6 +91,7 @@ import SphereToolbar from "./sphere-grid/SphereToolbar.vue";
 import GridControlsToolbar from "./sphere-grid/GridControlsToolbar.vue";
 import FileActionsToolbar from "./sphere-grid/FileActionsToolbar.vue";
 import { Button } from "@/components/ui/button";
+import { toast } from "vue-sonner";
 import { Info, Save, X } from "lucide-vue-next";
 
 // Grid sharing store
@@ -199,7 +200,7 @@ const { startTour, shouldAutoStart } = useSphereGridTour();
 // Initialize Cytoscape on mount
 onMounted(() => {
   initializeCytoscape();
-  if (shouldAutoStart()) {
+  if (shouldAutoStart() && !isSharedView.value) {
     setTimeout(() => startTour(), 500);
   }
 });
@@ -240,7 +241,10 @@ function handleShare() {
   const defaultGrid = generateSphereGrid(gridType.value);
   const shareUrl = gridSharingStore.generateShareUrl(sphereData.value.nodes, defaultGrid.nodes, gridType.value);
   navigator.clipboard.writeText(shareUrl).then(() => {
-    alert("Share URL copied to clipboard!");
+    toast.success("Copied!", {
+      description: "Share URL copied to clipboard",
+      duration: 2500,
+    });
   });
 }
 
@@ -248,7 +252,10 @@ function handleShare() {
 function handleSaveSharedGrid() {
   saveSharedGridToLocal();
   gridSharingStore.clearShareParams();
-  alert("Grid saved to your local storage!");
+  toast.success("Grid saved!", {
+    description: "Grid saved to your local storage",
+    duration: 2500,
+  });
 }
 
 // Handle back to my grid

@@ -97,7 +97,7 @@ export const useGridSharingStore = defineStore("gridSharing", () => {
     modifications.forEach((mod) => {
       writer.write(mod.index, 10);
       writer.write(typeToInt(mod.type), 4);
-      writer.write(valueToInt(mod.value), 3);
+      writer.write(valueToInt(mod.value), 4);
     });
 
     return base64UrlEncode(writer.toBytes());
@@ -126,7 +126,7 @@ export const useGridSharingStore = defineStore("gridSharing", () => {
       modifications.push({
         index,
         type: intToType(reader.read(4)),
-        value: intToValue(reader.read(3)),
+        value: intToValue(reader.read(4)),
       });
     }
 

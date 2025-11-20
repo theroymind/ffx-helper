@@ -1,3 +1,9 @@
+<template>
+  <Primitive data-slot="item" :as="as" :as-child="asChild" :class="cn(itemVariants({ variant, size }), props.class)">
+    <slot />
+  </Primitive>
+</template>
+
 <script setup lang="ts">
 import type { PrimitiveProps } from "reka-ui";
 import type { HTMLAttributes } from "vue";
@@ -19,9 +25,3 @@ const props = withDefaults(
   },
 );
 </script>
-
-<template>
-  <Primitive data-slot="item" :as="as" :as-child="asChild" :class="cn(itemVariants({ variant, size }), props.class)">
-    <slot />
-  </Primitive>
-</template>

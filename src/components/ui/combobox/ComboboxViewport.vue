@@ -1,3 +1,13 @@
+<template>
+  <ComboboxViewport
+    data-slot="combobox-viewport"
+    v-bind="forwarded"
+    :class="cn('max-h-[300px] scroll-py-1 overflow-x-hidden overflow-y-auto', props.class)"
+  >
+    <slot />
+  </ComboboxViewport>
+</template>
+
 <script setup lang="ts">
 import type { ComboboxViewportProps } from "reka-ui";
 import type { HTMLAttributes } from "vue";
@@ -11,13 +21,3 @@ const delegatedProps = reactiveOmit(props, "class");
 
 const forwarded = useForwardProps(delegatedProps);
 </script>
-
-<template>
-  <ComboboxViewport
-    data-slot="combobox-viewport"
-    v-bind="forwarded"
-    :class="cn('max-h-[300px] scroll-py-1 overflow-x-hidden overflow-y-auto', props.class)"
-  >
-    <slot />
-  </ComboboxViewport>
-</template>

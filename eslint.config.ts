@@ -24,5 +24,24 @@ export default defineConfigWithVueTs(
     ...pluginVitest.configs.recommended,
     files: ['src/**/__tests__/*'],
   },
+  {
+    name: 'app/shadcn-ui-exceptions',
+    files: ['src/components/ui/**/*.vue'],
+    rules: {
+      'vue/multi-word-component-names': 'off',
+    },
+  },
+  {
+    name: 'app/vue-component-order',
+    files: ['**/*.vue'],
+    rules: {
+      'vue/block-order': [
+        'error',
+        {
+          order: ['template', 'script', 'style'],
+        },
+      ],
+    },
+  },
   skipFormatting,
 )

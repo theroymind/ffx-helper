@@ -1,8 +1,3 @@
-<script setup lang="ts">
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Info } from "lucide-vue-next";
-</script>
-
 <template>
   <Card>
     <CardHeader>
@@ -45,3 +40,8 @@ import { Info } from "lucide-vue-next";
     </CardContent>
   </Card>
 </template>
+
+<script setup lang="ts">
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Info } from "lucide-vue-next";
+</script>

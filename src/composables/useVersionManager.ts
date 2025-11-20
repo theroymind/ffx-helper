@@ -1,4 +1,4 @@
-import { ref, computed } from "vue";
+import { computed } from "vue";
 import { useLocalStorage } from "@vueuse/core";
 import type { GridNode } from "@/composables/useGridMapperContext";
 

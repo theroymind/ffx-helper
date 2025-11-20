@@ -86,8 +86,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import Button from "@/components/ui/button/Button.vue";
+import { Button } from "@/components/ui/button";
 import NodeTypeDialogContent from "@/components/grid-mapper/NodeTypeDialogContent.vue";
 import GridMapperToolbar from "@/components/grid-mapper/GridMapperToolbar.vue";
 import GridMapperStats from "@/components/grid-mapper/GridMapperStats.vue";
@@ -188,8 +187,8 @@ function handleClick(event: MouseEvent) {
   }
 }
 
-function handleMouseUp(event: MouseEvent) {
-  const result = handleMouseUpEvent(event);
+function handleMouseUp() {
+  const result = handleMouseUpEvent();
 
   if (result && result.type === "drag-to-create") {
     pendingNodePosition.value = { x: result.worldX, y: result.worldY };

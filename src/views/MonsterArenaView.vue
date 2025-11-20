@@ -50,7 +50,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, nextTick } from "vue";
+import { onMounted, nextTick } from "vue";
 import { Save, RotateCcw } from "lucide-vue-next";
 import { useMonsterArena } from "@/composables/useMonsterArena";
 import MonsterSummaryCard from "@/components/monster-arena/MonsterSummaryCard.vue";

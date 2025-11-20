@@ -1,3 +1,28 @@
+<template>
+  <Card>
+    <CardHeader>
+      <CardTitle class="text-gold text-base font-semibold">Current Stats</CardTitle>
+    </CardHeader>
+    <CardContent>
+      <div
+        v-for="stat in statDisplay"
+        :key="stat.key"
+        class="flex justify-between items-center rounded transition-colors"
+      >
+        <span class="font-semibold text-xs" :class="stat.colorClass">{{ stat.label }}</span>
+        <div class="font-mono text-base font-bold tabular-nums flex items-center gap-2">
+          <template v-if="stat.isCapped">
+            <span class="text-success">{{ stat.cappedValue }}</span>
+            <span class="text-destructive">({{ stat.actualValue }})</span>
+            <span v-if="stat.isOverCap" class="text-xs text-destructive">!</span>
+          </template>
+          <span v-else class="text-foreground">{{ stat.value }}</span>
+        </div>
+      </div>
+    </CardContent>
+  </Card>
+</template>
+
 <script setup lang="ts">
 import { computed } from "vue";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -50,28 +75,3 @@ const statDisplay = computed(() => {
   });
 });
 </script>
-
-<template>
-  <Card>
-    <CardHeader>
-      <CardTitle class="text-gold text-base font-semibold">Current Stats</CardTitle>
-    </CardHeader>
-    <CardContent>
-      <div
-        v-for="stat in statDisplay"
-        :key="stat.key"
-        class="flex justify-between items-center rounded transition-colors"
-      >
-        <span class="font-semibold text-xs" :class="stat.colorClass">{{ stat.label }}</span>
-        <div class="font-mono text-base font-bold tabular-nums flex items-center gap-2">
-          <template v-if="stat.isCapped">
-            <span class="text-success">{{ stat.cappedValue }}</span>
-            <span class="text-destructive">({{ stat.actualValue }})</span>
-            <span v-if="stat.isOverCap" class="text-xs text-destructive">!</span>
-          </template>
-          <span v-else class="text-foreground">{{ stat.value }}</span>
-        </div>
-      </div>
-    </CardContent>
-  </Card>
-</template>

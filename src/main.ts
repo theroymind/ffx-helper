@@ -1,6 +1,7 @@
 import { createApp } from "vue";
 import { createPinia } from "pinia";
 import "./styles.css";
+import "vue-sonner/style.css";
 import * as Sentry from "@sentry/vue";
 
 import App from "./App.vue";

@@ -71,7 +71,7 @@ export function useGridMapperEvents(providedContext?: GridMapperContext) {
     }
   }
 
-  function handleMouseUp(event: MouseEvent) {
+  function handleMouseUp() {
     const wasDragging = ctx.isDraggingToCreate.value;
 
     ctx.isPanning.value = false;

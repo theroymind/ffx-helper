@@ -21,7 +21,9 @@
       "Bash(npm run lint)",
       "Bash(npx vue-tsc:*)",
       "Bash(xargs sed -i '' 's|from \"\"\"\"@/types/sphere\"\"\"\"|from \"\"\"\"@/domain/grid/SphereType\"\"\"\"|g')",
-      "Bash(xargs sed:*)"
+      "Bash(xargs sed:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(npm run test:unit:*)"
     ],
     "deny": [],
     "ask": []

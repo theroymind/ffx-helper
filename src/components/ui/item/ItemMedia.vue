@@ -1,3 +1,9 @@
+<template>
+  <div data-slot="item-media" :data-variant="props.variant" :class="cn(itemMediaVariants({ variant }), props.class)">
+    <slot />
+  </div>
+</template>
+
 <script setup lang="ts">
 import type { HTMLAttributes } from "vue";
 import type { ItemMediaVariants } from ".";
@@ -9,9 +15,3 @@ const props = defineProps<{
   variant?: ItemMediaVariants["variant"];
 }>();
 </script>
-
-<template>
-  <div data-slot="item-media" :data-variant="props.variant" :class="cn(itemMediaVariants({ variant }), props.class)">
-    <slot />
-  </div>
-</template>
