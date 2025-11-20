@@ -1,0 +1,26 @@
+{
+  "icon": {
+    "desktop": {
+      "regularIconTransformation": {
+        "type": "none"
+      },
+      "darkIconType": "none"
+    },
+    "touch": {
+      "transformation": {
+        "type": "none"
+      },
+      "appTitle": null
+    },
+    "webAppManifest": {
+      "transformation": {
+        "type": "none"
+      },
+      "backgroundColor": "#09090b",
+      "name": "FFX Sphere Grid Planner & Monster Arena Tracker",
+      "shortName": "FFX Planner",
+      "themeColor": "#09090b"
+    }
+  },
+  "path": "/ffx-helper/"
+}

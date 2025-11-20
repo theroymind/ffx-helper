@@ -16,7 +16,8 @@
       "Bash(xargs kill:*)",
       "Bash(git log:*)",
       "Bash(node -e:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(sips:*)"
     ],
     "deny": [],
     "ask": []
