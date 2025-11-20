@@ -98,7 +98,7 @@ const SPHERE_TYPES: SphereType[] = [
   "locked",
 ];
 
-const VALID_VALUES = [0, 1, 2, 3, 4, 10, 20, 40, 200];
+const VALID_VALUES = [0, 1, 2, 3, 4, 10, 20, 40, 200, 300];
 
 function typeToInt(type: SphereType): number {
   const index = SPHERE_TYPES.indexOf(type);

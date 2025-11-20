@@ -135,8 +135,8 @@ const sharedNodes = computed(() => {
 });
 
 const lowestValues: Record<SphereType, number> = {
-  hp: 200,
-  mp: 20,
+  hp: 300,
+  mp: 40,
   strength: 4,
   defense: 4,
   magic: 4,
