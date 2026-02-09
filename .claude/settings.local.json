@@ -24,7 +24,11 @@
       "Bash(xargs sed:*)",
       "Bash(npm uninstall:*)",
       "Bash(npm run test:unit:*)",
-      "Bash(node /tmp/analyze.mjs:*)"
+      "Bash(node /tmp/analyze.mjs:*)",
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(npx vitest run:*)",
+      "Bash(node --version:*)"
     ],
     "deny": [],
     "ask": []

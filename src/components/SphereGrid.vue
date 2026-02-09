@@ -55,7 +55,7 @@
               data-tour="grid-toolbar"
               :grid-type="gridType"
               :display-mode="displayMode"
-              @update:grid-type="gridType = $event"
+              @update:grid-type="handleGridTypeChange"
               @update:display-mode="displayMode = $event"
             />
             <SphereToolbar v-if="!isSharedView" data-tour="sphere-toolbar" v-model="selectedType" />
@@ -73,15 +73,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, computed, onMounted, watch, toRef } from "vue";
 import { useLocalStorage } from "@vueuse/core";
 import { storeToRefs } from "pinia";
-import { useSphereData, generateSphereGrid } from "@/composables/useSphereData";
 import { GridType } from "@/domain/grid/GridType";
 import { useCytoscapeGrid } from "@/composables/useCytoscapeGrid";
 import { useSphereGridTour } from "@/composables/useSphereGridTour";
 import { useGridSharingStore } from "@/stores/gridSharing";
 import { SphereType } from "@/domain/grid/SphereType";
+import { injectGridState } from "@/composables/useGridState";
+import { injectGridStats } from "@/composables/useGridStats";
+import { injectGridFileOps } from "@/composables/useGridFileOps";
 import StatsBar from "./sphere-grid/StatsBar.vue";
 import StatsDetailsDialog from "./sphere-grid/StatsDetailsDialog.vue";
 import HelpDialog from "./sphere-grid/HelpDialog.vue";
@@ -94,47 +96,31 @@ import { Button } from "@/components/ui/button";
 import { toast } from "vue-sonner";
 import { Info, Save, X } from "lucide-vue-next";
 
-// Grid sharing store
-const gridSharingStore = useGridSharingStore();
-const { isSharedView, sharedGridType } = storeToRefs(gridSharingStore);
+const props = defineProps<{
+  gridType: GridType;
+}>();
 
-// State
+const emit = defineEmits<{
+  "update:grid-type": [value: GridType];
+}>();
+
+const gridType = toRef(props, "gridType");
+
+const gridSharingStore = useGridSharingStore();
+const { isSharedView } = storeToRefs(gridSharingStore);
+
+const { sphereData, defaultNodes, updateNode, updateNodes, resetGrid, clearGrid } = injectGridState();
+const { stats, sphereCounts, overriddenSphereCounts } = injectGridStats();
+const { exportGrid, importGrid, saveSharedGridToLocal } = injectGridFileOps();
+
 const selectedType = useLocalStorage<SphereType>("ffx-sphere-grid-selected-type", SphereType.Hp);
 const displayMode = useLocalStorage<"icons" | "numbers">("ffx-sphere-grid-display-mode", "icons");
-
-const storedGridType = useLocalStorage<GridType>("ffx-sphere-grid-type", GridType.Standard);
-const gridType = ref<GridType>(sharedGridType.value || storedGridType.value);
 
 const showIcons = computed(() => displayMode.value === "icons");
 const selectedNodeIds = ref<string[]>([]);
 const highlightedType = ref<SphereType | null>(null);
 const showDetailsDialog = ref(false);
 const showHelpDialog = ref(false);
-
-watch(gridType, (newType) => {
-  if (!isSharedView.value) {
-    storedGridType.value = newType;
-  }
-});
-
-watch(sharedGridType, (newType) => {
-  if (newType) {
-    gridType.value = newType;
-  }
-});
-
-watch(isSharedView, (isShared) => {
-  if (!isShared) {
-    gridType.value = storedGridType.value;
-  }
-});
-
-// Compute shared nodes for useSphereData
-const sharedNodes = computed(() => {
-  if (!isSharedView) return null;
-  const defaultGrid = generateSphereGrid(gridType.value);
-  return gridSharingStore.loadSharedGrid(defaultGrid.nodes);
-});
 
 const lowestValues: Record<SphereType, number> = {
   hp: 300,
@@ -151,20 +137,9 @@ const lowestValues: Record<SphereType, number> = {
   locked: 0,
 };
 
-// Composables
-const {
-  sphereData,
-  stats,
-  sphereCounts,
-  overriddenSphereCounts,
-  resetGrid,
-  clearGrid,
-  updateNode,
-  updateNodes,
-  exportGrid,
-  importGrid,
-  saveSharedGridToLocal,
-} = useSphereData(gridType, sharedNodes);
+function handleGridTypeChange(newType: GridType) {
+  emit("update:grid-type", newType);
+}
 
 // Canvas ref
 const canvasRef = ref<InstanceType<typeof SphereGridCanvas> | null>(null);
@@ -236,10 +211,8 @@ async function handleImport(file: File) {
   }
 }
 
-// Handle share
 function handleShare() {
-  const defaultGrid = generateSphereGrid(gridType.value);
-  const shareUrl = gridSharingStore.generateShareUrl(sphereData.value.nodes, defaultGrid.nodes, gridType.value);
+  const shareUrl = gridSharingStore.generateShareUrl(sphereData.value.nodes, defaultNodes.value, gridType.value);
   navigator.clipboard.writeText(shareUrl).then(() => {
     toast.success("Copied!", {
       description: "Share URL copied to clipboard",
