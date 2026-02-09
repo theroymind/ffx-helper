@@ -17,6 +17,7 @@ export function useCytoscapeGrid(
   let cy: Core | null = null;
   const isDragging = ref(false);
   let wheelEventCleanup: (() => void) | null = null;
+  let middleMouseCleanup: (() => void) | null = null;
 
   const initializeCytoscape = () => {
     if (!container.value) return;
@@ -24,6 +25,10 @@ export function useCytoscapeGrid(
     if (wheelEventCleanup) {
       wheelEventCleanup();
       wheelEventCleanup = null;
+    }
+    if (middleMouseCleanup) {
+      middleMouseCleanup();
+      middleMouseCleanup = null;
     }
     if (cy) {
       cy.destroy();
@@ -182,34 +187,72 @@ export function useCytoscapeGrid(
 
     const containerElement = container.value;
     if (containerElement) {
-      const wheelHandler = (event: WheelEvent) => {
+      function wheelHandler(event: WheelEvent) {
         event.preventDefault();
-
         if (!cy) return;
 
         if (event.ctrlKey || event.metaKey) {
+          if (event.deltaY === 0) return;
           const zoomFactor = event.deltaY > 0 ? 0.95 : 1.05;
           const currentZoom = cy.zoom();
           const newZoom = Math.max(0.1, Math.min(10, currentZoom * zoomFactor));
-
           cy.zoom({
             level: newZoom,
-            renderedPosition: {
-              x: event.offsetX,
-              y: event.offsetY,
-            },
+            renderedPosition: { x: event.offsetX, y: event.offsetY },
           });
         } else {
           const pan = cy.pan();
-          cy.pan({
-            x: pan.x - event.deltaX,
-            y: pan.y - event.deltaY,
-          });
+          cy.pan({ x: pan.x - event.deltaX, y: pan.y - event.deltaY });
         }
-      };
+      }
 
       containerElement.addEventListener("wheel", wheelHandler, { passive: false });
       wheelEventCleanup = () => containerElement.removeEventListener("wheel", wheelHandler);
+
+      let isPanning = false;
+      let panStartX = 0;
+      let panStartY = 0;
+      let panStartPan = { x: 0, y: 0 };
+
+      function panMouseDown(event: MouseEvent) {
+        if (event.button === 1 || event.button === 2) {
+          event.preventDefault();
+          isPanning = true;
+          panStartX = event.clientX;
+          panStartY = event.clientY;
+          panStartPan = cy ? { ...cy.pan() } : { x: 0, y: 0 };
+        }
+      }
+
+      function panMouseMove(event: MouseEvent) {
+        if (isPanning && cy) {
+          cy.pan({
+            x: panStartPan.x + (event.clientX - panStartX),
+            y: panStartPan.y + (event.clientY - panStartY),
+          });
+        }
+      }
+
+      function panMouseUp(event: MouseEvent) {
+        if (event.button === 1 || event.button === 2) {
+          isPanning = false;
+        }
+      }
+
+      function preventContextMenu(event: MouseEvent) {
+        event.preventDefault();
+      }
+
+      containerElement.addEventListener("mousedown", panMouseDown);
+      containerElement.addEventListener("contextmenu", preventContextMenu);
+      document.addEventListener("mousemove", panMouseMove);
+      document.addEventListener("mouseup", panMouseUp);
+      middleMouseCleanup = () => {
+        containerElement.removeEventListener("mousedown", panMouseDown);
+        containerElement.removeEventListener("contextmenu", preventContextMenu);
+        document.removeEventListener("mousemove", panMouseMove);
+        document.removeEventListener("mouseup", panMouseUp);
+      };
     }
 
     // Handle node interactions
@@ -352,6 +395,10 @@ export function useCytoscapeGrid(
     if (wheelEventCleanup) {
       wheelEventCleanup();
       wheelEventCleanup = null;
+    }
+    if (middleMouseCleanup) {
+      middleMouseCleanup();
+      middleMouseCleanup = null;
     }
     if (cy) {
       cy.destroy();
