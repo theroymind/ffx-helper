@@ -101,7 +101,14 @@ const statDisplayConfig = [
     cap: statCaps.hp,
     overCap: 99999,
   },
-  { key: "mp" as const, sphereType: SphereType.Mp, label: "MP", colorClass: "text-sphere-mp", badgeVariant: "mp" as const, cap: statCaps.mp },
+  {
+    key: "mp" as const,
+    sphereType: SphereType.Mp,
+    label: "MP",
+    colorClass: "text-sphere-mp",
+    badgeVariant: "mp" as const,
+    cap: statCaps.mp,
+  },
   {
     key: "strength" as const,
     sphereType: SphereType.Strength,

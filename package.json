@@ -23,7 +23,8 @@
   },
   "lint-staged": {
     "*.{ts,tsx,vue}": [
-      "eslint --fix --cache"
+      "eslint --fix --cache",
+      "prettier --write"
     ]
   },
   "dependencies": {

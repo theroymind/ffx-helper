@@ -44,7 +44,6 @@ export const useGridSharingStore = defineStore("gridSharing", () => {
     return type;
   }
 
-
   function base64UrlEncode(bytes: Uint8Array): string {
     let binary = "";
     for (let i = 0; i < bytes.length; i++) {
@@ -129,7 +128,9 @@ export const useGridSharingStore = defineStore("gridSharing", () => {
     const magic = reader.read(4);
 
     if (magic !== MAGIC_NUMBER) {
-      throw new Error(`Invalid data format: expected magic number ${MAGIC_NUMBER.toString(2)}, got ${magic.toString(2)}`);
+      throw new Error(
+        `Invalid data format: expected magic number ${MAGIC_NUMBER.toString(2)}, got ${magic.toString(2)}`,
+      );
     }
 
     const version = reader.read(4);

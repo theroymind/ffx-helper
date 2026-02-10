@@ -49,8 +49,13 @@
 
       <div class="relative flex-1 overflow-hidden">
         <SphereGridCanvas ref="canvasRef" />
-        <div class="absolute top-2 md:top-4 left-0 right-0 z-10 flex flex-col items-center gap-2 px-2 md:px-0 overflow-hidden">
-          <div data-test-id="toolbar-row" class="flex flex-row gap-2 max-w-full overflow-x-auto [&::-webkit-scrollbar]:hidden">
+        <div
+          class="absolute top-2 md:top-4 left-0 right-0 z-10 flex flex-col items-center gap-2 px-2 md:px-0 overflow-hidden"
+        >
+          <div
+            data-test-id="toolbar-row"
+            class="flex flex-row gap-2 max-w-full overflow-x-auto [&::-webkit-scrollbar]:hidden"
+          >
             <FileActionsToolbar @export="handleExport" @import="handleImport" @share="handleShare" />
             <SphereGridToolbar
               data-tour="grid-toolbar"
@@ -67,10 +72,22 @@
             />
             <Card class="p-2 md:hidden">
               <div class="flex gap-1">
-                <Button data-test-id="mobile-stats-button" variant="ghost" size="icon" class="h-8 w-8" @click="showDetailsDialog = true">
+                <Button
+                  data-test-id="mobile-stats-button"
+                  variant="ghost"
+                  size="icon"
+                  class="h-8 w-8"
+                  @click="showDetailsDialog = true"
+                >
                   <BarChart3 class="h-4 w-4" />
                 </Button>
-                <Button data-test-id="mobile-help-button" variant="ghost" size="icon" class="h-8 w-8" @click="showHelpDialog = true">
+                <Button
+                  data-test-id="mobile-help-button"
+                  variant="ghost"
+                  size="icon"
+                  class="h-8 w-8"
+                  @click="showHelpDialog = true"
+                >
                   <HelpCircle class="h-4 w-4" />
                 </Button>
               </div>

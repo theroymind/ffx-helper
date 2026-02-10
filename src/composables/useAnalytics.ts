@@ -16,10 +16,25 @@ declare global {
   }
 }
 
+const UMAMI_SRC = "https://cloud.umami.is/script.js";
+const UMAMI_WEBSITE_ID = "7740cd5b-03fa-4302-b3cb-6d35ac534828";
+
 const isEnabled = ref(false);
+
+function injectUmamiScript(): void {
+  const script = document.createElement("script");
+  script.defer = true;
+  script.src = UMAMI_SRC;
+  script.dataset.websiteId = UMAMI_WEBSITE_ID;
+  document.head.appendChild(script);
+}
 
 export function useAnalytics() {
   function initialize() {
+    if (!import.meta.env.PROD) return;
+
+    injectUmamiScript();
+
     if (typeof window !== "undefined" && window.umami) {
       isEnabled.value = true;
     }

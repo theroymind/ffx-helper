@@ -15,7 +15,11 @@
               Reset to Default
             </DropdownMenuItem>
 
-            <DropdownMenuItem data-test-id="clear-grid-item" @click="showClearDialog = true" class="text-destructive focus:text-destructive">
+            <DropdownMenuItem
+              data-test-id="clear-grid-item"
+              @click="showClearDialog = true"
+              class="text-destructive focus:text-destructive"
+            >
               <Trash2 class="h-4 w-4 mr-2" />
               Clear Grid
             </DropdownMenuItem>

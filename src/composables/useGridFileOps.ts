@@ -20,11 +20,7 @@ export interface GridFileOps {
 
 export const gridFileOpsKey: InjectionKey<GridFileOps> = Symbol("gridFileOps");
 
-export function useGridFileOps(
-  gridType: Ref<GridType>,
-  gridState: GridState,
-  storage: GridStorage,
-): GridFileOps {
+export function useGridFileOps(gridType: Ref<GridType>, gridState: GridState, storage: GridStorage): GridFileOps {
   const { trackGridImported, trackGridShared } = useAnalytics();
 
   function exportGrid() {
