@@ -13,6 +13,8 @@ export function useCytoscapeGrid(
   showIcons: Ref<boolean>,
   highlightedType: Ref<SphereType | null>,
   onSelectionChange?: (nodeIds: string[]) => void,
+  onDragStart?: () => void,
+  onDragEnd?: () => void,
 ) {
   let cy: Core | null = null;
   const isDragging = ref(false);
@@ -259,6 +261,7 @@ export function useCytoscapeGrid(
     cy.on("mousedown", "node", (event) => {
       const node = event.target;
       if (!node.data("abilityId")) {
+        onDragStart?.();
         isDragging.value = true;
         updateNodeType(node);
       }
@@ -314,6 +317,7 @@ export function useCytoscapeGrid(
 
     cy.on("mouseup", () => {
       isDragging.value = false;
+      onDragEnd?.();
     });
 
     // Handle selection changes
@@ -328,9 +332,10 @@ export function useCytoscapeGrid(
     document.addEventListener("mouseup", handleGlobalMouseUp);
   };
 
-  const handleGlobalMouseUp = () => {
+  function handleGlobalMouseUp() {
     isDragging.value = false;
-  };
+    onDragEnd?.();
+  }
 
   const updateNodeType = (node: NodeSingular) => {
     const newType = selectedType.value;
@@ -360,7 +365,8 @@ export function useCytoscapeGrid(
         const isAbilityNode = defaultNode.abilityId !== null && defaultNode.abilityId !== undefined;
         const nodeType = defaultNode.type as SphereType;
         node.style("background-color", isAbilityNode ? abilityNodeColor : sphereColors[nodeType]);
-        node.style("background-image", showIcons.value ? sphereIcons[nodeType] || "none" : "none");
+        const icon = isAbilityNode ? abilityIcon : sphereIcons[nodeType] || "none";
+        node.style("background-image", showIcons.value ? icon : "none");
       }
     });
   };

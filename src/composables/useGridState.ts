@@ -61,7 +61,7 @@ export function useGridState(
         nodes.value = buildNodes();
       }
     },
-    { deep: true },
+    { deep: true, flush: "sync" },
   );
 
   watch(

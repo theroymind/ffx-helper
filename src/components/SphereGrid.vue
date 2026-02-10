@@ -74,7 +74,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch, toRef } from "vue";
-import { useLocalStorage } from "@vueuse/core";
+import { useLocalStorage, useEventListener } from "@vueuse/core";
 import { storeToRefs } from "pinia";
 import { GridType } from "@/domain/grid/GridType";
 import { useCytoscapeGrid } from "@/composables/useCytoscapeGrid";
@@ -84,6 +84,7 @@ import { SphereType } from "@/domain/grid/SphereType";
 import { injectGridState } from "@/composables/useGridState";
 import { injectGridStats } from "@/composables/useGridStats";
 import { injectGridFileOps } from "@/composables/useGridFileOps";
+import { injectUndoRedo } from "@/composables/useUndoRedo";
 import StatsBar from "./sphere-grid/StatsBar.vue";
 import StatsDetailsDialog from "./sphere-grid/StatsDetailsDialog.vue";
 import HelpDialog from "./sphere-grid/HelpDialog.vue";
@@ -112,6 +113,7 @@ const { isSharedView } = storeToRefs(gridSharingStore);
 const { sphereData, defaultNodes, updateNode, updateNodes, resetGrid, clearGrid } = injectGridState();
 const { stats, sphereCounts, overriddenSphereCounts } = injectGridStats();
 const { exportGrid, importGrid, saveSharedGridToLocal } = injectGridFileOps();
+const undoRedo = injectUndoRedo();
 
 const selectedType = useLocalStorage<SphereType>("ffx-sphere-grid-selected-type", SphereType.Hp);
 const displayMode = useLocalStorage<"icons" | "numbers">("ffx-sphere-grid-display-mode", "icons");
@@ -141,24 +143,23 @@ function handleGridTypeChange(newType: GridType) {
   emit("update:grid-type", newType);
 }
 
-// Canvas ref
 const canvasRef = ref<InstanceType<typeof SphereGridCanvas> | null>(null);
 const cyContainer = computed(() => canvasRef.value?.container ?? null);
 
-// Selection change handler - automatically apply selected type
 function handleSelectionChange(nodeIds: string[]) {
   selectedNodeIds.value = nodeIds;
 
   if (nodeIds.length > 0) {
+    undoRedo.beginAction();
     const value = lowestValues[selectedType.value];
     updateNodes(nodeIds, selectedType.value, value);
     updateSelectedNodes(nodeIds, selectedType.value, value);
     clearSelection();
     selectedNodeIds.value = [];
+    undoRedo.commitAction();
   }
 }
 
-// Cytoscape grid
 const { initializeCytoscape, resetNodes, clearSelection, updateSelectedNodes } = useCytoscapeGrid(
   cyContainer,
   sphereData,
@@ -167,12 +168,28 @@ const { initializeCytoscape, resetNodes, clearSelection, updateSelectedNodes } =
   showIcons,
   highlightedType,
   handleSelectionChange,
+  () => undoRedo.beginAction(),
+  () => undoRedo.commitAction(),
 );
 
-// Tour
+function syncVisuals() {
+  resetNodes(sphereData.value.nodes);
+}
+
+useEventListener(document, "keydown", (event: KeyboardEvent) => {
+  const mod = event.metaKey || event.ctrlKey;
+  if (mod && event.key === "z" && !event.shiftKey) {
+    event.preventDefault();
+    undoRedo.undo(syncVisuals);
+  }
+  if (mod && event.key === "z" && event.shiftKey) {
+    event.preventDefault();
+    undoRedo.redo(syncVisuals);
+  }
+});
+
 const { startTour, shouldAutoStart } = useSphereGridTour();
 
-// Initialize Cytoscape on mount
 onMounted(() => {
   initializeCytoscape();
   if (shouldAutoStart() && !isSharedView.value) {
@@ -180,30 +197,28 @@ onMounted(() => {
   }
 });
 
-// Reinitialize when grid type changes
 watch(gridType, () => {
+  undoRedo.clearHistory();
   initializeCytoscape();
 });
 
-// Reset handler
 const handleReset = () => {
   resetGrid(resetNodes);
 };
 
-// Clear handler
 const handleClear = () => {
   clearGrid(resetNodes);
 };
 
-// Handle export
 function handleExport() {
   exportGrid();
 }
 
-// Handle import
 async function handleImport(file: File) {
   try {
+    undoRedo.beginAction();
     await importGrid(file, resetNodes);
+    undoRedo.commitAction();
     showHelpDialog.value = false;
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to import grid";
@@ -221,7 +236,6 @@ function handleShare() {
   });
 }
 
-// Handle save shared grid to local
 function handleSaveSharedGrid() {
   saveSharedGridToLocal();
   gridSharingStore.clearShareParams();
@@ -231,7 +245,6 @@ function handleSaveSharedGrid() {
   });
 }
 
-// Handle back to my grid
 function handleBackToMyGrid() {
   gridSharingStore.clearShareParams();
 }
