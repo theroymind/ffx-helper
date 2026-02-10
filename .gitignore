@@ -40,4 +40,4 @@ __screenshots__/
 
 # Sentry Config File
 .env.sentry-build-plugin
- .claude/settings.local.json
+.claude/settings.local.json
