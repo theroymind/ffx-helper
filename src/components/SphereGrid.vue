@@ -1,6 +1,6 @@
 <template>
-  <div class="h-screen p-6">
-    <div class="flex flex-col gap-4 h-full">
+  <div data-test-id="sphere-grid" class="h-screen p-2 md:p-6">
+    <div class="flex flex-col gap-2 md:gap-4 h-full">
       <div
         v-if="isSharedView"
         class="bg-sphere-ability/20 border border-sphere-ability rounded-md p-3 flex items-center justify-between"
@@ -22,6 +22,7 @@
       </div>
 
       <StatsBar
+        class="hidden md:block"
         :stats="stats"
         :counts="sphereCounts"
         :total="sphereData.nodes.length"
@@ -46,10 +47,10 @@
         @take-tour="startTour"
       />
 
-      <div class="relative flex-1">
+      <div class="relative flex-1 overflow-hidden">
         <SphereGridCanvas ref="canvasRef" />
-        <div class="absolute top-4 left-0 right-0 z-10 flex justify-center">
-          <div class="flex flex-row gap-2">
+        <div class="absolute top-2 md:top-4 left-0 right-0 z-10 flex flex-col items-center gap-2 px-2 md:px-0 overflow-hidden">
+          <div data-test-id="toolbar-row" class="flex flex-row gap-2 max-w-full overflow-x-auto [&::-webkit-scrollbar]:hidden">
             <FileActionsToolbar @export="handleExport" @import="handleImport" @share="handleShare" />
             <SphereGridToolbar
               data-tour="grid-toolbar"
@@ -58,14 +59,24 @@
               @update:grid-type="handleGridTypeChange"
               @update:display-mode="displayMode = $event"
             />
-            <SphereToolbar v-if="!isSharedView" data-tour="sphere-toolbar" v-model="selectedType" />
             <GridControlsToolbar
               v-if="!isSharedView"
               data-tour="controls-toolbar"
               @reset="handleReset"
               @clear="handleClear"
             />
+            <Card class="p-2 md:hidden">
+              <div class="flex gap-1">
+                <Button data-test-id="mobile-stats-button" variant="ghost" size="icon" class="h-8 w-8" @click="showDetailsDialog = true">
+                  <BarChart3 class="h-4 w-4" />
+                </Button>
+                <Button data-test-id="mobile-help-button" variant="ghost" size="icon" class="h-8 w-8" @click="showHelpDialog = true">
+                  <HelpCircle class="h-4 w-4" />
+                </Button>
+              </div>
+            </Card>
           </div>
+          <SphereToolbar v-if="!isSharedView" data-tour="sphere-toolbar" v-model="selectedType" />
         </div>
       </div>
     </div>
@@ -95,7 +106,8 @@ import GridControlsToolbar from "./sphere-grid/GridControlsToolbar.vue";
 import FileActionsToolbar from "./sphere-grid/FileActionsToolbar.vue";
 import { Button } from "@/components/ui/button";
 import { toast } from "vue-sonner";
-import { Info, Save, X } from "lucide-vue-next";
+import { Info, Save, X, BarChart3, HelpCircle } from "lucide-vue-next";
+import { Card } from "@/components/ui/card";
 
 const props = defineProps<{
   gridType: GridType;

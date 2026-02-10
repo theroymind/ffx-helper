@@ -1,8 +1,8 @@
 <template>
-  <nav class="w-full border-b px-6 py-4">
+  <nav class="w-full border-b px-3 md:px-6 py-3 md:py-4">
     <div class="flex items-center justify-between">
-      <div class="flex items-center gap-8">
-        <h1 class="text-xl text-gold font-bold">FFX Planner</h1>
+      <div class="flex items-center gap-2 md:gap-8">
+        <h1 class="text-lg md:text-xl text-gold font-bold">FFX Planner</h1>
         <div class="flex gap-1">
           <RouterLink to="/" custom v-slot="{ navigate, isActive: isActiveLink }">
             <Button variant="ghost" @click="navigate" :class="isActiveLink && 'bg-accent text-accent-foreground'">

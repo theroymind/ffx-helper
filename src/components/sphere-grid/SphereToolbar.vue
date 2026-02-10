@@ -1,13 +1,14 @@
 <template>
   <TooltipProvider>
-    <Card v-bind="$attrs" class="p-2">
-      <div class="flex gap-1 flex-wrap">
+    <Card v-bind="$attrs" class="p-2 max-w-full overflow-x-auto [&::-webkit-scrollbar]:hidden">
+      <div data-test-id="sphere-selector" class="flex gap-1 flex-nowrap">
         <Tooltip v-for="type in selectableTypes" :key="type">
           <TooltipTrigger as-child>
             <Button
               variant="ghost"
               size="icon"
               class="h-8 w-8"
+              :data-test-id="`sphere-type-${type}`"
               :class="{ 'ring-2 ring-gold ring-offset-2 ring-offset-background': modelValue === type }"
               @click="modelValue = type"
             >

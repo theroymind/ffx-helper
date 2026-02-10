@@ -4,7 +4,7 @@
       <DialogHeader>
         <DialogTitle class="text-gold text-xl font-bold">Character Details</DialogTitle>
       </DialogHeader>
-      <div class="space-y-4">
+      <div data-test-id="stats-details-dialog" class="space-y-4">
         <StatsPanel :stats="stats" />
         <SphereCountsPanel :counts="counts" :total="total" />
       </div>

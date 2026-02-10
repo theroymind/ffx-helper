@@ -4,18 +4,18 @@
       <div class="flex gap-1">
         <DropdownMenu>
           <DropdownMenuTrigger as-child>
-            <Button variant="ghost" size="icon" class="h-8 w-8">
+            <Button data-test-id="grid-controls-trigger" variant="ghost" size="icon" class="h-8 w-8">
               <Trash2 class="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="start">
-            <DropdownMenuItem @click="showResetDialog = true">
+            <DropdownMenuItem data-test-id="reset-to-default-item" @click="showResetDialog = true">
               <RotateCcw class="h-4 w-4 mr-2" />
               Reset to Default
             </DropdownMenuItem>
 
-            <DropdownMenuItem @click="showClearDialog = true" class="text-destructive focus:text-destructive">
+            <DropdownMenuItem data-test-id="clear-grid-item" @click="showClearDialog = true" class="text-destructive focus:text-destructive">
               <Trash2 class="h-4 w-4 mr-2" />
               Clear Grid
             </DropdownMenuItem>
@@ -34,7 +34,7 @@
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction @click="handleReset">Reset to Defaults</AlertDialogAction>
+          <AlertDialogAction data-test-id="confirm-reset" @click="handleReset">Reset to Defaults</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
@@ -49,7 +49,7 @@
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction @click="handleClear">Clear Grid</AlertDialogAction>
+          <AlertDialogAction data-test-id="confirm-clear" @click="handleClear">Clear Grid</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

@@ -1,5 +1,5 @@
 <template>
-  <div ref="container" class="flex-1 overflow-hidden w-full h-full touch-none [&_canvas]:cursor-crosshair"></div>
+  <div ref="container" data-test-id="sphere-canvas" class="flex-1 overflow-hidden w-full h-full touch-none [&_canvas]:cursor-crosshair"></div>
 </template>
 
 <script setup lang="ts">

@@ -40,6 +40,9 @@ export function useCytoscapeGrid(
     const { nodes, edges, positions } = gridData.value;
     const sphereColors = getSphereColors(); // Get colors from CSS at runtime
 
+    // @ts-expect-error expose for e2e testing
+    window.__cy = null;
+
     cy = cytoscape({
       container: container.value,
       elements: [
@@ -186,6 +189,29 @@ export function useCytoscapeGrid(
       autoungrabify: true,
       autounselectify: false,
     });
+
+    // @ts-expect-error expose for e2e testing
+    window.__cy = cy;
+
+    // @ts-expect-error expose for e2e testing
+    window.__clickNode = (nodeId: string, type?: string) => {
+      if (!cy) return false;
+      const node = cy.getElementById(nodeId);
+      if (!node || node.empty() || node.data("abilityId")) return false;
+      if (type) {
+        selectedType.value = type as SphereType;
+      }
+      updateNodeType(node);
+      return true;
+    };
+
+    // @ts-expect-error expose for e2e testing
+    window.__getModifiableNodeId = (index: number) => {
+      if (!cy) return null;
+      const nodes = cy.nodes().filter((n: NodeSingular) => !n.data("abilityId") && !n.data("locked"));
+      const node = nodes[index];
+      return node ? node.id() : null;
+    };
 
     const containerElement = container.value;
     if (containerElement) {
