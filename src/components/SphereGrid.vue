@@ -16,7 +16,7 @@
           </Button>
           <Button variant="default" size="sm" @click="handleSaveSharedGrid">
             <Save class="h-4 w-4 mr-2" />
-            Save to My Grids
+            Replace My Grid
           </Button>
         </div>
       </div>
@@ -268,8 +268,8 @@ function handleShare() {
 function handleSaveSharedGrid() {
   saveSharedGridToLocal();
   gridSharingStore.clearShareParams();
-  toast.success("Grid saved!", {
-    description: "Grid saved to your local storage",
+  toast.success("Grid replaced!", {
+    description: "Your existing grid has been replaced with the shared grid",
     duration: 2500,
   });
 }
