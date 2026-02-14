@@ -47,6 +47,8 @@
         @take-tour="startTour"
       />
 
+      <AnalyticsConsentDialog v-model:open="showConsentDialog" />
+
       <div class="relative flex-1 overflow-hidden">
         <SphereGridCanvas ref="canvasRef" />
         <div
@@ -107,6 +109,7 @@ import { storeToRefs } from "pinia";
 import { GridType } from "@/domain/grid/GridType";
 import { useCytoscapeGrid } from "@/composables/useCytoscapeGrid";
 import { useSphereGridTour } from "@/composables/useSphereGridTour";
+import { useAnalyticsConsent } from "@/composables/useAnalyticsConsent";
 import { useGridSharingStore } from "@/stores/gridSharing";
 import { SphereType } from "@/domain/grid/SphereType";
 import { injectGridState } from "@/composables/useGridState";
@@ -121,6 +124,7 @@ import SphereGridToolbar from "./sphere-grid/SphereGridToolbar.vue";
 import SphereToolbar from "./sphere-grid/SphereToolbar.vue";
 import GridControlsToolbar from "./sphere-grid/GridControlsToolbar.vue";
 import FileActionsToolbar from "./sphere-grid/FileActionsToolbar.vue";
+import AnalyticsConsentDialog from "./AnalyticsConsentDialog.vue";
 import { Button } from "@/components/ui/button";
 import { toast } from "vue-sonner";
 import { Info, Save, X, BarChart3, HelpCircle } from "lucide-vue-next";
@@ -152,6 +156,7 @@ const selectedNodeIds = ref<string[]>([]);
 const highlightedType = ref<SphereType | null>(null);
 const showDetailsDialog = ref(false);
 const showHelpDialog = ref(false);
+const showConsentDialog = ref(false);
 
 const lowestValues: Record<SphereType, number> = {
   hp: 300,
@@ -218,12 +223,22 @@ useEventListener(document, "keydown", (event: KeyboardEvent) => {
   }
 });
 
-const { startTour, shouldAutoStart } = useSphereGridTour();
+const { hasResponded } = useAnalyticsConsent();
+
+function handleTourComplete() {
+  if (!hasResponded.value) {
+    showConsentDialog.value = true;
+  }
+}
+
+const { startTour, shouldAutoStart } = useSphereGridTour(handleTourComplete);
 
 onMounted(() => {
   initializeCytoscape();
   if (shouldAutoStart() && !isSharedView.value) {
     setTimeout(() => startTour(), 500);
+  } else if (!hasResponded.value) {
+    showConsentDialog.value = true;
   }
 });
 

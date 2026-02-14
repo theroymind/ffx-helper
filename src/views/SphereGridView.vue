@@ -1,7 +1,9 @@
 <template>
-  <SphereGridProvider :grid-type="gridType">
-    <SphereGrid :grid-type="gridType" @update:grid-type="handleGridTypeChange" />
-  </SphereGridProvider>
+  <div>
+    <SphereGridProvider :grid-type="gridType">
+      <SphereGrid :grid-type="gridType" @update:grid-type="handleGridTypeChange" />
+    </SphereGridProvider>
+  </div>
 </template>
 
 <script setup lang="ts">

@@ -17,7 +17,7 @@ export const useThemeStore = defineStore("theme", () => {
 
   const theme = computed<Theme>(() => (isDark.value ? "dark" : "light"));
 
-  function setTheme(newTheme: Theme | string) {
+  function setTheme(newTheme: unknown) {
     if (newTheme === "light" || newTheme === "dark") {
       isDark.value = newTheme === "dark";
     }

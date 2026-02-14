@@ -7,18 +7,10 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue";
 import { RouterView } from "vue-router";
 import NavigationBar from "./components/NavigationBar.vue";
 import { Toaster } from "@/components/ui/sonner";
 import { useThemeStore } from "@/stores/theme";
-import { useAnalytics } from "@/composables/useAnalytics";
 
 useThemeStore();
-
-const { initialize } = useAnalytics();
-
-onMounted(() => {
-  initialize();
-});
 </script>

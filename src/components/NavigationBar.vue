@@ -30,6 +30,12 @@
             <DropdownMenuRadioItem value="light"> Light </DropdownMenuRadioItem>
             <DropdownMenuRadioItem value="dark"> Dark </DropdownMenuRadioItem>
           </DropdownMenuRadioGroup>
+          <DropdownMenuSeparator />
+          <DropdownMenuLabel>Privacy</DropdownMenuLabel>
+          <div class="flex items-center justify-between px-2 py-1.5">
+            <span class="text-sm">Analytics</span>
+            <Switch :model-value="isAccepted" @update:model-value="handleAnalyticsToggle" />
+          </div>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
@@ -40,6 +46,7 @@
 import { RouterLink } from "vue-router";
 import { Settings } from "lucide-vue-next";
 import { useThemeStore } from "@/stores/theme";
+import { useAnalyticsConsent } from "@/composables/useAnalyticsConsent";
 import Button from "@/components/ui/button/Button.vue";
 import {
   DropdownMenu,
@@ -50,6 +57,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Switch } from "@/components/ui/switch";
 
 const themeStore = useThemeStore();
+const { isAccepted, accept, decline } = useAnalyticsConsent();
+
+function handleAnalyticsToggle(checked: boolean) {
+  if (checked) {
+    accept();
+  } else {
+    decline();
+  }
+}
 </script>

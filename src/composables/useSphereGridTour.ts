@@ -4,7 +4,7 @@ import "driver.js/dist/driver.css";
 
 const TOUR_COMPLETED_KEY = "ffx-sphere-grid-tour-completed";
 
-export function useSphereGridTour() {
+export function useSphereGridTour(onComplete?: () => void) {
   const tourCompleted = useLocalStorage(TOUR_COMPLETED_KEY, false);
 
   const driverObj = driver({
@@ -14,6 +14,7 @@ export function useSphereGridTour() {
     popoverClass: "driver-popover-custom",
     onDestroyed: () => {
       tourCompleted.value = true;
+      onComplete?.();
     },
     steps: [
       {
