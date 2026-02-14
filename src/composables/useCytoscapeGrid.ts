@@ -13,6 +13,7 @@ export function useCytoscapeGrid(
   onNodeUpdate: (nodeId: string, type: SphereType, value: number) => void,
   showIcons: Ref<boolean>,
   highlightedType: Ref<SphereType | null>,
+  isReadOnly: Ref<boolean>,
   onSelectionChange?: (nodeIds: string[]) => void,
   onDragStart?: () => void,
   onDragEnd?: () => void,
@@ -291,7 +292,7 @@ export function useCytoscapeGrid(
     // Handle node interactions
     cy.on("mousedown", "node", (event) => {
       const node = event.target;
-      if (!node.data("abilityId")) {
+      if (!node.data("abilityId") && !isReadOnly.value) {
         onDragStart?.();
         isDragging.value = true;
         updateNodeType(node);
@@ -323,7 +324,7 @@ export function useCytoscapeGrid(
         node.data("hoverLabel", hoverLabel);
 
         // If dragging, update node type
-        if (isDragging.value) {
+        if (isDragging.value && !isReadOnly.value) {
           updateNodeType(node);
         }
       }
@@ -353,7 +354,12 @@ export function useCytoscapeGrid(
 
     // Handle selection changes
     cy.on("select unselect", () => {
-      if (onSelectionChange && cy) {
+      if (!cy) return;
+      if (isReadOnly.value) {
+        cy.nodes(":selected").unselect();
+        return;
+      }
+      if (onSelectionChange) {
         const selectedNodes = cy.nodes(":selected").filter((node) => !node.data("abilityId"));
         const nodeIds = selectedNodes.map((node) => node.id());
         onSelectionChange(nodeIds);

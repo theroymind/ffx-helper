@@ -4,6 +4,7 @@
 
 <script setup lang="ts">
 import { provide, computed, toRef, type Ref } from "vue";
+import { storeToRefs } from "pinia";
 import { GridType } from "@/domain/grid/GridType.ts";
 import type { SphereNode } from "@/domain/grid/SphereNode.ts";
 import { useGridSharingStore } from "@/stores/gridSharing.ts";
@@ -19,7 +20,7 @@ const props = defineProps<{
 }>();
 
 const gridSharingStore = useGridSharingStore();
-const isSharedView = gridSharingStore.isSharedView;
+const { isSharedView } = storeToRefs(gridSharingStore);
 
 const gridTypeRef = toRef(props, "gridType");
 

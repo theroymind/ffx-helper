@@ -14,7 +14,7 @@ export interface GridState {
   updateNodes: (nodeIds: string[], type: SphereType, value: number) => void;
   resetGrid: (updateCallback?: (nodes: SphereNode[]) => void) => void;
   clearGrid: (updateCallback?: (nodes: SphereNode[]) => void) => void;
-  isSharedView: boolean;
+  isSharedView: Ref<boolean>;
 }
 
 export const gridStateKey: InjectionKey<GridState> = Symbol("gridState");
@@ -37,7 +37,7 @@ function applyDeltasToNodes(nodes: SphereNode[], deltas: NodeDeltas): SphereNode
 export function useGridState(
   gridType: Ref<GridType>,
   storage: GridStorage,
-  isSharedView: boolean,
+  isSharedView: Ref<boolean>,
   sharedNodes?: Ref<SphereNode[] | null>,
 ): GridState {
   const { trackSphereModification, trackGridReset } = useAnalytics();
@@ -46,7 +46,7 @@ export function useGridState(
   const defaultNodes = computed(() => defaultGrid.value.nodes);
 
   function buildNodes(): SphereNode[] {
-    if (isSharedView && sharedNodes?.value) {
+    if (isSharedView.value && sharedNodes?.value) {
       return sharedNodes.value;
     }
     return applyDeltasToNodes(defaultNodes.value, storage.deltas.value);
@@ -55,11 +55,9 @@ export function useGridState(
   const nodes = ref<SphereNode[]>(buildNodes());
 
   watch(
-    [gridType, () => storage.deltas.value],
+    [gridType, isSharedView, () => storage.deltas.value],
     () => {
-      if (!isSharedView) {
-        nodes.value = buildNodes();
-      }
+      nodes.value = buildNodes();
     },
     { deep: true, flush: "sync" },
   );
@@ -67,7 +65,7 @@ export function useGridState(
   watch(
     () => sharedNodes?.value,
     () => {
-      if (isSharedView && sharedNodes?.value) {
+      if (isSharedView.value && sharedNodes?.value) {
         nodes.value = sharedNodes.value;
       }
     },
@@ -96,7 +94,7 @@ export function useGridState(
       abilityName: node.abilityName,
     };
 
-    if (!isSharedView) {
+    if (!isSharedView.value) {
       const defaultNode = defaultNodes.value[nodeIndex];
       if (defaultNode && (type !== defaultNode.type || value !== defaultNode.value)) {
         storage.saveNode(nodeId, type, value);
@@ -128,7 +126,7 @@ export function useGridState(
         abilityName: node.abilityName,
       };
 
-      if (!isSharedView) {
+      if (!isSharedView.value) {
         const defaultNode = defaultNodes.value[nodeIndex];
         if (defaultNode && (type !== defaultNode.type || value !== defaultNode.value)) {
           updates.push({ nodeId, type, value });
@@ -138,7 +136,7 @@ export function useGridState(
       }
     });
 
-    if (!isSharedView && updates.length > 0) {
+    if (!isSharedView.value && updates.length > 0) {
       storage.saveNodes(updates);
     }
     removals.forEach((nodeId) => storage.removeNode(nodeId));
@@ -180,7 +178,7 @@ export function useGridState(
         value: 0,
       }));
 
-    if (!isSharedView) {
+    if (!isSharedView.value) {
       storage.saveNodes(updates);
     }
 

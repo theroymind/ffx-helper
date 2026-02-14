@@ -196,6 +196,7 @@ const { initializeCytoscape, resetNodes, clearSelection, updateSelectedNodes } =
   updateNode,
   showIcons,
   highlightedType,
+  isSharedView,
   handleSelectionChange,
   () => undoRedo.beginAction(),
   () => undoRedo.commitAction(),
@@ -229,6 +230,10 @@ onMounted(() => {
 watch(gridType, () => {
   undoRedo.clearHistory();
   initializeCytoscape();
+});
+
+watch(isSharedView, () => {
+  resetNodes(sphereData.value.nodes);
 });
 
 const handleReset = () => {
