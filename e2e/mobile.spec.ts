@@ -1,52 +1,58 @@
-import { test, expect } from '@playwright/test'
-import { getByTestId } from './helpers'
+import { test, expect } from "@playwright/test";
+import { getByTestId } from "./helpers";
 
 test.use({
   viewport: { width: 393, height: 851 },
   isMobile: true,
-})
+});
 
-test('loads and displays the sphere grid on mobile', async ({ page }) => {
-  await page.goto('/')
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem("ffx-sphere-grid-tour-completed", "true");
+  });
+});
 
-  await expect(page).toHaveTitle(/Sphere Grid/)
-  await expect(getByTestId(page, 'sphere-grid')).toBeVisible()
-})
+test("loads and displays the sphere grid on mobile", async ({ page }) => {
+  await page.goto("/");
 
-test('canvas is visible and takes up most of the viewport', async ({ page }) => {
-  await page.goto('/')
+  await expect(page).toHaveTitle(/Sphere Grid/);
+  await expect(getByTestId(page, "sphere-grid")).toBeVisible();
+});
 
-  const canvas = getByTestId(page, 'sphere-canvas')
-  await expect(canvas).toBeVisible()
+test("canvas is visible and takes up most of the viewport", async ({ page }) => {
+  await page.goto("/");
 
-  const box = await canvas.boundingBox()
-  expect(box).not.toBeNull()
-  expect(box!.height).toBeGreaterThan(300)
-})
+  const canvas = getByTestId(page, "sphere-canvas");
+  await expect(canvas).toBeVisible();
 
-test('sphere selector toolbar is visible', async ({ page }) => {
-  await page.goto('/')
+  const box = await canvas.boundingBox();
+  expect(box).not.toBeNull();
+  expect(box!.height).toBeGreaterThan(300);
+});
 
-  await expect(getByTestId(page, 'sphere-selector')).toBeVisible()
-})
+test("sphere selector toolbar is visible", async ({ page }) => {
+  await page.goto("/");
 
-test('can open stats details dialog on mobile', async ({ page }) => {
-  await page.goto('/')
+  await expect(getByTestId(page, "sphere-selector")).toBeVisible();
+});
 
-  const toolbarRow = getByTestId(page, 'toolbar-row')
-  await toolbarRow.evaluate((el) => (el.scrollLeft = el.scrollWidth))
+test("can open stats details dialog on mobile", async ({ page }) => {
+  await page.goto("/");
 
-  await getByTestId(page, 'mobile-stats-button').click()
+  const toolbarRow = getByTestId(page, "toolbar-row");
+  await toolbarRow.evaluate((el) => (el.scrollLeft = el.scrollWidth));
 
-  await expect(getByTestId(page, 'stats-details-dialog')).toBeVisible()
-})
+  await getByTestId(page, "mobile-stats-button").click();
 
-test('page does not scroll horizontally', async ({ page }) => {
-  await page.goto('/')
+  await expect(getByTestId(page, "stats-details-dialog")).toBeVisible();
+});
+
+test("page does not scroll horizontally", async ({ page }) => {
+  await page.goto("/");
 
   const overflow = await page.evaluate(() => {
-    return document.documentElement.scrollWidth > document.documentElement.clientWidth
-  })
+    return document.documentElement.scrollWidth > document.documentElement.clientWidth;
+  });
 
-  expect(overflow).toBe(false)
-})
+  expect(overflow).toBe(false);
+});
