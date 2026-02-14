@@ -1,4 +1,19 @@
 import type { Page, Locator } from "@playwright/test";
+import { LocalStorageKey } from "../src/domain/LocalStorageKey";
+import { AnalyticsConsentStatus } from "../src/domain/AnalyticsConsentStatus";
+
+export async function seedE2eLocalStorage(page: Page) {
+  const seed = {
+    tourKey: LocalStorageKey.SphereGridTourCompleted,
+    consentKey: LocalStorageKey.AnalyticsConsent,
+    consentValue: AnalyticsConsentStatus.Declined,
+  };
+
+  await page.addInitScript((s) => {
+    localStorage.setItem(s.tourKey, "true");
+    localStorage.setItem(s.consentKey, s.consentValue);
+  }, seed);
+}
 
 export function getByTestId(page: Page, testId: string): Locator {
   return page.locator(`[data-test-id="${testId}"]`);

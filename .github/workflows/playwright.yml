@@ -39,8 +39,6 @@ jobs:
       - name: Install Playwright system deps
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: npx playwright install-deps chromium webkit
-      - name: Build app
-        run: npm run build-only
       - name: Run Playwright tests
         run: npx playwright test
       - uses: actions/upload-artifact@v4

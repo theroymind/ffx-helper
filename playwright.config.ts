@@ -1,7 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
 const isCI = !!process.env.CI;
-const baseURL = isCI ? "http://localhost:4173" : "http://localhost:5173";
+const baseURL = "http://localhost:5173";
 
 export default defineConfig({
   testDir: "./e2e",
@@ -37,7 +37,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: isCI ? "npm run preview" : "npm run dev",
+    command: "npm run dev -- --host 127.0.0.1 --port 5173",
     url: baseURL,
     reuseExistingServer: !isCI,
   },

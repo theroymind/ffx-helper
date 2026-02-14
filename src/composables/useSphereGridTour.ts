@@ -1,11 +1,10 @@
 import { useLocalStorage } from "@vueuse/core";
 import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
-
-const TOUR_COMPLETED_KEY = "ffx-sphere-grid-tour-completed";
+import { LocalStorageKey } from "@/domain/LocalStorageKey";
 
 export function useSphereGridTour(onComplete?: () => void) {
-  const tourCompleted = useLocalStorage(TOUR_COMPLETED_KEY, false);
+  const tourCompleted = useLocalStorage(LocalStorageKey.SphereGridTourCompleted, false);
 
   const driverObj = driver({
     showProgress: true,

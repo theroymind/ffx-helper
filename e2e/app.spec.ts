@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import {
   getByTestId,
+  seedE2eLocalStorage,
   waitForGrid,
   getModifiableNodeId,
   clickNode,
@@ -26,9 +27,7 @@ const SPHERE_TYPES = [
 ] as const;
 
 test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => {
-    localStorage.setItem("ffx-sphere-grid-tour-completed", "true");
-  });
+  await seedE2eLocalStorage(page);
 });
 
 test("page loads with all UI elements visible", async ({ page }) => {
@@ -121,9 +120,7 @@ test("grid controls: clear, reset, and cancel dialogs", async ({ page }) => {
   await clearGrid(page);
   await page.waitForTimeout(500);
   const typesAfterClear = await getAllNodeTypes(page);
-  const hasOnlyEmptyAndLocked = Object.keys(typesAfterClear).every(
-    (t) => t === "empty" || t === "locked",
-  );
+  const hasOnlyEmptyAndLocked = Object.keys(typesAfterClear).every((t) => t === "empty" || t === "locked");
   expect(hasOnlyEmptyAndLocked).toBe(true);
 
   const nodeId = await getModifiableNodeId(page, 0);

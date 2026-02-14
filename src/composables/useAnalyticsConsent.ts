@@ -1,15 +1,12 @@
 import { computed } from "vue";
 import { useLocalStorage } from "@vueuse/core";
+import { LocalStorageKey } from "@/domain/LocalStorageKey";
+import { AnalyticsConsentStatus } from "@/domain/AnalyticsConsentStatus";
 
-export enum AnalyticsConsentStatus {
-  Pending = "pending",
-  Accepted = "accepted",
-  Declined = "declined",
-}
-
-const CONSENT_KEY = "ffx-analytics-consent";
-
-const consentStatus = useLocalStorage<AnalyticsConsentStatus>(CONSENT_KEY, AnalyticsConsentStatus.Pending);
+const consentStatus = useLocalStorage<AnalyticsConsentStatus>(
+  LocalStorageKey.AnalyticsConsent,
+  AnalyticsConsentStatus.Pending,
+);
 
 export function useAnalyticsConsent() {
   const hasResponded = computed(() => consentStatus.value !== AnalyticsConsentStatus.Pending);

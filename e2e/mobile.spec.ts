@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { getByTestId } from "./helpers";
+import { getByTestId, seedE2eLocalStorage } from "./helpers";
 
 test.use({
   viewport: { width: 393, height: 851 },
@@ -7,9 +7,7 @@ test.use({
 });
 
 test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => {
-    localStorage.setItem("ffx-sphere-grid-tour-completed", "true");
-  });
+  await seedE2eLocalStorage(page);
 });
 
 test("loads and displays the sphere grid on mobile", async ({ page }) => {
