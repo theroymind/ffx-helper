@@ -4,6 +4,7 @@ import { SphereType } from "@/domain/grid/SphereType";
 import type { SphereGridData } from "@/domain/grid/SphereGridData";
 import type { SphereNode } from "@/domain/grid/SphereNode";
 import { getSphereColors, abilityNodeColor, abilityIcon, sphereTypeInfo, sphereIcons } from "@/constants/sphere";
+import { useParticleOverlay } from "@/composables/useParticleOverlay";
 
 export function useCytoscapeGrid(
   container: Ref<HTMLElement | null>,
@@ -20,6 +21,7 @@ export function useCytoscapeGrid(
   const isDragging = ref(false);
   let wheelEventCleanup: (() => void) | null = null;
   let middleMouseCleanup: (() => void) | null = null;
+  let particleOverlay: ReturnType<typeof useParticleOverlay> | null = null;
 
   const initializeCytoscape = () => {
     if (!container.value) return;
@@ -189,6 +191,9 @@ export function useCytoscapeGrid(
       autoungrabify: true,
       autounselectify: false,
     });
+
+    if (particleOverlay) particleOverlay.destroy();
+    particleOverlay = useParticleOverlay(container.value!);
 
     // @ts-expect-error expose for e2e testing
     window.__cy = cy;
@@ -363,7 +368,30 @@ export function useCytoscapeGrid(
     onDragEnd?.();
   }
 
-  const updateNodeType = (node: NodeSingular) => {
+  function flashNode(node: NodeSingular) {
+    node.stop();
+    node.style("border-width", 12);
+    node.style("border-color", "#fbbf24");
+    node.style("border-opacity", 1);
+    node.animate(
+      {
+        style: {
+          "border-width": 0,
+          "border-opacity": 0,
+        },
+      },
+      {
+        duration: 800,
+        easing: "ease-out-cubic",
+      },
+    );
+
+    if (particleOverlay && cy) {
+      particleOverlay.emit(cy, node.id());
+    }
+  }
+
+  function updateNodeType(node: NodeSingular) {
     const newType = selectedType.value;
     const statValue = sphereTypeInfo[newType].statValue;
     const sphereColors = getSphereColors();
@@ -375,8 +403,10 @@ export function useCytoscapeGrid(
     node.style("background-color", isAbilityNode ? abilityNodeColor : sphereColors[newType]);
     node.style("background-image", showIcons.value ? sphereIcons[newType] || "none" : "none");
 
+    flashNode(node);
+
     onNodeUpdate(node.id(), newType, statValue);
-  };
+  }
 
   const resetNodes = (nodes: SphereNode[]) => {
     if (!cy) return;
@@ -407,6 +437,7 @@ export function useCytoscapeGrid(
     if (!cy) return;
 
     const sphereColors = getSphereColors();
+    const updatedNodes: NodeSingular[] = [];
     cy.batch(() => {
       nodeIds.forEach((nodeId) => {
         const node = cy?.getElementById(nodeId);
@@ -416,10 +447,12 @@ export function useCytoscapeGrid(
           const isAbilityNode = node.data("abilityId") !== null && node.data("abilityId") !== undefined;
           node.style("background-color", isAbilityNode ? abilityNodeColor : sphereColors[type]);
           node.style("background-image", showIcons.value ? sphereIcons[type] || "none" : "none");
+          updatedNodes.push(node);
         }
       });
     });
     cy.style().update();
+    updatedNodes.forEach((node) => flashNode(node));
   };
 
   const destroy = () => {
@@ -431,6 +464,10 @@ export function useCytoscapeGrid(
     if (middleMouseCleanup) {
       middleMouseCleanup();
       middleMouseCleanup = null;
+    }
+    if (particleOverlay) {
+      particleOverlay.destroy();
+      particleOverlay = null;
     }
     if (cy) {
       cy.destroy();

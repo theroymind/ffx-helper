@@ -50,7 +50,7 @@
       <div class="relative flex-1 overflow-hidden">
         <SphereGridCanvas ref="canvasRef" />
         <div
-          class="absolute top-2 md:top-4 left-0 right-0 z-10 flex flex-col items-center gap-2 px-2 md:px-0 overflow-hidden"
+          class="absolute top-2 md:top-4 left-0 right-0 z-10 flex flex-col md:flex-row items-center justify-center gap-2 px-2 md:px-0 overflow-hidden"
         >
           <div
             data-test-id="toolbar-row"
