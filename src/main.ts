@@ -16,7 +16,7 @@ if (import.meta.env.PROD) {
     Sentry.init({
       app,
       dsn: "https://7d48942cbb25a8a75f40a3fcc9261e1c@o4510395206205440.ingest.us.sentry.io/4510395207057408",
-      sendDefaultPii: true,
+      sendDefaultPii: false,
     });
   });
 }
